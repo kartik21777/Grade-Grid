@@ -97,3 +97,21 @@ code {
   max-width: 1000px;
   margin: 0 auto;
 }
+
+.card-container{
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.card-schedule{
+  border-top: 4px solid #ea4335;
+}
+
+.card-class{
+  border-top: 4px solid #34a853;
+}
+
+.card-assignments{
+  border-top: 4px solid #3538ea;
+}
