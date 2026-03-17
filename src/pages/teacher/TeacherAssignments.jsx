@@ -44,16 +44,16 @@ const TeacherAssignments = () => {
   }
 
   return (
-    <div style={localStyles.wrapper}>
-      <header style={{ marginBottom: '20px' }}>
-        <h2 style={{ textAlign: 'center', margin: '0 0 15px 0' }}>Assignment Calendar</h2>
+    <div className="teacherAssignWrapper">
+      <header className="teacherAssignHeader">
+        <h2 className="teacherAssignTitle">Assignment Calendar</h2>
         
         {/* Dropdowns for Month and Year */}
-        <div style={{ textAlign: 'center', display: 'flex', justifyContent: 'center', gap: '10px' }}>
+        <div className="teacherAssignControls">
           <select 
             value={month} 
             onChange={(e) => setMonth(Number(e.target.value))}
-            style={localStyles.select}
+            className="teacherAssignSelect"
           >
             {months.map((m, index) => (
               <option key={index} value={index}>{m}</option>
@@ -63,7 +63,7 @@ const TeacherAssignments = () => {
           <select 
             value={year} 
             onChange={(e) => setYear(Number(e.target.value))}
-            style={localStyles.select}
+            className="teacherAssignSelect"
           >
             {years.map((y) => (
               <option key={y} value={y}>{y}</option>
@@ -73,11 +73,11 @@ const TeacherAssignments = () => {
       </header>
 
       {/* Calendar Grid */}
-      <table style={localStyles.table}>
+      <table className="teacherAssignTable">
         <thead>
           <tr>
             {daysOfWeek.map((day) => (
-              <th key={day} style={localStyles.th}>{day}</th>
+              <th key={day} className="teacherAssignTh">{day}</th>
             ))}
           </tr>
         </thead>
@@ -89,14 +89,14 @@ const TeacherAssignments = () => {
                 const dayAssignments = mockAssignments[dateKey] || [];
                 
                 return (
-                  <td key={colIndex} style={localStyles.td}>
+                  <td key={colIndex} className="teacherAssignTd">
                     {day ? (
-                      <div style={localStyles.cellContent}>
-                        <span style={localStyles.dateNumber}>{day}</span>
+                      <div className="teacherAssignCellContent">
+                        <span className="teacherAssignDateNumber">{day}</span>
                         {/* Render assignments if they exist for this day */}
-                        <div style={localStyles.assignmentContainer}>
+                        <div className="teacherAssignContainer">
                           {dayAssignments.map((assignment, idx) => (
-                            <div key={idx} style={localStyles.assignmentTag}>
+                            <div key={idx} className="teacherAssignTag">
                               {assignment}
                             </div>
                           ))}
@@ -114,69 +114,6 @@ const TeacherAssignments = () => {
   );
 };
 
-const localStyles = {
-  wrapper: {
-    padding: '20px',
-    backgroundColor: '#fff',
-    borderRadius: '12px',
-    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-  },
-  select: {
-    padding: '8px 12px',
-    fontSize: '16px',
-    borderRadius: '5px',
-    border: '1px solid #ccc',
-    cursor: 'pointer',
-  },
-  table: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    border: '2px solid #000',
-    textAlign: 'center',
-    tableLayout: 'fixed', // Ensures columns are equally sized
-  },
-  th: {
-    backgroundColor: '#07beb8',
-    color: '#000',
-    border: '1px solid #000',
-    padding: '10px',
-    fontWeight: 'bold',
-    fontSize: '16px',
-  },
-  td: {
-    border: '1px solid #000',
-    height: '100px', // Gives the "Big Calendar" feel
-    verticalAlign: 'top',
-    padding: '5px',
-    width: '14%', // 100% / 7 days
-  },
-  cellContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: '100%',
-  },
-  dateNumber: {
-    fontWeight: 'bold',
-    textAlign: 'right',
-    display: 'block',
-    marginBottom: '5px',
-  },
-  assignmentContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '4px',
-    overflowY: 'auto',
-  },
-  assignmentTag: {
-    backgroundColor: '#e8f0fe',
-    color: '#1a73e8',
-    fontSize: '11px',
-    padding: '4px',
-    borderRadius: '4px',
-    textAlign: 'left',
-    fontWeight: '600',
-    borderLeft: '3px solid #1a73e8',
-  }
-};
+
 
 export default TeacherAssignments;

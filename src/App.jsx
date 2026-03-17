@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import './index.css';
 import Login from './pages/Login';
 import StudentDashboard from './pages/StudentDashboard';
@@ -9,10 +9,16 @@ import TeacherSchedule from './pages/teacher/TeacherSchedule';
 import TeacherClasses from './pages/teacher/TeacherClasses';
 import CreateAssignment from './pages/teacher/CreateAssignment';
 import TeacherAssignments from './pages/teacher/TeacherAssignments';
+import Dashboard from './components/Dashboard';
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState({ id: '', role: '' });
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return localStorage.getItem('isLoggedIn') === 'true';
+  });
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : { id: '', role: '' };
+  });
   const [credentials, setCredentials] = useState({ id: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -21,8 +27,14 @@ const App = () => {
     e.preventDefault();
     if (credentials.id && credentials.password) {
       const mockRole = credentials.id === '101' ? 'teacher' : 'student';
-      setUser({ id: credentials.id, role: mockRole });
+      const newUser = { id: credentials.id, role: mockRole };
+      setUser(newUser);
       setIsLoggedIn(true);
+      
+      // Persist to localStorage
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('user', JSON.stringify(newUser));
+      
       navigate(mockRole === 'teacher' ? '/teacher' : '/student');
     } else {
       setError('Invalid ID or Password');
@@ -30,33 +42,32 @@ const App = () => {
   };
 
   return (
-    <div className={isLoggedIn ? 'dashboard' : ''}>
-      {isLoggedIn && (
-        <nav className="nav">
-          <h3>Grade Grid</h3>
-          <div className="navRight">
-            <span style={{ marginRight: '15px' }}>ID: {user.id} ({user.role})</span>
-            <button onClick={() => { setIsLoggedIn(false); navigate('/'); }} className="logoutBtn">Logout</button>
-          </div>
-        </nav>
+    <>
+      {isLoggedIn ? (
+        <Dashboard user={user} setIsLoggedIn={setIsLoggedIn}>
+          <Routes>
+            <Route path="/student" element={<StudentDashboard />} />
+            
+            <Route path="/teacher" element={<TeacherDashboard />}>
+              <Route index element={<TeacherHome />} />
+              <Route path="schedule" element={<TeacherSchedule />} />
+              <Route path="classes" element={<TeacherClasses />} />
+              <Route path="create-assignment" element={<CreateAssignment />} />
+              <Route path="assignments" element={<TeacherAssignments />} />
+            </Route>
+            
+            <Route path="*" element={<Navigate to={user.role === 'teacher' ? '/teacher' : '/student'} replace />} />
+          </Routes>
+        </Dashboard>
+      ) : (
+        <div className="content">
+          <Routes>
+            <Route path="/" element={<Login credentials={credentials} onChange={(e) => setCredentials({ ...credentials, [e.target.name]: e.target.value })} onLogin={handleLogin} error={error} />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
       )}
-
-      <div className={isLoggedIn ? 'content' : ''}>
-        <Routes>
-          <Route path="/" element={<Login credentials={credentials} onChange={(e) => setCredentials({ ...credentials, [e.target.name]: e.target.value })} onLogin={handleLogin} error={error} />} />
-          
-          <Route path="/student" element={<StudentDashboard />} />
-          
-          <Route path="/teacher" element={<TeacherDashboard />}>
-            <Route index element={<TeacherHome />} />
-            <Route path="schedule" element={<TeacherSchedule />} />
-            <Route path="classes" element={<TeacherClasses />} />
-            <Route path="create-assignment" element={<CreateAssignment />} />
-            <Route path="assignments" element={<TeacherAssignments />} />
-          </Route>
-        </Routes>
-      </div>
-    </div>
+    </>
   );
 };
 

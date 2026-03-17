@@ -26,8 +26,8 @@ const Login = ({ credentials, onChange, onLogin, error }) => {
             className="input" 
             required 
           />
-          {/* Kept the inline style for the error message, but you can change this to className="errorMsg" later if you want to put it in index.css */}
-          {error && <p style={{color: 'red', fontSize: '12px'}}>{error}</p>}
+          {/* Error message stylings have been moved to index.css */}
+          {error && <p className="errorMsg">{error}</p>}
           
           <button type="submit" className="submitBtn">Login</button>
         </form>

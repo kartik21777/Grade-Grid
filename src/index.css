@@ -115,3 +115,280 @@ code {
 .card-assignments{
   border-top: 4px solid #3538ea;
 }
+
+/* Added for inline styles migration */
+
+.navUserId {
+  margin-right: 15px;
+}
+
+.cardLink {
+  text-decoration: none;
+  color: inherit;
+}
+
+.errorMsg {
+  color: red;
+  font-size: 12px;
+}
+
+.teacherDashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.teacherDashboardTitle {
+  margin: 0;
+}
+
+.backBtn {
+  padding: 8px 15px;
+  background: #e0e0e0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.fileInput {
+  margin-bottom: 10px;
+}
+
+/* Teacher Assignments */
+.teacherAssignWrapper {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.teacherAssignHeader {
+  margin-bottom: 20px;
+}
+.teacherAssignTitle {
+  text-align: center;
+  margin: 0 0 15px 0;
+}
+.teacherAssignControls {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.teacherAssignSelect {
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+.teacherAssignTable {
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid #000;
+  text-align: center;
+  table-layout: fixed;
+}
+.teacherAssignTh {
+  background-color: #07beb8;
+  color: #000;
+  border: 1px solid #000;
+  padding: 10px;
+  font-weight: bold;
+  font-size: 16px;
+}
+.teacherAssignTd {
+  border: 1px solid #000;
+  height: 100px;
+  vertical-align: top;
+  padding: 5px;
+  width: 14%;
+}
+.teacherAssignCellContent {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.teacherAssignDateNumber {
+  font-weight: bold;
+  text-align: right;
+  display: block;
+  margin-bottom: 5px;
+}
+.teacherAssignContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}
+.teacherAssignTag {
+  background-color: #e8f0fe;
+  color: #1a73e8;
+  font-size: 11px;
+  padding: 4px;
+  border-radius: 4px;
+  text-align: left;
+  font-weight: 600;
+  border-left: 3px solid #1a73e8;
+}
+
+/* Teacher Schedule */
+.scheduleWrapper {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.scheduleHeader {
+  text-align: center;
+  margin-bottom: 20px;
+  line-height: 1.5;
+  font-size: 18px;
+}
+.scheduleTableContainer {
+  overflow-x: auto;
+}
+.scheduleTable {
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid #000;
+  font-size: 14px;
+  text-align: center;
+  min-height: 500px;
+}
+.scheduleTh {
+  background-color: #07beb8;
+  border: 1px solid #000;
+  padding: 10px;
+  font-weight: bold;
+}
+.scheduleRowOdd {
+  background-color: #c4fff9;
+}
+.scheduleRowEven {
+  background-color: #9ceaef;
+}
+.scheduleLunchCell {
+  background-color: #8eece6;
+  border: 1px solid #000;
+  padding: 8px;
+}
+.scheduleElectiveCell {
+  background-color: rgb(109, 255, 255);
+  border: 1px solid #000;
+  padding: 8px;
+}
+.schedulePlacementCell {
+  background-color: rgb(147, 255, 219);
+  border: 1px solid #000;
+  padding: 8px;
+}
+.scheduleTd {
+  border: 1px solid #000;
+  padding: 8px;
+  text-align: center;
+}
+.classNameText {
+  font-weight: bold;
+  color: #111;
+}
+.classLocationText {
+  font-size: 12px;
+  color: #444;
+  margin-top: 4px;
+}
+.smallText {
+  font-size: 12px;
+}
+.whiteBg {
+  background-color: #ffffff;
+}
+
+/* Teacher Classes */
+.teacherClassesCard {
+  width: 100%;
+}
+.teacherClassesDesc {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+.teacherClassesLabel {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+.flex1 {
+  flex: 1;
+}
+.flex2 {
+  flex: 2;
+}
+.fileInfoBox {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  border-left: 4px solid #1a73e8;
+}
+.fileInfoText {
+  margin: 0 0 5px 0;
+  font-size: 0.9rem;
+}
+.fileInfoTextLast {
+  margin: 0;
+  font-size: 0.9rem;
+}
+.errorText {
+  color: #ea4335;
+}
+.checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.teacherClassOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  background: white;
+  border-left: 1px solid #ddd;
+}
+.teacherClassOptionSelected {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  background: #e8f0fe;
+  border-left: 4px solid #1a73e8;
+}
+.largeCheckbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+.boldText {
+  font-weight: bold;
+}
+.normalText {
+  font-weight: normal;
+}
+.btnGroup {
+  display: flex;
+  gap: 10px;
+}
+.backBtnOutline {
+  background: #e0e0e0;
+  color: #333;
+}
+.publishBtn {
+  background: #34a853;
+}
