@@ -12,6 +12,8 @@ import TeacherSchedule from './pages/teacher/TeacherSchedule';
 import TeacherClasses from './pages/teacher/TeacherClasses';
 import CreateAssignment from './pages/teacher/CreateAssignment';
 import TeacherAssignments from './pages/teacher/TeacherAssignments';
+import SearchStudent from './pages/teacher/SearchStudent';
+import GradeAssignment from './pages/teacher/GradeAssignment';
 import Dashboard from './components/Dashboard';
 
 const App = () => {
@@ -61,6 +63,8 @@ const App = () => {
               <Route path="classes" element={<TeacherClasses />} />
               <Route path="create-assignment" element={<CreateAssignment />} />
               <Route path="assignments" element={<TeacherAssignments />} />
+              <Route path="grade-assignment" element={<GradeAssignment />} />
+              <Route path="search-student" element={<SearchStudent />} />
             </Route>
             
             <Route path="*" element={<Navigate to={user.role === 'teacher' ? '/teacher' : '/student'} replace />} />

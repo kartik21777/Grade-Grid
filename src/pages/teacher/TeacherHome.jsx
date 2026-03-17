@@ -8,6 +8,10 @@ const TeacherHome = () => (
     <Card styles="card card-class" heading={'📚 Classes'} text={'Manage sections & assignments'} linkTo={'classes'}/>
 
     <Card styles="card card-assignments" heading={'⏰ Assignments'} text={'Track upcoming due dates'} linkTo={'assignments'}/>
+
+    <Card styles="card card-assignments" heading={'📊 Assignment Grading'} text={'Evaluate student submissions and provide feedback'} linkTo={'grade-assignment'}/>
+
+    <Card styles="card card-assignments" heading={'🔍 Student Search'} text={'Find student by roll number and edit grades'} linkTo={'search-student'}/>
   </div>
 );
 
