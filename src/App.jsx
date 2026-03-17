@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import Login from './components/Login';
-import StudentDashboard from './components/StudentDashboard';
-import TeacherDashboard from './components/TeacherDashboard';
-import TeacherHome from './components/teacher/TeacherHome';
-import TeacherSchedule from './components/teacher/TeacherSchedule';
-import TeacherClasses from './components/teacher/TeacherClasses';
-import CreateAssignment from './components/teacher/CreateAssignment';
-import TeacherAssignments from './components/teacher/TeacherAssignments';
+import Login from './pages/Login';
+import StudentDashboard from './pages/StudentDashboard';
+import TeacherDashboard from './pages/TeacherDashboard';
+import TeacherHome from './pages/teacher/TeacherHome';
+import TeacherSchedule from './pages/teacher/TeacherSchedule';
+import TeacherClasses from './pages/teacher/TeacherClasses';
+import CreateAssignment from './pages/teacher/CreateAssignment';
+import TeacherAssignments from './pages/teacher/TeacherAssignments';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
