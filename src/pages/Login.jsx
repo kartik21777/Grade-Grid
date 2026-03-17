@@ -1,20 +1,20 @@
 import React from 'react';
 
-const Login = ({ credentials, onChange, onLogin, error, styles }) => {
+const Login = ({ credentials, onChange, onLogin, error }) => {
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Grade Grid</h2>
-        <p style={styles.subtitle}>Lab Evaluation Platform</p>
+    <div className="container">
+      <div className="card">
+        <h2 className="title">Grade Grid</h2>
+        <p className="subtitle">Lab Evaluation Platform</p>
         
-        <form onSubmit={onLogin} style={styles.form}>
+        <form onSubmit={onLogin} className="form">
           <input 
             type="number"
             name="id"
             placeholder="User ID" 
             value={credentials.id}
             onChange={onChange}
-            style={styles.input} 
+            className="input" 
             required 
           />
           <input 
@@ -23,11 +23,13 @@ const Login = ({ credentials, onChange, onLogin, error, styles }) => {
             placeholder="Password" 
             value={credentials.password}
             onChange={onChange}
-            style={styles.input} 
+            className="input" 
             required 
           />
+          {/* Kept the inline style for the error message, but you can change this to className="errorMsg" later if you want to put it in index.css */}
           {error && <p style={{color: 'red', fontSize: '12px'}}>{error}</p>}
-          <button type="submit" style={styles.submitBtn}>Login</button>
+          
+          <button type="submit" className="submitBtn">Login</button>
         </form>
       </div>
     </div>
