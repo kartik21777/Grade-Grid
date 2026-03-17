@@ -392,3 +392,169 @@ code {
 .publishBtn {
   background: #34a853;
 }
+
+/* Student Assignments & Results */
+
+.studentCard {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.studentCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.studentCardTitle {
+  margin: 0 0 10px 0;
+  color: #1a73e8;
+}
+
+.studentCardCourse {
+  margin: 0 0 5px 0;
+  color: #666;
+}
+
+.studentCardDue {
+  margin: 0 0 15px 0;
+  color: #ea4335;
+  font-weight: bold;
+}
+
+.studentCardMeta {
+  text-align: right;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.statusSubmitted {
+  background-color: #e6f4ea;
+  color: #1e8e3e;
+}
+
+.statusPending {
+  background-color: #fce8e6;
+  color: #d93025;
+}
+
+.submissionDate {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+}
+
+.submitWorkForm {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.submitWorkTitle {
+  margin: 0 0 10px 0;
+}
+
+.submitWorkControls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.zeroMarginFlex {
+  margin: 0;
+  flex: 1;
+}
+
+.uploadBtn {
+  padding: 8px 15px;
+}
+
+/* Results Specific Elements */
+.resultHeaderBorder {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+
+.resultDate {
+  margin: 0;
+  font-size: 12px;
+  color: #888;
+}
+
+.scoreBadge {
+  display: inline-block;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.scoreExcellent {
+  background-color: #e6f4ea;
+  color: #1e8e3e;
+}
+
+.scoreGood {
+  background-color: #fff8e1;
+  color: #f57c00;
+}
+
+.scoreMaxText {
+  font-size: 14px;
+  color: #666;
+}
+
+.criteriaSection {
+  margin-bottom: 15px;
+}
+
+.criteriaTitle {
+  margin: 0 0 10px 0;
+}
+
+.criteriaTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.criteriaRow {
+  border-bottom: 1px solid #eee;
+}
+
+.criteriaName {
+  padding: 8px 0;
+  color: #555;
+}
+
+.criteriaScore {
+  padding: 8px 0;
+  text-align: right;
+  font-weight: bold;
+}
+
+.feedbackBox {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #34a853;
+}
+
+.feedbackTitle {
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.feedbackText {
+  margin: 0;
+  color: #555;
+  font-style: italic;
+}

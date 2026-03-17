@@ -3,6 +3,9 @@ import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import './index.css';
 import Login from './pages/Login';
 import StudentDashboard from './pages/StudentDashboard';
+import StudentHome from './pages/student/StudentHome';
+import StudentAssignments from './pages/student/StudentAssignments';
+import StudentResults from './pages/student/StudentResults';
 import TeacherDashboard from './pages/TeacherDashboard';
 import TeacherHome from './pages/teacher/TeacherHome';
 import TeacherSchedule from './pages/teacher/TeacherSchedule';
@@ -46,7 +49,11 @@ const App = () => {
       {isLoggedIn ? (
         <Dashboard user={user} setIsLoggedIn={setIsLoggedIn}>
           <Routes>
-            <Route path="/student" element={<StudentDashboard />} />
+            <Route path="/student" element={<StudentDashboard />}>
+              <Route index element={<StudentHome />} />
+              <Route path="assignments" element={<StudentAssignments />} />
+              <Route path="results" element={<StudentResults />} />
+            </Route>
             
             <Route path="/teacher" element={<TeacherDashboard />}>
               <Route index element={<TeacherHome />} />
