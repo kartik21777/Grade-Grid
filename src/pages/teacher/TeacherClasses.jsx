@@ -4,7 +4,7 @@ const TeacherClasses = () => {
   const [step, setStep] = useState(1);
   const [dueDate, setDueDate] = useState('');
   const [dueTime, setDueTime] = useState('');
-  const [file, setFile] = useState(null); 
+  const [file, setFile] = useState(null);
   const [selectedClasses, setSelectedClasses] = useState([]);
 
   const classes = ['Year 1 - CSE A', 'Year 2 - CSE A', 'Year 2 - CSE B', 'Year 3 - IT A'];
@@ -31,13 +31,11 @@ const TeacherClasses = () => {
       alert("Please select at least one class to assign this to.");
       return;
     }
-    
-    // USING THE FILE VARIABLE HERE:
+
     const fileName = file ? file.name : "No file attached";
-    
+
     alert(`Success! Assignment "${fileName}" assigned to:\n${selectedClasses.join('\n')}`);
-    
-    // Reset form
+
     setStep(1);
     setDueDate('');
     setDueTime('');
@@ -52,37 +50,37 @@ const TeacherClasses = () => {
         <p className="teacherClassesDesc">
           Attach your file and set a deadline.
         </p>
-        
+
         <form onSubmit={handleNextStep} className="form">
           <div>
             <label className="teacherClassesLabel">Assignment File:</label>
-            <input 
-              type="file" 
-              className="input" 
+            <input
+              type="file"
+              className="input"
               onChange={(e) => setFile(e.target.files[0])}
             />
           </div>
-          
+
           <div>
             <label className="teacherClassesLabel">Due Date:</label>
-            <input 
-              type="date" 
-              className="input" 
+            <input
+              type="date"
+              className="input"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
               required
             />
           </div>
           <div className="flex1">
-              <label className="teacherClassesLabel">Due Time:</label>
-              <input 
-                type="time" 
-                className="input" 
-                value={dueTime}
-                onChange={(e) => setDueTime(e.target.value)}
-                required
-              />
-            </div>
+            <label className="teacherClassesLabel">Due Time:</label>
+            <input
+              type="time"
+              className="input"
+              value={dueTime}
+              onChange={(e) => setDueTime(e.target.value)}
+              required
+            />
+          </div>
 
           <button type="submit" className="submitBtn">
             Continue to Select Classes →
@@ -95,8 +93,8 @@ const TeacherClasses = () => {
   return (
     <div className="card teacherClassesCard">
       <h3>Step 2: Assign to Classes</h3>
-      
-      {/* USING THE FILE VARIABLE HERE AS WELL FOR A UX BOOST */}
+
+
       <div className="fileInfoBox">
         <p className="fileInfoText">
           <strong>File:</strong> {file ? file.name : <span className="errorText">None attached</span>}
@@ -112,12 +110,12 @@ const TeacherClasses = () => {
 
       <div className="checkboxGroup">
         {classes.map((cls) => (
-          <label 
-            key={cls} 
+          <label
+            key={cls}
             className={selectedClasses.includes(cls) ? 'teacherClassOptionSelected' : 'teacherClassOption'}
           >
-            <input 
-              type="checkbox" 
+            <input
+              type="checkbox"
               checked={selectedClasses.includes(cls)}
               onChange={() => handleClassToggle(cls)}
               className="largeCheckbox"
@@ -130,14 +128,14 @@ const TeacherClasses = () => {
       </div>
 
       <div className="btnGroup">
-        <button 
-          onClick={() => setStep(1)} 
+        <button
+          onClick={() => setStep(1)}
           className="submitBtn backBtnOutline flex1"
         >
           ← Back
         </button>
-        <button 
-          onClick={handleSubmit} 
+        <button
+          onClick={handleSubmit}
           className="submitBtn publishBtn flex2"
         >
           Publish Assignment

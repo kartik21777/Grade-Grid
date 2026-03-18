@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+
 const SearchStudent = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [student, setStudent] = useState(null);
@@ -7,7 +8,6 @@ const SearchStudent = () => {
   const [grades, setGrades] = useState({ code: '', func: '', doc: '' });
   const [errorText, setErrorText] = useState('');
 
-  // Mock Data
   const mockStudents = {
     'CS-101': {
       rollNo: 'CS-101',
@@ -34,7 +34,6 @@ const SearchStudent = () => {
     e.preventDefault();
     const query = searchTerm.trim().toUpperCase();
     if (mockStudents[query]) {
-      // Deep clone to allow editing mock data in memory without issues
       setStudent(JSON.parse(JSON.stringify(mockStudents[query])));
       setErrorText('');
       setEditingAssignment(null);
@@ -63,8 +62,7 @@ const SearchStudent = () => {
 
   const handleGradeSubmit = (e) => {
     e.preventDefault();
-    
-    // Update the student object in state
+
     const updatedAssignments = student.assignments.map(a => {
       if (a.id === editingAssignment.id) {
         return {
@@ -85,133 +83,127 @@ const SearchStudent = () => {
     alert(`Grades updated for ${editingAssignment.title}!`);
   };
 
-  // View 1: Grading Interface (Inline)
   if (editingAssignment) {
     const totalScore = Number(grades.code || 0) + Number(grades.func || 0) + Number(grades.doc || 0);
 
     return (
-      <div className="card teacherClassesCard" style={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-          <h3 style={{ margin: 0 }}>Update Grades: {editingAssignment.title}</h3>
-          <button onClick={() => setEditingAssignment(null)} className="backBtnOutline" style={{ padding: '8px 15px', borderRadius: '5px', border: 'none', cursor: 'pointer' }}>
-              ← Back to Profile
+      <div className="card teacherClassesCard ss-grading-card">
+        <div className="ss-header">
+          <h3 className="ss-grading-title">Update Grades: {editingAssignment.title}</h3>
+          <button onClick={() => setEditingAssignment(null)} className="backBtnOutline ss-back-btn">
+            ← Back to Profile
           </button>
         </div>
 
-        <div className="fileInfoBox" style={{ marginBottom: '20px' }}>
+        <div className="fileInfoBox ss-mb-20">
           <p className="fileInfoText">
-              <strong>Student:</strong> {student.name} ({student.rollNo})
+            <strong>Student:</strong> {student.name} ({student.rollNo})
           </p>
-          <div className="fileInfoTextLast" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-              <span><strong>Submitted File:</strong> <code>{editingAssignment.file || 'N/A'}</code></span>
-              {editingAssignment.file && <button className="submitBtn publishBtn" style={{ padding: '6px 12px', fontSize: '12px' }}>Download Work</button>}
+          <div className="fileInfoTextLast ss-file-info-last">
+            <span><strong>Submitted File:</strong> <code>{editingAssignment.file || 'N/A'}</code></span>
+            {editingAssignment.file && <button className="submitBtn publishBtn ss-download-btn">Download Work</button>}
           </div>
         </div>
 
         <form onSubmit={handleGradeSubmit} className="form">
-          <h4 style={{ margin: '0 0 15px 0', borderBottom: '2px solid #eee', paddingBottom: '10px', color: '#1a73e8' }}>
-              Evaluation Rubric
+          <h4 className="ss-rubric-title">
+            Evaluation Rubric
           </h4>
-          
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-              <label className="teacherClassesLabel" style={{ margin: 0, flex: 1 }}>Code Quality (Max: 25)</label>
-              <input 
-                type="number" 
-                className="input" 
-                style={{ width: '100px', marginLeft: '10px' }}
-                name="code"
-                value={grades.code}
-                onChange={handleGradeChange}
-                min="0"
-                max="25"
-                required
-              />
+
+          <div className="ss-rubric-row">
+            <label className="teacherClassesLabel ss-rubric-label">Code Quality (Max: 25)</label>
+            <input
+              type="number"
+              className="input ss-rubric-input"
+              name="code"
+              value={grades.code}
+              onChange={handleGradeChange}
+              min="0"
+              max="25"
+              required
+            />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-              <label className="teacherClassesLabel" style={{ margin: 0, flex: 1 }}>Functionality (Max: 50)</label>
-              <input 
-                type="number" 
-                className="input" 
-                style={{ width: '100px', marginLeft: '10px' }}
-                name="func"
-                value={grades.func}
-                onChange={handleGradeChange}
-                min="0"
-                max="50"
-                required
-              />
+          <div className="ss-rubric-row">
+            <label className="teacherClassesLabel ss-rubric-label">Functionality (Max: 50)</label>
+            <input
+              type="number"
+              className="input ss-rubric-input"
+              name="func"
+              value={grades.func}
+              onChange={handleGradeChange}
+              min="0"
+              max="50"
+              required
+            />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-              <label className="teacherClassesLabel" style={{ margin: 0, flex: 1 }}>Documentation (Max: 25)</label>
-              <input 
-                type="number" 
-                className="input" 
-                style={{ width: '100px', marginLeft: '10px' }}
-                name="doc"
-                value={grades.doc}
-                onChange={handleGradeChange}
-                min="0"
-                max="25"
-                required
-              />
+          <div className="ss-rubric-row">
+            <label className="teacherClassesLabel ss-rubric-label">Documentation (Max: 25)</label>
+            <input
+              type="number"
+              className="input ss-rubric-input"
+              name="doc"
+              value={grades.doc}
+              onChange={handleGradeChange}
+              min="0"
+              max="25"
+              required
+            />
           </div>
 
-          <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#e6f4ea', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid #1e8e3e' }}>
-              <strong style={{ fontSize: '18px', color: '#1e8e3e' }}>Calculated Total:</strong>
-              <strong style={{ fontSize: '24px', color: '#1e8e3e' }}>{totalScore}/100</strong>
+          <div className="ss-total-box">
+            <strong className="ss-total-label">Calculated Total:</strong>
+            <strong className="ss-total-value">{totalScore}/100</strong>
           </div>
 
-          <button type="submit" className="submitBtn" style={{ marginTop: '20px', fontSize: '16px', padding: '12px' }}>
-              Save Grades
+          <button type="submit" className="submitBtn ss-save-btn">
+            Save Grades
           </button>
         </form>
       </div>
     );
   }
 
-  // View 2: Search & Detail
   return (
-    <div className="card teacherClassesCard" style={{ width: '100%', maxWidth: '800px' }}>
-      <h3 style={{ marginBottom: '15px' }}>Student Search</h3>
-      <p className="teacherClassesDesc" style={{ marginBottom: '20px' }}>
+    <div className="card teacherClassesCard ss-search-card">
+      <h3 className="ss-mb-15">Student Search</h3>
+      <p className="teacherClassesDesc ss-search-desc">
         Search for a student by their University Roll Number to view their details and assignments.
       </p>
 
-      <form onSubmit={handleSearch} style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-        <input 
-          type="text" 
-          className="input" 
-          placeholder="Enter Roll No (e.g. CS-101)" 
+      <form onSubmit={handleSearch} className="ss-search-form">
+        <input
+          type="text"
+          className="input ss-search-input"
+          placeholder="Enter Roll No (e.g. CS-101)"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           required
-          style={{ flex: 1 }}
         />
-        <button type="submit" className="submitBtn" style={{ padding: '10px 20px' }}>Search</button>
+        <button type="submit" className="submitBtn ss-search-btn">Search</button>
       </form>
 
-      {errorText && <p className="errorText" style={{ textAlign: 'center' }}>{errorText}</p>}
+      {errorText && <p className="errorText ss-error-text">{errorText}</p>}
 
       {student && (
-        <div style={{ marginTop: '30px' }}>
-          <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '8px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderLeft: '4px solid #1a73e8' }}>
+        <div className="ss-mt-30">
+          <div className="ss-student-info">
             <div>
-              <h4 style={{ margin: '0 0 5px 0', fontSize: '18px', color: '#111' }}>{student.name}</h4>
-              <p style={{ margin: '0', color: '#666', fontSize: '14px' }}>Roll No: <strong>{student.rollNo}</strong> | Class: <strong>{student.class}</strong></p>
+              <h4 className="ss-student-name">{student.name}</h4>
+              <p className="ss-student-details">Roll No: <strong>{student.rollNo}</strong> | Class: <strong>{student.class}</strong></p>
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <p style={{ margin: '0 0 5px 0', color: '#666', fontSize: '14px' }}>Total Submissions</p>
-              <h4 style={{ margin: '0', fontSize: '24px', color: '#1a73e8' }}>
+            <div className="ss-text-right">
+              <p className="ss-submissions-label">Total Submissions</p>
+              <h4 className="ss-submissions-count">
                 {student.assignments.filter(a => a.status === 'Submitted').length} / {student.assignments.length}
               </h4>
             </div>
           </div>
 
-          <h4 style={{ marginBottom: '15px' }}>Assignment History</h4>
-          <div style={{ overflowX: 'auto' }}>
-            <table className="teacherAssignTable" style={{ width: '100%' }}>
+          <h4 className="ss-mb-15">Assignment History</h4>
+          <div className="ss-table-container">
+            <table className="teacherAssignTable ss-w-100">
               <thead>
                 <tr>
                   <th className="teacherAssignTh">Title</th>
@@ -223,33 +215,25 @@ const SearchStudent = () => {
               <tbody>
                 {student.assignments.map(assignment => (
                   <tr key={assignment.id}>
-                    <td className="teacherAssignTd" style={{ height: 'auto', padding: '15px 10px', verticalAlign: 'middle', textAlign: 'left', fontWeight: 'bold' }}>
-                        {assignment.title}
+                    <td className="teacherAssignTd ss-td-title">
+                      {assignment.title}
                     </td>
-                    <td className="teacherAssignTd" style={{ height: 'auto', padding: '15px 10px', verticalAlign: 'middle' }}>
-                        <span className={assignment.status === 'Submitted' ? 'statusSubmitted statusBadge' : 'statusPending statusBadge'}>
-                          {assignment.status}
-                        </span>
+                    <td className="teacherAssignTd ss-td-normal">
+                      <span className={assignment.status === 'Submitted' ? 'statusSubmitted statusBadge' : 'statusPending statusBadge'}>
+                        {assignment.status}
+                      </span>
                     </td>
-                    <td className="teacherAssignTd" style={{ height: 'auto', padding: '15px 10px', verticalAlign: 'middle', fontWeight: 'bold' }}>
-                        {assignment.graded ? `${assignment.score.code + assignment.score.func + assignment.score.doc}/100` : '-'}
+                    <td className="teacherAssignTd ss-td-bold">
+                      {assignment.graded ? `${assignment.score.code + assignment.score.func + assignment.score.doc}/100` : '-'}
                     </td>
-                    <td className="teacherAssignTd" style={{ height: 'auto', padding: '15px 10px', verticalAlign: 'middle' }}>
-                        <button 
-                          className="submitBtn" 
-                          style={{ 
-                              padding: '8px 15px', 
-                              backgroundColor: assignment.status === 'Submitted' ? '#1a73e8' : '#e0e0e0', 
-                              color: assignment.status === 'Submitted' ? 'white' : '#777', 
-                              cursor: assignment.status === 'Submitted' ? 'pointer' : 'not-allowed',
-                              border: 'none',
-                              fontWeight: 'bold'
-                          }}
-                          onClick={() => handleEditClick(assignment)}
-                          disabled={assignment.status !== 'Submitted'}
-                        >
-                          {assignment.graded ? 'Edit Grade' : 'Grade'}
-                        </button>
+                    <td className="teacherAssignTd ss-td-normal">
+                      <button
+                        className={`submitBtn ss-action-btn ${assignment.status === 'Submitted' ? 'ss-action-btn-submitted' : 'ss-action-btn-disabled'}`}
+                        onClick={() => handleEditClick(assignment)}
+                        disabled={assignment.status !== 'Submitted'}
+                      >
+                        {assignment.graded ? 'Edit Grade' : 'Grade'}
+                      </button>
                     </td>
                   </tr>
                 ))}
