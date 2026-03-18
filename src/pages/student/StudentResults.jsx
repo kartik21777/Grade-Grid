@@ -1,7 +1,6 @@
 import React from 'react';
 
 const StudentResults = () => {
-  // Mock data for results
   const results = [
     {
       id: 1,
@@ -35,7 +34,7 @@ const StudentResults = () => {
   return (
     <div className="contentWrapper">
       <h2>My Results</h2>
-      
+
       <div className="card-container">
         {results.map(result => (
           <div key={result.id} className="card studentCard">
@@ -45,7 +44,7 @@ const StudentResults = () => {
                 <p className="studentCardCourse"><strong>Course:</strong> {result.course}</p>
                 <p className="resultDate">Evaluated on: {result.checkedDate}</p>
               </div>
-              
+
               <div className="studentCardMeta">
                 <div className={`scoreBadge ${result.obtainedMarks / result.totalMarks >= 0.8 ? 'scoreExcellent' : 'scoreGood'}`}>
                   {result.obtainedMarks} <span className="scoreMaxText">/ {result.totalMarks}</span>

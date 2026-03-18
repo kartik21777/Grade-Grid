@@ -71,12 +71,10 @@ const App = () => {
           </Routes>
         </Dashboard>
       ) : (
-        <div className="content">
-          <Routes>
-            <Route path="/" element={<Login credentials={credentials} onChange={(e) => setCredentials({ ...credentials, [e.target.name]: e.target.value })} onLogin={handleLogin} error={error} />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </div>
+        <Routes>
+          <Route path="/" element={<Login credentials={credentials} onChange={(e) => setCredentials({ ...credentials, [e.target.name]: e.target.value })} onLogin={handleLogin} error={error} />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       )}
     </>
   );

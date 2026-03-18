@@ -1,81 +1,201 @@
 body {
   margin: 0;
-  font-family: 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
 
-.container {
+
+.login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: #f5f7fa;
+  min-height: 100vh;
+  background: #0f172a;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-.card {
-  background: white;
-  padding: 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  width: 450px;
-  text-align: left;
-}
-
-.title {
-  text-align: center;
-  margin: 0 0 5px 0;
-  color: #89a5d0;
-}
-
-.subtitle {
-  text-align: center;
-  font-size: 0.85rem;
-  color: #666;
-  margin-bottom: 20px;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.input {
-  padding: 12px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
+.login-background {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
+  height: 100%;
+
+}
+
+.shape {
+  position: absolute;
+  filter: blur(80px);
+  border-radius: 50%;
+  animation: float 10s infinite ease-in-out alternate;
+  opacity: 0.6;
+}
+
+.shape-1 {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, #a855f7, #6366f1);
+  top: -100px;
+  left: -100px;
+}
+
+.shape-2 {
+  width: 500px;
+  height: 500px;
+  background: linear-gradient(135deg, #ec4899, #f43f5e);
+  bottom: -150px;
+  right: -100px;
+  animation-delay: -3s;
+}
+
+.shape-3 {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  bottom: 20%;
+  left: 20%;
+  animation-delay: -7s;
+}
+
+
+
+.login-card {
+  position: relative;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 3rem;
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 420px;
+  color: #fff;
+  transition: transform 0.3s, box-shadow 0.3s;
   box-sizing: border-box;
 }
 
-.submitBtn {
-  padding: 12px;
-  background: #1a73e8;
-  color: white;
+.login-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.login-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+  background: linear-gradient(to right, #a855f7, #ec4899, #3b82f6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  animation: bgPan 4s ease infinite;
+  background-size: 200% auto;
+}
+
+
+
+.login-subtitle {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.input-group {
+  position: relative;
+}
+
+.login-input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #f8fafc;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.login-input::placeholder {
+  color: #64748b;
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: #a855f7;
+  background: rgba(15, 23, 42, 0.8);
+  box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.15);
+}
+
+.login-submitBtn {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+  color: #fff;
   border: none;
-  border-radius: 5px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  font-weight: bold;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-submitBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: all 0.5s ease;
+}
+
+.login-submitBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -10px rgba(139, 92, 246, 0.6);
+}
+
+.login-submitBtn:hover::before {
+  left: 100%;
+}
+
+.login-submitBtn:active {
+  transform: translateY(1px);
 }
 
 .dashboard {
-  min-height: 100vh;
-  background-color: #fff;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #0f172a;
+  display: flex;
+  flex-direction: column;
 }
 
 .nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
-  background-color: #202124;
+  padding: 15px 20px;
+  background-color: #1e293b;
   color: white;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .navRight {
@@ -96,27 +216,97 @@ code {
   padding: 40px;
   max-width: 1000px;
   margin: 0 auto;
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  color: #f8fafc;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.card h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.card p {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  background: rgba(30, 41, 59, 0.9);
 }
 
 .card-schedule {
-  border-top: 4px solid #ea4335;
+  border-top: 4px solid #f43f5e;
+}
+
+.card-schedule:hover {
+  border-color: #f43f5e;
+  box-shadow: 0 20px 40px rgba(244, 63, 94, 0.15);
 }
 
 .card-class {
-  border-top: 4px solid #34a853;
+  border-top: 4px solid #10b981;
+}
+
+.card-class:hover {
+  border-color: #10b981;
+  box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15);
 }
 
 .card-assignments {
-  border-top: 4px solid #3538ea;
+  border-top: 4px solid #3b82f6;
 }
 
-/* Added for inline styles migration */
+.card-assignments:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+}
+
+.card-assignments-grading {
+  border-top: 4px solid #a855f7;
+}
+
+.card-assignments-grading:hover {
+  border-color: #a855f7;
+  box-shadow: 0 20px 40px rgba(168, 85, 247, 0.15);
+}
+
+.card-student-search {
+  border-top: 4px solid #f7ec55;
+}
+
+.card-student-search:hover {
+  border-color: #f7ec55;
+  box-shadow: 0 20px 40px rgba(247, 236, 85, 0.15);
+}
+
 
 .navUserId {
   margin-right: 15px;
@@ -125,12 +315,19 @@ code {
 .cardLink {
   text-decoration: none;
   color: inherit;
+  display: block;
+  height: 100%;
 }
 
-.errorMsg {
-  color: red;
-  font-size: 12px;
+.login-errorMsg {
+  color: #f43f5e;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
 }
+
 
 .teacherDashboardHeader {
   display: flex;
@@ -141,14 +338,26 @@ code {
 
 .teacherDashboardTitle {
   margin: 0;
+  color: #f8fafc;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
 .backBtn {
-  padding: 8px 15px;
-  background: #e0e0e0;
-  border: none;
-  border-radius: 5px;
+  padding: 8px 16px;
+  background: rgba(30, 41, 59, 0.7);
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.backBtn:hover {
+  background: rgba(51, 65, 85, 0.9);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .fileInput {
@@ -157,59 +366,97 @@ code {
 
 /* Teacher Assignments */
 .teacherAssignWrapper {
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  color: #f8fafc;
 }
 
 .teacherAssignHeader {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .teacherAssignTitle {
   text-align: center;
-  margin: 0 0 15px 0;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #3b82f6;
+  letter-spacing: 0.5px;
 }
 
 .teacherAssignControls {
   text-align: center;
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .teacherAssignSelect {
-  padding: 8px 12px;
-  font-size: 16px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  padding: 10px 16px;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
+  background: rgba(15, 23, 42, 0.6);
+  color: #f8fafc;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.teacherAssignSelect:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.teacherAssignSelect option {
+  background-color: #1e293b;
+  color: #f8fafc;
 }
 
 .teacherAssignTable {
   width: 100%;
   border-collapse: collapse;
-  border: 2px solid #000;
   text-align: center;
   table-layout: fixed;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .teacherAssignTh {
-  background-color: #07beb8;
-  color: #000;
-  border: 1px solid #000;
-  padding: 10px;
-  font-weight: bold;
-  font-size: 16px;
+  background-color: rgba(15, 23, 42, 0.8);
+  color: #f8fafc;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.teacherAssignTh:last-child {
+  border-right: none;
 }
 
 .teacherAssignTd {
-  border: 1px solid #000;
-  height: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  height: 110px;
   vertical-align: top;
-  padding: 5px;
+  padding: 8px;
   width: 14%;
+  transition: background-color 0.2s;
+}
+
+.teacherAssignTd:hover {
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
 .teacherAssignCellContent {
@@ -219,131 +466,166 @@ code {
 }
 
 .teacherAssignDateNumber {
-  font-weight: bold;
+  font-weight: 600;
   text-align: right;
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+  color: #94a3b8;
+  font-size: 0.9rem;
 }
 
 .teacherAssignContainer {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.teacherAssignContainer::-webkit-scrollbar {
+  width: 4px;
+}
+
+.teacherAssignContainer::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
 }
 
 .teacherAssignTag {
-  background-color: #e8f0fe;
-  color: #1a73e8;
-  font-size: 11px;
-  padding: 4px;
-  border-radius: 4px;
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+  font-size: 0.75rem;
+  padding: 6px 8px;
+  border-radius: 6px;
   text-align: left;
   font-weight: 600;
-  border-left: 3px solid #1a73e8;
+  border-left: 3px solid #3b82f6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Teacher Schedule */
 .scheduleWrapper {
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  color: #f8fafc;
 }
 
 .scheduleHeader {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   line-height: 1.5;
-  font-size: 18px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #3b82f6;
+  letter-spacing: 0.5px;
 }
 
 .scheduleTableContainer {
   overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .scheduleTable {
   width: 100%;
   border-collapse: collapse;
-  border: 2px solid #000;
   font-size: 14px;
   text-align: center;
-  min-height: 500px;
 }
 
 .scheduleTh {
-  background-color: #07beb8;
-  border: 1px solid #000;
-  padding: 10px;
-  font-weight: bold;
+  background-color: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  font-weight: 600;
+  color: #f8fafc;
 }
 
 .scheduleRowOdd {
-  background-color: #c4fff9;
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
 .scheduleRowEven {
-  background-color: #9ceaef;
+  background-color: transparent;
 }
 
 .scheduleLunchCell {
-  background-color: #8eece6;
-  border: 1px solid #000;
-  padding: 8px;
+  background-color: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  color: #93c5fd;
 }
 
 .scheduleElectiveCell {
-  background-color: rgb(109, 255, 255);
-  border: 1px solid #000;
-  padding: 8px;
+  background-color: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  color: #d8b4fe;
 }
 
 .schedulePlacementCell {
-  background-color: rgb(147, 255, 219);
-  border: 1px solid #000;
-  padding: 8px;
+  background-color: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  color: #6ee7b7;
 }
 
 .scheduleTd {
-  border: 1px solid #000;
-  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px;
   text-align: center;
+  transition: background-color 0.2s;
+}
+
+.scheduleTd:hover {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .classNameText {
-  font-weight: bold;
-  color: #111;
+  font-weight: 600;
+  color: #f8fafc;
 }
 
 .classLocationText {
   font-size: 12px;
-  color: #444;
+  color: #94a3b8;
   margin-top: 4px;
 }
 
 .smallText {
   font-size: 12px;
+  opacity: 0.8;
 }
 
 .whiteBg {
-  background-color: #ffffff;
+  background-color: rgba(15, 23, 42, 0.8);
 }
 
 /* Teacher Classes */
 .teacherClassesCard {
   width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .teacherClassesDesc {
-  color: #666;
-  font-size: 0.9rem;
-  margin-bottom: 15px;
+  color: #94a3b8;
+  font-size: 1rem;
+  margin-bottom: 24px;
 }
 
 .teacherClassesLabel {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #e2e8f0;
 }
 
 .flex1 {
@@ -355,88 +637,158 @@ code {
 }
 
 .fileInfoBox {
-  background-color: #f8f9fa;
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 15px;
-  border-left: 4px solid #1a73e8;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  border-left: 4px solid #3b82f6;
 }
 
 .fileInfoText {
-  margin: 0 0 5px 0;
-  font-size: 0.9rem;
+  margin: 0 0 8px 0;
+  font-size: 0.95rem;
+  color: #e2e8f0;
 }
 
 .fileInfoTextLast {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  color: #e2e8f0;
 }
 
 .errorText {
-  color: #ea4335;
+  color: #f43f5e;
 }
 
 .checkboxGroup {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 30px;
 }
 
 .teacherClassOption {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
   cursor: pointer;
-  background: white;
-  border-left: 1px solid #ddd;
+  background: rgba(15, 23, 42, 0.6);
+  border-left: 4px solid transparent;
+  transition: all 0.2s ease;
+  color: #f8fafc;
+}
+
+.teacherClassOption:hover {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .teacherClassOptionSelected {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(59, 130, 246, 0.5);
+  border-radius: 8px;
   cursor: pointer;
-  background: #e8f0fe;
-  border-left: 4px solid #1a73e8;
+  background: rgba(59, 130, 246, 0.15);
+  border-left: 4px solid #3b82f6;
+  color: #f8fafc;
+  transition: all 0.2s ease;
 }
 
 .largeCheckbox {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
+  accent-color: #3b82f6;
 }
 
 .boldText {
-  font-weight: bold;
+  font-weight: 700;
+  color: #3b82f6;
 }
 
 .normalText {
-  font-weight: normal;
+  font-weight: 500;
 }
 
 .btnGroup {
   display: flex;
-  gap: 10px;
+  gap: 16px;
+}
+
+.submitBtn {
+  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+  color: white;
+  border: none;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.submitBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
 }
 
 .backBtnOutline {
-  background: #e0e0e0;
-  color: #333;
-  padding: 8px 15px;
-  border-radius: 5px;
-  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.backBtnOutline:hover {
+  background: rgba(255, 255, 255, 0.2);
+
 }
 
 .publishBtn {
-  background: #34a853;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.publishBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+}
+
+.input {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #f8fafc;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #a855f7;
+  background: rgba(15, 23, 42, 0.8);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
 }
 
 /* Student Assignments & Results */
@@ -656,7 +1008,7 @@ code {
 }
 
 .studentProfileHeader {
-  background-color: #f8f9fa;
+  background-color: #0f172a;
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 20px;
@@ -669,7 +1021,7 @@ code {
 .studentName {
   margin: 0 0 5px 0;
   font-size: 18px;
-  color: #111;
+  color: white;
 }
 
 .studentMeta {
@@ -794,17 +1146,19 @@ code {
 /* GradeAssignment Classes */
 .gradeAssignSubtext {
   display: block;
-  color: #666;
+  color: #94a3b8;
+  margin-top: 4px;
 }
 
 .gradeAssignContainerLarge {
   width: 100%;
-  max-width: 800px;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .gradeAssignContainerSmall {
   width: 100%;
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
 }
 
@@ -812,60 +1166,69 @@ code {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .gradeAssignTitle {
   margin: 0;
-  color: #1a73e8;
+  color: #3b82f6;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .gradeAssignTableContainer {
   overflow-x: auto;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .gradeAssignTdLeft {
   height: auto;
-  padding: 15px 10px;
+  padding: 16px 16px;
   vertical-align: middle;
   text-align: left;
-  font-weight: bold;
+  font-weight: 600;
+  color: #f8fafc;
 }
 
 .gradeAssignTdCenter {
   height: auto;
-  padding: 15px 10px;
+  padding: 16px 12px;
   vertical-align: middle;
+  text-align: center;
 }
 
 .gradeAssignTdCenterBold {
   height: auto;
-  padding: 15px 10px;
+  padding: 16px 12px;
   vertical-align: middle;
-  font-weight: bold;
+  text-align: center;
+  font-weight: 700;
+  color: #f8fafc;
+  font-size: 1.1rem;
 }
 
 .gradeAssignBtn {
-  padding: 10px 20px;
+  padding: 8px 16px;
   border: none;
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: 6px;
   transition: all 0.2s ease;
   font-size: 14px;
 }
 
 .gradeAssignBtnActive {
-  background: linear-gradient(135deg, #1a73e8, #4285f4);
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;
   cursor: pointer;
-  box-shadow: 0 4px 6px rgba(26, 115, 232, 0.2);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .gradeAssignBtnActive:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(26, 115, 232, 0.3);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
 
 .gradeAssignBtnActive:active {
@@ -873,25 +1236,29 @@ code {
 }
 
 .gradeAssignBtnDisabled {
-  background-color: #f1f3f4;
-  color: #9aa0a6;
+  background: rgba(255, 255, 255, 0.05);
+  color: #64748b;
   cursor: not-allowed;
   box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .gradeAssignFileInfo {
-  margin-bottom: 20px;
-  background-color: #f8f9fa;
-  padding: 15px;
-  border-radius: 8px;
-  border-left: 4px solid #1a73e8;
+  margin-bottom: 24px;
+  background: rgba(30, 41, 59, 0.8);
+  padding: 20px;
+  border-radius: 12px;
+  border-left: 4px solid #a855f7;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .gradeAssignFileInfoRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .gradeAssignDownloadBtn {
@@ -902,95 +1269,101 @@ code {
 }
 
 .gradeAssignDownloadBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 .gradeAssignRubricTitle {
-  margin: 0 0 20px 0;
-  border-bottom: 2px solid #e1e4e8;
-  padding-bottom: 10px;
-  color: #1a73e8;
-  font-size: 1.1rem;
+  margin: 0 0 24px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+  color: #a855f7;
+  font-size: 1.25rem;
+  font-weight: 600;
 }
 
 .gradeAssignInputRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 15px;
-  padding: 10px;
-  background: #f8f9fa;
-  border-radius: 6px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .gradeAssignInputLabel {
   margin: 0;
   flex: 1;
   font-weight: 500;
-  color: #3c4043;
+  color: #cbd5e1;
 }
 
 .gradeAssignInputNumber {
-  width: 80px;
-  margin-left: 15px;
-  border: 1px solid #dadce0;
-  border-radius: 4px;
-  padding: 8px;
-  font-size: 14px;
+  width: 90px;
+  margin-left: 16px;
+  background: rgba(15, 23, 42, 0.8);
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 1rem;
   text-align: center;
+  transition: all 0.2s;
 }
 
 .gradeAssignInputNumber:focus {
   outline: none;
-  border-color: #1a73e8;
-  box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
 }
 
 .gradeAssignTotalBox {
-  margin-top: 25px;
-  padding: 20px;
-  background: linear-gradient(135deg, #e6f4ea, #ceefe3);
+  margin-top: 32px;
+  padding: 24px;
+  background: rgba(16, 185, 129, 0.1);
   border-radius: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid #1e8e3e;
-  box-shadow: 0 4px 6px rgba(30,142,62,0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .gradeAssignTotalLabel {
-  font-size: 18px;
-  color: #137333;
-  font-weight: bold;
+  font-size: 1.1rem;
+  color: #6ee7b7;
+  font-weight: 600;
 }
 
 .gradeAssignTotalValue {
-  font-size: 28px;
-  color: #137333;
-  font-weight: 900;
+  font-size: 2rem;
+  color: #10b981;
+  font-weight: 800;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .gradeAssignSubmitBtn {
-  margin-top: 25px;
-  font-size: 16px;
-  padding: 14px 24px;
+  margin-top: 32px;
+  font-size: 1.1rem;
+  padding: 16px 24px;
   width: 100%;
-  background: linear-gradient(135deg, #34a853, #2e8b57);
+  background: linear-gradient(135deg, #10b981, #059669);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-weight: bold;
+  border-radius: 12px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 6px rgba(52, 168, 83, 0.2);
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 16px rgba(16, 185, 129, 0.2);
 }
 
 .gradeAssignSubmitBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(52, 168, 83, 0.3);
+  box-shadow: 0 12px 20px rgba(16, 185, 129, 0.3);
 }
 
 .gradeAssignSubmitBtn:active {
-  transform: translateY(0);
+  transform: translateY(1px);
 }

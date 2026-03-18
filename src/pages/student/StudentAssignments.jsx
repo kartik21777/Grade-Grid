@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 const StudentAssignments = () => {
-  // Mock data for assignments
   const [assignments, setAssignments] = useState([
     {
       id: 1,
@@ -32,12 +31,11 @@ const StudentAssignments = () => {
 
   const handleSubmit = (id, e) => {
     e.preventDefault();
-    // Simulate file submission
     setTimeout(() => {
-      setAssignments(assignments.map(a => 
-        a.id === id 
-        ? { ...a, submitted: true, submissionDate: new Date().toISOString().split('T')[0] } 
-        : a
+      setAssignments(assignments.map(a =>
+        a.id === id
+          ? { ...a, submitted: true, submissionDate: new Date().toISOString().split('T')[0] }
+          : a
       ));
       alert('Assignment submitted successfully!');
     }, 500);
@@ -57,16 +55,16 @@ const StudentAssignments = () => {
                   <strong>Due:</strong> {assignment.dueDate} at {assignment.dueTime}
                 </p>
               </div>
-              
+
               <div className="studentCardMeta">
                 <span className={`statusBadge ${assignment.submitted ? 'statusSubmitted' : 'statusPending'}`}>
                   {assignment.submitted ? 'Submitted' : 'Pending'}
                 </span>
-                
+
                 {assignment.submitted && (
-                   <p className="submissionDate">
-                     on {assignment.submissionDate}
-                   </p>
+                  <p className="submissionDate">
+                    on {assignment.submissionDate}
+                  </p>
                 )}
               </div>
             </div>
