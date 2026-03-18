@@ -26,7 +26,7 @@ const Login = ({ credentials, onChange, onLogin, error }) => {
             className="input" 
             required 
           />
-          {/* Error message stylings have been moved to index.css */}
+          
           {error && <p className="errorMsg">{error}</p>}
           
           <button type="submit" className="submitBtn">Login</button>

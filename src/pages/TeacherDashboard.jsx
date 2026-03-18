@@ -9,7 +9,7 @@ const TeacherDashboard = () => {
     <section>
       <div className="teacherDashboardHeader">
         <h2 className="teacherDashboardTitle">Instructor Portal</h2>
-        {/* Show Back button only if we are not on the main teacher home */}
+        
         {location.pathname !== '/teacher' && (
           <button 
             onClick={() => navigate('/teacher')} 
@@ -20,7 +20,7 @@ const TeacherDashboard = () => {
         )}
       </div>
 
-      {/* This is where the sub-pages will be rendered */}
+      
       <Outlet />
     </section>
   );

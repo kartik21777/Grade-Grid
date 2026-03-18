@@ -1,12 +1,5 @@
 import React from 'react';
-
-// A helper component to format the Class and Location neatly
-const ClassCell = ({ className, location, colSpan }) => (
-  <td colSpan={colSpan || 1} className="scheduleTd">
-    <div className="classNameText">{className}</div>
-    <div className="classLocationText">📍 {location}</div>
-  </td>
-);
+import ClassCell from '../../components/ClassCell';
 
 const TeacherSchedule = () => {
   return (

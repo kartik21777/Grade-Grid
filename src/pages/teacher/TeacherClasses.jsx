@@ -32,12 +32,10 @@ const TeacherClasses = () => {
       return;
     }
     
-    // USING THE FILE VARIABLE HERE:
     const fileName = file ? file.name : "No file attached";
     
     alert(`Success! Assignment "${fileName}" assigned to:\n${selectedClasses.join('\n')}`);
     
-    // Reset form
     setStep(1);
     setDueDate('');
     setDueTime('');
@@ -96,7 +94,6 @@ const TeacherClasses = () => {
     <div className="card teacherClassesCard">
       <h3>Step 2: Assign to Classes</h3>
       
-      {/* USING THE FILE VARIABLE HERE AS WELL FOR A UX BOOST */}
       <div className="fileInfoBox">
         <p className="fileInfoText">
           <strong>File:</strong> {file ? file.name : <span className="errorText">None attached</span>}

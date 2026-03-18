@@ -22,7 +22,7 @@ code {
   background: white;
   padding: 2.5rem;
   border-radius: 12px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   width: 450px;
   text-align: left;
 }
@@ -98,21 +98,21 @@ code {
   margin: 0 auto;
 }
 
-.card-container{
+.card-container {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
 }
 
-.card-schedule{
+.card-schedule {
   border-top: 4px solid #ea4335;
 }
 
-.card-class{
+.card-class {
   border-top: 4px solid #34a853;
 }
 
-.card-assignments{
+.card-assignments {
   border-top: 4px solid #3538ea;
 }
 
@@ -160,21 +160,25 @@ code {
   padding: 20px;
   background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 .teacherAssignHeader {
   margin-bottom: 20px;
 }
+
 .teacherAssignTitle {
   text-align: center;
   margin: 0 0 15px 0;
 }
+
 .teacherAssignControls {
   text-align: center;
   display: flex;
   justify-content: center;
   gap: 10px;
 }
+
 .teacherAssignSelect {
   padding: 8px 12px;
   font-size: 16px;
@@ -182,6 +186,7 @@ code {
   border: 1px solid #ccc;
   cursor: pointer;
 }
+
 .teacherAssignTable {
   width: 100%;
   border-collapse: collapse;
@@ -189,6 +194,7 @@ code {
   text-align: center;
   table-layout: fixed;
 }
+
 .teacherAssignTh {
   background-color: #07beb8;
   color: #000;
@@ -197,6 +203,7 @@ code {
   font-weight: bold;
   font-size: 16px;
 }
+
 .teacherAssignTd {
   border: 1px solid #000;
   height: 100px;
@@ -204,23 +211,27 @@ code {
   padding: 5px;
   width: 14%;
 }
+
 .teacherAssignCellContent {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
+
 .teacherAssignDateNumber {
   font-weight: bold;
   text-align: right;
   display: block;
   margin-bottom: 5px;
 }
+
 .teacherAssignContainer {
   display: flex;
   flex-direction: column;
   gap: 4px;
   overflow-y: auto;
 }
+
 .teacherAssignTag {
   background-color: #e8f0fe;
   color: #1a73e8;
@@ -237,17 +248,20 @@ code {
   padding: 20px;
   background-color: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 .scheduleHeader {
   text-align: center;
   margin-bottom: 20px;
   line-height: 1.5;
   font-size: 18px;
 }
+
 .scheduleTableContainer {
   overflow-x: auto;
 }
+
 .scheduleTable {
   width: 100%;
   border-collapse: collapse;
@@ -256,50 +270,61 @@ code {
   text-align: center;
   min-height: 500px;
 }
+
 .scheduleTh {
   background-color: #07beb8;
   border: 1px solid #000;
   padding: 10px;
   font-weight: bold;
 }
+
 .scheduleRowOdd {
   background-color: #c4fff9;
 }
+
 .scheduleRowEven {
   background-color: #9ceaef;
 }
+
 .scheduleLunchCell {
   background-color: #8eece6;
   border: 1px solid #000;
   padding: 8px;
 }
+
 .scheduleElectiveCell {
   background-color: rgb(109, 255, 255);
   border: 1px solid #000;
   padding: 8px;
 }
+
 .schedulePlacementCell {
   background-color: rgb(147, 255, 219);
   border: 1px solid #000;
   padding: 8px;
 }
+
 .scheduleTd {
   border: 1px solid #000;
   padding: 8px;
   text-align: center;
 }
+
 .classNameText {
   font-weight: bold;
   color: #111;
 }
+
 .classLocationText {
   font-size: 12px;
   color: #444;
   margin-top: 4px;
 }
+
 .smallText {
   font-size: 12px;
 }
+
 .whiteBg {
   background-color: #ffffff;
 }
@@ -308,22 +333,27 @@ code {
 .teacherClassesCard {
   width: 100%;
 }
+
 .teacherClassesDesc {
   color: #666;
   font-size: 0.9rem;
   margin-bottom: 15px;
 }
+
 .teacherClassesLabel {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
 }
+
 .flex1 {
   flex: 1;
 }
+
 .flex2 {
   flex: 2;
 }
+
 .fileInfoBox {
   background-color: #f8f9fa;
   padding: 10px;
@@ -331,23 +361,28 @@ code {
   margin-bottom: 15px;
   border-left: 4px solid #1a73e8;
 }
+
 .fileInfoText {
   margin: 0 0 5px 0;
   font-size: 0.9rem;
 }
+
 .fileInfoTextLast {
   margin: 0;
   font-size: 0.9rem;
 }
+
 .errorText {
   color: #ea4335;
 }
+
 .checkboxGroup {
   display: flex;
   flex-direction: column;
   gap: 10px;
   margin-bottom: 20px;
 }
+
 .teacherClassOption {
   display: flex;
   align-items: center;
@@ -359,6 +394,7 @@ code {
   background: white;
   border-left: 1px solid #ddd;
 }
+
 .teacherClassOptionSelected {
   display: flex;
   align-items: center;
@@ -370,25 +406,35 @@ code {
   background: #e8f0fe;
   border-left: 4px solid #1a73e8;
 }
+
 .largeCheckbox {
   width: 18px;
   height: 18px;
   cursor: pointer;
 }
+
 .boldText {
   font-weight: bold;
 }
+
 .normalText {
   font-weight: normal;
 }
+
 .btnGroup {
   display: flex;
   gap: 10px;
 }
+
 .backBtnOutline {
   background: #e0e0e0;
   color: #333;
+  padding: 8px 15px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
 }
+
 .publishBtn {
   background: #34a853;
 }
@@ -557,4 +603,394 @@ code {
   margin: 0;
   color: #555;
   font-style: italic;
+}
+
+/* SearchStudent page */
+.searchStudentCard {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.searchStudentCardNarrow {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.searchStudentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.searchStudentTitle {
+  margin: 0 0 15px 0;
+}
+
+.searchStudentDesc {
+  margin-bottom: 20px;
+}
+
+.searchForm {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.searchInput {
+  flex: 1;
+}
+
+.searchBtn {
+  padding: 10px 20px;
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.studentDetail {
+  margin-top: 30px;
+}
+
+.studentProfileHeader {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 4px solid #1a73e8;
+}
+
+.studentName {
+  margin: 0 0 5px 0;
+  font-size: 18px;
+  color: #111;
+}
+
+.studentMeta {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.studentStats {
+  text-align: right;
+}
+
+.studentStatsLabel {
+  margin: 0 0 5px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.studentStatsValue {
+  margin: 0;
+  font-size: 24px;
+  color: #1a73e8;
+}
+
+.sectionTitle {
+  margin-bottom: 15px;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.gradeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.gradeLabel {
+  margin: 0;
+  flex: 1;
+}
+
+.gradeInput {
+  width: 100px;
+  margin-left: 10px;
+}
+
+.gradeTotalBox {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #e6f4ea;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #1e8e3e;
+}
+
+.gradeTotalLabel {
+  font-size: 18px;
+  color: #1e8e3e;
+}
+
+.gradeTotalValue {
+  font-size: 24px;
+  color: #1e8e3e;
+}
+
+.saveGradesBtn {
+  margin-top: 20px;
+  font-size: 16px;
+  padding: 12px;
+}
+
+.fileInfoBoxLarge {
+  margin-bottom: 20px;
+}
+
+.fileInfoTextRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.downloadBtn {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.teacherAssignTdCustom {
+  height: auto;
+  padding: 15px 10px;
+  vertical-align: middle;
+}
+
+.teacherAssignTdBold {
+  text-align: left;
+  font-weight: bold;
+}
+
+.gradeActionBtn {
+  padding: 8px 15px;
+  border: none;
+  font-weight: bold;
+}
+
+.gradeActionBtnSubmitted {
+  background-color: #1a73e8;
+  color: white;
+  cursor: pointer;
+}
+
+.gradeActionBtnPending {
+  background-color: #e0e0e0;
+  color: #777;
+  cursor: not-allowed;
+}
+
+/* GradeAssignment Classes */
+.gradeAssignSubtext {
+  display: block;
+  color: #666;
+}
+
+.gradeAssignContainerLarge {
+  width: 100%;
+  max-width: 800px;
+}
+
+.gradeAssignContainerSmall {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.gradeAssignHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.gradeAssignTitle {
+  margin: 0;
+  color: #1a73e8;
+}
+
+.gradeAssignTableContainer {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.gradeAssignTdLeft {
+  height: auto;
+  padding: 15px 10px;
+  vertical-align: middle;
+  text-align: left;
+  font-weight: bold;
+}
+
+.gradeAssignTdCenter {
+  height: auto;
+  padding: 15px 10px;
+  vertical-align: middle;
+}
+
+.gradeAssignTdCenterBold {
+  height: auto;
+  padding: 15px 10px;
+  vertical-align: middle;
+  font-weight: bold;
+}
+
+.gradeAssignBtn {
+  padding: 10px 20px;
+  border: none;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.gradeAssignBtnActive {
+  background: linear-gradient(135deg, #1a73e8, #4285f4);
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(26, 115, 232, 0.2);
+}
+
+.gradeAssignBtnActive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(26, 115, 232, 0.3);
+}
+
+.gradeAssignBtnActive:active {
+  transform: translateY(0);
+}
+
+.gradeAssignBtnDisabled {
+  background-color: #f1f3f4;
+  color: #9aa0a6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.gradeAssignFileInfo {
+  margin-bottom: 20px;
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  border-left: 4px solid #1a73e8;
+}
+
+.gradeAssignFileInfoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.gradeAssignDownloadBtn {
+  padding: 8px 16px;
+  font-size: 13px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.gradeAssignDownloadBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.gradeAssignRubricTitle {
+  margin: 0 0 20px 0;
+  border-bottom: 2px solid #e1e4e8;
+  padding-bottom: 10px;
+  color: #1a73e8;
+  font-size: 1.1rem;
+}
+
+.gradeAssignInputRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+}
+
+.gradeAssignInputLabel {
+  margin: 0;
+  flex: 1;
+  font-weight: 500;
+  color: #3c4043;
+}
+
+.gradeAssignInputNumber {
+  width: 80px;
+  margin-left: 15px;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.gradeAssignInputNumber:focus {
+  outline: none;
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
+}
+
+.gradeAssignTotalBox {
+  margin-top: 25px;
+  padding: 20px;
+  background: linear-gradient(135deg, #e6f4ea, #ceefe3);
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #1e8e3e;
+  box-shadow: 0 4px 6px rgba(30,142,62,0.1);
+}
+
+.gradeAssignTotalLabel {
+  font-size: 18px;
+  color: #137333;
+  font-weight: bold;
+}
+
+.gradeAssignTotalValue {
+  font-size: 28px;
+  color: #137333;
+  font-weight: 900;
+}
+
+.gradeAssignSubmitBtn {
+  margin-top: 25px;
+  font-size: 16px;
+  padding: 14px 24px;
+  width: 100%;
+  background: linear-gradient(135deg, #34a853, #2e8b57);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(52, 168, 83, 0.2);
+}
+
+.gradeAssignSubmitBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(52, 168, 83, 0.3);
+}
+
+.gradeAssignSubmitBtn:active {
+  transform: translateY(0);
 }
