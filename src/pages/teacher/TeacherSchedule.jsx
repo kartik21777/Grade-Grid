@@ -1,5 +1,12 @@
 import React from 'react';
-import Card from '../../components/ClassCell';
+
+// A helper component to format the Class and Location neatly
+const ClassCell = ({ className, location, colSpan }) => (
+  <td colSpan={colSpan || 1} className="scheduleTd">
+    <div className="classNameText">{className}</div>
+    <div className="classLocationText">📍 {location}</div>
+  </td>
+);
 
 const TeacherSchedule = () => {
   return (
@@ -27,27 +34,30 @@ const TeacherSchedule = () => {
             </tr>
           </thead>
           <tbody>
+            {/* MONDAY */}
             <tr className="scheduleRowOdd">
               <th className="scheduleTh">Mon</th>
               <ClassCell className="Year 2 CSE A" location="Room 301" />
               <ClassCell className="Year 3 IT B" location="Room 405" />
               <ClassCell className="Year 2 CSE B" location="Room 302" />
               <ClassCell className="Year 1 CSE A" location="Room 101" />
-
+              
+              {/* Spanning blocks for the teacher's schedule */}
               <td rowSpan="5" className="scheduleLunchCell">
-                <strong>Lunch Break</strong><br /><span className="smallText">Staff Canteen</span>
+                <strong>Lunch Break</strong><br/><span className="smallText">Staff Canteen</span>
               </td>
-
+              
               <ClassCell className="Year 3 IT A (Lab)" location="Lab 2" colSpan="2" />
-
+              
               <td rowSpan="4" className="scheduleElectiveCell">
-                <strong>Free Period / Prep</strong><br /><span className="smallText">Staff Room</span>
+                <strong>Free Period / Prep</strong><br/><span className="smallText">Staff Room</span>
               </td>
               <td colSpan="2" rowSpan="5" className="schedulePlacementCell">
-                <strong>Office Hours</strong><br /><span className="smallText">Cabin 4</span>
+                <strong>Office Hours</strong><br/><span className="smallText">Cabin 4</span>
               </td>
             </tr>
-
+            
+            {/* TUESDAY */}
             <tr className="scheduleRowEven">
               <th className="scheduleTh">Tue</th>
               <ClassCell className="Year 2 CSE A" location="Room 301" />
@@ -56,8 +66,8 @@ const TeacherSchedule = () => {
               <ClassCell className="Year 3 IT A" location="Room 401" />
               <ClassCell className="Year 3 IT B (Lab)" location="Lab 3" colSpan="2" />
             </tr>
-
-
+            
+            {/* WEDNESDAY */}
             <tr className="scheduleRowOdd">
               <th className="scheduleTh">Wed</th>
               <ClassCell className="Year 2 CSE A (Lab)" location="Lab 1" colSpan="2" />
@@ -66,7 +76,8 @@ const TeacherSchedule = () => {
               <ClassCell className="Year 3 IT B" location="Room 405" />
               <ClassCell className="Year 2 CSE C" location="Room 204" />
             </tr>
-
+            
+            {/* THURSDAY */}
             <tr className="scheduleRowEven">
               <th className="scheduleTh">Thur</th>
               <ClassCell className="Year 1 CSE A" location="Room 101" />
@@ -74,7 +85,8 @@ const TeacherSchedule = () => {
               <ClassCell className="Year 2 CSE B (Lab)" location="Lab 1" colSpan="2" />
               <ClassCell className="Year 3 IT A (Lab)" location="Lab 4" colSpan="2" />
             </tr>
-
+            
+            {/* FRIDAY */}
             <tr className="scheduleRowOdd">
               <th className="scheduleTh">Fri</th>
               <ClassCell className="Year 3 IT B (Lab)" location="Lab 4" colSpan="2" />
