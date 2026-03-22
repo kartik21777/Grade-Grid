@@ -94,17 +94,17 @@ const SearchStudent = () => {
         <div className="gradeAssignHeader">
           <h3 className="gradeAssignTitle">Update Grades: {editingAssignment.title}</h3>
           <button onClick={() => setEditingAssignment(null)} className="backBtnOutline">
-              ← Back to Profile
+            ← Back to Profile
           </button>
         </div>
 
         <div className="fileInfoBox gradeAssignFileInfo">
           <p className="fileInfoText">
-              <strong>Student:</strong> {student.name} ({student.rollNo})
+            <strong>Student:</strong> {student.name} ({student.rollNo})
           </p>
           <div className="fileInfoTextLast gradeAssignFileInfoRow">
-              <span><strong>Submitted File:</strong> <code>{editingAssignment.file || 'N/A'}</code></span>
-              {editingAssignment.file && <button className="submitBtn publishBtn gradeAssignDownloadBtn">Download Work</button>}
+            <span><strong>Submitted File:</strong> <code>{editingAssignment.file || 'N/A'}</code></span>
+            {editingAssignment.file && <button className="submitBtn publishBtn gradeAssignDownloadBtn">Download Work</button>}
           </div>
         </div>
 
@@ -112,54 +112,54 @@ const SearchStudent = () => {
           <h4 className="gradeAssignRubricTitle">Evaluation Rubric</h4>
 
           <div className="gradeAssignInputRow">
-              <label className="teacherClassesLabel gradeAssignInputLabel">Code Quality (Max: 25)</label>
-              <input
-                type="number"
-                className="input gradeAssignInputNumber"
-                name="code"
-                value={grades.code}
-                onChange={handleGradeChange}
-                min="0"
-                max="25"
-                required
-              />
+            <label className="teacherClassesLabel gradeAssignInputLabel">Code Quality (Max: 25)</label>
+            <input
+              type="number"
+              className="input gradeAssignInputNumber"
+              name="code"
+              value={grades.code}
+              onChange={handleGradeChange}
+              min="0"
+              max="25"
+              required
+            />
           </div>
 
           <div className="gradeAssignInputRow">
-              <label className="teacherClassesLabel gradeAssignInputLabel">Functionality (Max: 50)</label>
-              <input
-                type="number"
-                className="input gradeAssignInputNumber"
-                name="func"
-                value={grades.func}
-                onChange={handleGradeChange}
-                min="0"
-                max="50"
-                required
-              />
+            <label className="teacherClassesLabel gradeAssignInputLabel">Functionality (Max: 50)</label>
+            <input
+              type="number"
+              className="input gradeAssignInputNumber"
+              name="func"
+              value={grades.func}
+              onChange={handleGradeChange}
+              min="0"
+              max="50"
+              required
+            />
           </div>
 
           <div className="gradeAssignInputRow">
-              <label className="teacherClassesLabel gradeAssignInputLabel">Documentation (Max: 25)</label>
-              <input
-                type="number"
-                className="input gradeAssignInputNumber"
-                name="doc"
-                value={grades.doc}
-                onChange={handleGradeChange}
-                min="0"
-                max="25"
-                required
-              />
+            <label className="teacherClassesLabel gradeAssignInputLabel">Documentation (Max: 25)</label>
+            <input
+              type="number"
+              className="input gradeAssignInputNumber"
+              name="doc"
+              value={grades.doc}
+              onChange={handleGradeChange}
+              min="0"
+              max="25"
+              required
+            />
           </div>
 
           <div className="gradeAssignTotalBox">
-              <strong className="gradeAssignTotalLabel">Calculated Total:</strong>
-              <strong className="gradeAssignTotalValue">{totalScore}/100</strong>
+            <strong className="gradeAssignTotalLabel">Calculated Total:</strong>
+            <strong className="gradeAssignTotalValue">{totalScore}/100</strong>
           </div>
 
           <button type="submit" className="submitBtn gradeAssignSubmitBtn">
-              Save Grades
+            Save Grades
           </button>
         </form>
       </div>
@@ -168,8 +168,8 @@ const SearchStudent = () => {
 
   return (
     <div className="card teacherClassesCard searchStudentCard">
-      <h3 className="searchStudentTitle">Student Search</h3>
-      <p className="teacherClassesDesc searchStudentDesc">
+      <h3 >Student Search</h3>
+      <p className="teacherClassesDesc">
         Search for a student by their University Roll Number to view their details and assignments.
       </p>
 
@@ -192,10 +192,10 @@ const SearchStudent = () => {
           <div className="studentProfileHeader">
             <div>
               <h4 className="studentName">{student.name}</h4>
-              <p className="studentMeta">Roll No: <strong>{student.rollNo}</strong> | Class: <strong>{student.class}</strong></p>
+              <p>Roll No: <strong>{student.rollNo}</strong> | Class: <strong>{student.class}</strong></p>
             </div>
             <div className="studentStats">
-              <p className="studentStatsLabel">Total Submissions</p>
+              <p>Total Submissions</p>
               <h4 className="studentStatsValue">
                 {student.assignments.filter(a => a.status === 'Submitted').length} / {student.assignments.length}
               </h4>
@@ -216,25 +216,25 @@ const SearchStudent = () => {
               <tbody>
                 {student.assignments.map(assignment => (
                   <tr key={assignment.id}>
-                    <td className="teacherAssignTd gradeAssignTdLeft">
-                        {assignment.title}
+                    <td className=" gradeAssignTdLeft">
+                      {assignment.title}
                     </td>
-                    <td className="teacherAssignTd gradeAssignTdCenter">
-                        <span className={assignment.status === 'Submitted' ? 'statusSubmitted statusBadge' : 'statusPending statusBadge'}>
-                          {assignment.status}
-                        </span>
+                    <td className=" gradeAssignTdCenter">
+                      <span className={assignment.status === 'Submitted' ? 'statusSubmitted statusBadge' : 'statusPending statusBadge'}>
+                        {assignment.status}
+                      </span>
                     </td>
-                    <td className="teacherAssignTd gradeAssignTdCenterBold">
-                        {assignment.graded ? `${assignment.score.code + assignment.score.func + assignment.score.doc}/100` : '-'}
+                    <td className=" gradeAssignTdCenterBold">
+                      {assignment.graded ? `${assignment.score.code + assignment.score.func + assignment.score.doc}/100` : '-'}
                     </td>
-                    <td className="teacherAssignTd gradeAssignTdCenter">
-                        <button
-                          className={`gradeAssignBtn ${assignment.status === 'Submitted' ? 'gradeAssignBtnActive' : 'gradeAssignBtnDisabled'}`}
-                          onClick={() => handleEditClick(assignment)}
-                          disabled={assignment.status !== 'Submitted'}
-                        >
-                          {assignment.graded ? 'Edit Grade' : 'Grade'}
-                        </button>
+                    <td className=" gradeAssignTdCenter">
+                      <button
+                        className={`gradeAssignBtn ${assignment.status === 'Submitted' ? 'gradeAssignBtnActive' : 'gradeAssignBtnDisabled'}`}
+                        onClick={() => handleEditClick(assignment)}
+                        disabled={assignment.status !== 'Submitted'}
+                      >
+                        {assignment.graded ? 'Edit Grade' : 'Grade'}
+                      </button>
                     </td>
                   </tr>
                 ))}

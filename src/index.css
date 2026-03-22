@@ -482,14 +482,7 @@ body {
   border-right: none;
 }
 
-.teacherAssignTd {
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  height: 110px;
-  vertical-align: top;
-  padding: 8px;
-  width: 14%;
-  transition: background-color 0.2s;
-}
+
 
 .teacherAssignTd:hover {
   background-color: rgba(255, 255, 255, 0.02);
@@ -651,18 +644,8 @@ body {
   margin: 0 auto;
 }
 
-.teacherClassesDesc {
-  color: #94a3b8;
-  font-size: 1rem;
-  margin-bottom: 24px;
-}
 
-.teacherClassesLabel {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #e2e8f0;
-}
+
 
 .flex1 {
   flex: 1;
@@ -672,13 +655,7 @@ body {
   flex: 2;
 }
 
-.fileInfoBox {
-  background: rgba(59, 130, 246, 0.1);
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 24px;
-  border-left: 4px solid #3b82f6;
-}
+
 
 .fileInfoText {
   margin: 0 0 8px 0;
@@ -787,6 +764,7 @@ body {
 
 .backBtnOutline:hover {
   background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 
 }
 
@@ -1018,13 +996,7 @@ body {
   margin-bottom: 15px;
 }
 
-.searchStudentTitle {
-  margin: 0 0 15px 0;
-}
 
-.searchStudentDesc {
-  margin-bottom: 20px;
-}
 
 .searchForm {
   display: flex;
@@ -1065,21 +1037,12 @@ body {
   color: white;
 }
 
-.studentMeta {
-  margin: 0;
-  color: #666;
-  font-size: 14px;
-}
+
 
 .studentStats {
   text-align: right;
 }
 
-.studentStatsLabel {
-  margin: 0 0 5px 0;
-  color: #666;
-  font-size: 14px;
-}
 
 .studentStatsValue {
   margin: 0;

@@ -110,7 +110,7 @@ const ClassResults = () => {
         <p className="teacherClassesDesc" style={{ margin: 0 }}>
           View student assignment scores and download the aggregate report.
         </p>
-        <button className="submitBtn publishBtn gradeAssignDownloadBtn" onClick={downloadCSV}>
+        <button className="publishBtn gradeAssignDownloadBtn" onClick={downloadCSV}>
           ⬇ Download CSV
         </button>
       </div>
