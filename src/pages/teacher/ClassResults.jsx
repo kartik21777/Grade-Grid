@@ -15,7 +15,7 @@ const ClassResults = () => {
       students: [
         { name: 'Alice Smith', scores: [85, 92, 90, 88, 95, 80, 85, 87, 89, 91, 95, 99] },
         { name: 'Bob Jones', scores: [85, 76, 80, 85, 82, 70, 75, 79, 81, 85, 87, 90] },
-        { name: 'Charlie Brown', scores: [null, 81, 75, 80, 85, 80, null, 85, 90, 88, 85, 84] } 
+        { name: 'Charlie Brown', scores: [null, 81, 75, 80, 85, 80, null, 85, 90, 88, 85, 84] }
       ]
     },
     2: {
@@ -52,11 +52,9 @@ const ClassResults = () => {
     if (!currentData) return;
 
     let csvContent = "data:text/csv;charset=utf-8,";
-    // Header
     const headers = ["Student Name", ...currentData.assignments, "Aggregate Score"];
     csvContent += headers.join(",") + "\r\n";
 
-    // Data rows
     currentData.students.forEach(student => {
       const row = [
         student.name,
@@ -84,8 +82,8 @@ const ClassResults = () => {
         </p>
         <div className="form">
           {facultyClasses.map(cls => (
-            <div 
-              key={cls.id} 
+            <div
+              key={cls.id}
               className="teacherClassOption"
               onClick={() => setSelectedClass(cls)}
             >
@@ -100,11 +98,11 @@ const ClassResults = () => {
   }
 
   return (
-    <div className="card teacherClassesCard gradeAssignContainerLarge">
+    <div className="card gradeAssignContainerLarge">
       <div className="gradeAssignHeader">
         <h3 className="gradeAssignTitle">Results: {selectedClass.name}</h3>
         <button onClick={() => setSelectedClass(null)} className="backBtnOutline">
-            ← Back to Classes
+          ← Back to Classes
         </button>
       </div>
 
@@ -128,7 +126,7 @@ const ClassResults = () => {
             <tr>
               <th className="teacherAssignTh">Student Name</th>
               {currentData.assignments.map((assignmentName, index) => (
-                 <th key={index} className="teacherAssignTh">{assignmentName}</th>
+                <th key={index} className="teacherAssignTh">{assignmentName}</th>
               ))}
               <th className="teacherAssignTh" style={{ backgroundColor: 'rgba(59, 130, 246, 0.2)', color: '#93c5fd' }}>
                 Aggregate
@@ -139,19 +137,19 @@ const ClassResults = () => {
             {currentData.students.map((student, idx) => {
               const agg = calculateAggregate(student.scores);
               return (
-                 <tr key={idx}>
-                   <td className="teacherAssignTd gradeAssignTdLeft" style={{ fontWeight: 'bold' }}>
-                     {student.name}
-                   </td>
-                   {student.scores.map((score, sIdx) => (
-                      <td key={sIdx} className="teacherAssignTd gradeAssignTdCenter">
-                        {score === null ? <span style={{ color: '#94a3b8' }}>Pending</span> : score}
-                      </td>
-                   ))}
-                   <td className="teacherAssignTd gradeAssignTdCenterBold" style={{ backgroundColor: 'rgba(59, 130, 246, 0.05)', color: '#60a5fa' }}>
-                     {agg}{agg !== '-' ? '%' : ''}
-                   </td>
-                 </tr>
+                <tr key={idx}>
+                  <td className="teacherAssignTd gradeAssignTdLeft" style={{ fontWeight: 'bold' }}>
+                    {student.name}
+                  </td>
+                  {student.scores.map((score, sIdx) => (
+                    <td key={sIdx} className="teacherAssignTd gradeAssignTdCenter">
+                      {score === null ? <span style={{ color: '#94a3b8' }}>Pending</span> : score}
+                    </td>
+                  ))}
+                  <td className="teacherAssignTd gradeAssignTdCenterBold" style={{ backgroundColor: 'rgba(59, 130, 246, 0.05)', color: '#60a5fa' }}>
+                    {agg}{agg !== '-' ? '%' : ''}
+                  </td>
+                </tr>
               );
             })}
           </tbody>

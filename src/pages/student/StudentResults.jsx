@@ -33,7 +33,7 @@ const StudentResults = () => {
 
   return (
     <div className="contentWrapper">
-      <h2>My Results</h2>
+      <h2 style={{ color: 'white' }}>My Results</h2>
 
       <div className="card-container">
         {results.map(result => (

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const StudentAssignments = () => {
   const [selectedSubject, setSelectedSubject] = useState(null);
-  
+
   const [assignments, setAssignments] = useState([
     {
       id: 1,
@@ -60,44 +60,50 @@ const StudentAssignments = () => {
     }, 500);
   };
 
-  // Extract unique subjects
   const subjects = [...new Set(assignments.map(a => a.subject))];
 
-  // View 1: Subject List
   if (!selectedSubject) {
     return (
       <div className="contentWrapper">
-        <h2 style={{ marginBottom: '5px' }}>My Subjects</h2>
-        <p style={{ color: '#666', marginBottom: '25px', fontSize: '15px' }}>Select a subject to view its assignments.</p>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+        <h2 style={{ color: 'white', marginBottom: '5px' }}>My Subjects</h2>
+        <p style={{ color: '#42cab3ff', marginBottom: '25px', fontSize: '15px' }}>Select a subject to view its assignments.</p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {subjects.map(subject => {
             const subjectAssignments = assignments.filter(a => a.subject === subject);
-            const pendingCount = subjectAssignments.filter(a => !a.submitted).length;
-            
+            const pendingCount = subjectAssignments.filter(a => !a.submitted && isBeforeDue(a.dueDate, a.dueTime)).length;
+            const missedCount = subjectAssignments.filter(a => !a.submitted && !isBeforeDue(a.dueDate, a.dueTime)).length;
+
             return (
-              <div 
-                key={subject} 
-                className="card studentCard" 
-                style={{ 
-                   cursor: 'pointer', 
-                   borderLeft: '4px solid #1a73e8', 
-                   padding: '25px',
-                   transition: 'box-shadow 0.2s, transform 0.2s',
-                   margin: 0,
-                   width: 'auto'
+              <div
+                key={subject}
+                className="card studentCard"
+                style={{
+                  cursor: 'pointer',
+                  borderLeft: '4px solid #1a73e8',
+                  padding: '25px',
+                  transition: 'box-shadow 0.2s, transform 0.2s',
+                  margin: 0,
+                  width: '100%',
+                  boxSizing: 'border-box'
                 }}
                 onClick={() => setSelectedSubject(subject)}
               >
-                <h3 style={{ margin: '0 0 12px 0', color: '#1a73e8', fontSize: '20px' }}>{subject}</h3>
-                <p style={{ margin: '0 0 8px 0', color: '#555', fontSize: '14px' }}>
+                <h3 style={{ margin: '0 0 12px 0', color: '#a4b9d5ff', fontSize: '20px' }}>{subject}</h3>
+                <p style={{ margin: '0 0 8px 0', color: '#d265b3ff', fontSize: '14px' }}>
                   <strong>{subjectAssignments.length}</strong> total assignments
                 </p>
-                {pendingCount > 0 ? (
-                  <p style={{ margin: 0, color: '#d93025', fontWeight: 'bold', fontSize: '14px' }}>
+                {pendingCount > 0 && (
+                  <p style={{ margin: '0 0 4px 0', color: '#d93025', fontWeight: 'bold', fontSize: '14px' }}>
                     {pendingCount} pending
                   </p>
-                ) : (
+                )}
+                {missedCount > 0 && (
+                  <p style={{ margin: 0, color: '#f43f5e', fontWeight: 'bold', fontSize: '14px' }}>
+                    {missedCount} missed deadline
+                  </p>
+                )}
+                {pendingCount === 0 && missedCount === 0 && (
                   <p style={{ margin: 0, color: '#1e8e3e', fontWeight: 'bold', fontSize: '14px' }}>
                     All caught up!
                   </p>
@@ -110,28 +116,27 @@ const StudentAssignments = () => {
     );
   }
 
-  // View 2: Assignments for selected subject
   const filteredAssignments = assignments.filter(a => a.subject === selectedSubject);
 
   return (
     <div className="contentWrapper">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
         <div>
-           <h2 style={{ margin: '0 0 5px 0' }}>{selectedSubject}</h2>
-           <p style={{ margin: 0, color: '#666', fontSize: '14px' }}>Assignments and coursework</p>
+          <h2 style={{ color: 'white', margin: '0 0 5px 0' }}>{selectedSubject}</h2>
+          <p style={{ margin: 0, color: '#94e1e6ff', fontSize: '14px' }}>Assignments and coursework</p>
         </div>
-        <button 
-          onClick={() => setSelectedSubject(null)} 
-          className="backBtnOutline" 
-          style={{ padding: '8px 15px', borderRadius: '5px', border: 'none', cursor: 'pointer', background: '#e0e0e0', fontWeight: 'bold' }}
+        <button
+          onClick={() => setSelectedSubject(null)}
+          className="backBtnOutline"
+
         >
           ← Back to Subjects
         </button>
       </div>
-      
-      <div className="card-container">
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {filteredAssignments.map(assignment => (
-          <div key={assignment.id} className="card studentCard">
+          <div key={assignment.id} className="card studentCard" style={{ width: '100%', boxSizing: 'border-box' }}>
             <div className="studentCardHeader">
               <div>
                 <h3 className="studentCardTitle">{assignment.title}</h3>
@@ -142,8 +147,8 @@ const StudentAssignments = () => {
               </div>
 
               <div className="studentCardMeta">
-                <span className={`statusBadge ${assignment.submitted ? 'statusSubmitted' : 'statusPending'}`}>
-                  {assignment.submitted ? 'Submitted' : 'Pending'}
+                <span className={`statusBadge ${assignment.submitted ? 'statusSubmitted' : (!isBeforeDue(assignment.dueDate, assignment.dueTime) ? 'statusLate' : 'statusPending')}`}>
+                  {assignment.submitted ? 'Submitted' : (!isBeforeDue(assignment.dueDate, assignment.dueTime) ? 'Late' : 'Pending')}
                 </span>
 
                 {assignment.submitted && (
@@ -154,9 +159,9 @@ const StudentAssignments = () => {
               </div>
             </div>
 
-            {(!assignment.submitted || isBeforeDue(assignment.dueDate, assignment.dueTime)) && (
+            {(isBeforeDue(assignment.dueDate, assignment.dueTime)) && (
               <form onSubmit={(e) => handleSubmit(assignment.id, e, assignment.submitted)} className="submitWorkForm">
-                <h4 className="submitWorkTitle">
+                <h4 className="submitWorkTitle" style={{ color: 'black' }}>
                   {assignment.submitted ? 'Update Submission' : 'Submit Work'}
                 </h4>
                 <div className="submitWorkControls">
