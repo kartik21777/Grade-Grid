@@ -2,33 +2,58 @@ import React, { useState } from 'react';
 
 const GradeAssignment = () => {
   const [selectedClass, setSelectedClass] = useState(null);
+  const [selectedAssignment, setSelectedAssignment] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null);
 
   const facultyClasses = [
-    { id: 1, name: 'Year 2 - CSE A', assignment: 'Data Structures Lab 3' },
-    { id: 2, name: 'Year 3 - IT A', assignment: 'Web Dev Mini Project' },
-    { id: 3, name: 'Year 1 - CSE B', assignment: 'Intro to Python Assignment 1' }
+    { id: 1, name: 'Year 2 - CSE A' },
+    { id: 2, name: 'Year 3 - IT A' },
+    { id: 3, name: 'Year 1 - CSE B' }
   ];
 
-  const [classStudents, setClassStudents] = useState({
+  const classAssignments = {
     1: [
-      { id: 101, name: 'Alice Smith', status: 'Submitted', file: 'alice_lab3.zip', graded: false },
-      { id: 102, name: 'Bob Jones', status: 'Submitted', file: 'bob_lab3.zip', graded: true, score: { code: 20, func: 45, doc: 20 } },
+      { id: 101, title: 'Data Structures Lab 3' },
+      { id: 102, title: 'Data Structures Midterm' }
     ],
     2: [
-      { id: 201, name: 'Charlie Brown', status: 'Submitted', file: 'charlie_project.rar', graded: false },
-      { id: 202, name: 'Diana Prince', status: 'Submitted', file: 'diana_webapp.zip', graded: false },
+      { id: 201, title: 'Web Dev Mini Project' }
     ],
     3: [
-      { id: 301, name: 'Evan Wright', status: 'Pending', file: null, graded: false },
-      { id: 302, name: 'Fiona Gallagher', status: 'Submitted', file: 'fiona_python.py', graded: false },
+      { id: 301, title: 'Intro to Python Assignment 1' },
+      { id: 302, title: 'Intro to Python Assignment 2' }
     ]
+  };
+
+  const [submissions, setSubmissions] = useState({
+    101: [
+      { id: 1011, name: 'Alice Smith', status: 'Submitted', file: 'alice_lab3.zip', graded: false },
+      { id: 1012, name: 'Bob Jones', status: 'Submitted', file: 'bob_lab3.zip', graded: true, score: { code: 20, func: 45, doc: 20 } },
+    ],
+    102: [
+      { id: 1021, name: 'Alice Smith', status: 'Pending', file: null, graded: false },
+    ],
+    201: [
+      { id: 2011, name: 'Charlie Brown', status: 'Submitted', file: 'charlie_project.rar', graded: false },
+      { id: 2012, name: 'Diana Prince', status: 'Submitted', file: 'diana_webapp.zip', graded: false },
+    ],
+    301: [
+      { id: 3011, name: 'Evan Wright', status: 'Pending', file: null, graded: false },
+      { id: 3012, name: 'Fiona Gallagher', status: 'Submitted', file: 'fiona_python.py', graded: false },
+    ],
+    302: []
   });
 
   const [grades, setGrades] = useState({ code: '', func: '', doc: '' });
 
   const handleClassSelect = (cls) => {
     setSelectedClass(cls);
+    setSelectedAssignment(null);
+    setSelectedStudent(null);
+  };
+
+  const handleAssignmentSelect = (assignment) => {
+    setSelectedAssignment(assignment);
     setSelectedStudent(null);
   };
 
@@ -56,8 +81,8 @@ const GradeAssignment = () => {
   const handleGradeSubmit = (e) => {
     e.preventDefault();
     
-    const currentClassStudents = classStudents[selectedClass.id];
-    const updatedStudents = currentClassStudents.map(student => {
+    const currentSubmissions = submissions[selectedAssignment.id] || [];
+    const updatedStudents = currentSubmissions.map(student => {
       if (student.id === selectedStudent.id) {
         return {
           ...student,
@@ -72,9 +97,9 @@ const GradeAssignment = () => {
       return student;
     });
 
-    setClassStudents({
-      ...classStudents,
-      [selectedClass.id]: updatedStudents
+    setSubmissions({
+      ...submissions,
+      [selectedAssignment.id]: updatedStudents
     });
 
     alert(`Success! Grades submitted for ${selectedStudent.name}.\nCode: ${grades.code}/25\nFunctionality: ${grades.func}/50\nDocumentation: ${grades.doc}/25\nTotal: ${Number(grades.code) + Number(grades.func) + Number(grades.doc)}/100`);
@@ -87,7 +112,7 @@ const GradeAssignment = () => {
       <div className="card teacherClassesCard">
         <h3>Assignment Grading: Select Class</h3>
         <p className="teacherClassesDesc">
-          Select a class to view student submissions for grading.
+          Select a class to view assignments and student submissions for grading.
         </p>
         <div className="form">
           {facultyClasses.map(cls => (
@@ -98,9 +123,6 @@ const GradeAssignment = () => {
             >
               <div>
                 <span className="boldText">{cls.name}</span>
-                <span className="smallText gradeAssignSubtext">
-                  Current Assignment: {cls.assignment}
-                </span>
               </div>
             </div>
           ))}
@@ -109,18 +131,51 @@ const GradeAssignment = () => {
     );
   }
 
+  if (!selectedAssignment) {
+    const assignments = classAssignments[selectedClass.id] || [];
+    return (
+      <div className="card teacherClassesCard gradeAssignContainerLarge">
+        <div className="gradeAssignHeader">
+          <h3 className="gradeAssignTitle">Assignments: {selectedClass.name}</h3>
+          <button onClick={() => setSelectedClass(null)} className="backBtnOutline">
+            ← Back to Classes
+          </button>
+        </div>
+        <p className="teacherClassesDesc">
+          Select an assignment to view student submissions.
+        </p>
+        <div className="form" style={{ marginTop: '20px' }}>
+          {assignments.length > 0 ? assignments.map(assignment => (
+            <div 
+              key={assignment.id} 
+              className="teacherClassOption"
+              onClick={() => handleAssignmentSelect(assignment)}
+              style={{ padding: '15px', marginBottom: '10px' }}
+            >
+              <div>
+                <span className="boldText">{assignment.title}</span>
+              </div>
+            </div>
+          )) : (
+            <p style={{ color: '#94a3b8' }}>No assignments found for this class.</p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   if (!selectedStudent) {
-    const students = classStudents[selectedClass.id] || [];
+    const students = submissions[selectedAssignment.id] || [];
     return (
       <div className="card teacherClassesCard gradeAssignContainerLarge">
          <div className="gradeAssignHeader">
-            <h3 className="gradeAssignTitle">Submissions: {selectedClass.name}</h3>
-            <button onClick={() => setSelectedClass(null)} className="backBtnOutline">
-               ← Back Options
+            <h3 className="gradeAssignTitle">Submissions for: {selectedAssignment.title}</h3>
+            <button onClick={() => setSelectedAssignment(null)} className="backBtnOutline">
+               ← Back to Assignments
             </button>
          </div>
          <p className="teacherClassesDesc">
-          Select a student to evaluate their work for "{selectedClass.assignment}".
+          Select a student to evaluate their work for "{selectedAssignment.title}".
         </p>
 
         <div className="gradeAssignTableContainer">
@@ -157,6 +212,13 @@ const GradeAssignment = () => {
                     </td>
                   </tr>
                 ))}
+                {students.length === 0 && (
+                  <tr>
+                    <td colSpan="4" className="teacherAssignTd gradeAssignTdCenter" style={{ color: '#94a3b8' }}>
+                      No students found.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
         </div>
@@ -171,13 +233,13 @@ const GradeAssignment = () => {
       <div className="gradeAssignHeader">
          <h3 className="gradeAssignTitle">Grading: {selectedStudent.name}</h3>
          <button onClick={() => setSelectedStudent(null)} className="backBtnOutline">
-            ← Back to Roster
+            ← Back to Submissions
          </button>
       </div>
 
       <div className="fileInfoBox gradeAssignFileInfo">
          <p className="fileInfoText">
-            <strong>Assignment:</strong> {selectedClass.assignment}
+            <strong>Assignment:</strong> {selectedAssignment.title}
          </p>
          <div className="fileInfoTextLast gradeAssignFileInfoRow">
             <span><strong>Submitted File:</strong> <code>{selectedStudent.file}</code></span>

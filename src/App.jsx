@@ -8,12 +8,10 @@ import StudentAssignments from './pages/student/StudentAssignments';
 import StudentResults from './pages/student/StudentResults';
 import TeacherDashboard from './pages/TeacherDashboard';
 import TeacherHome from './pages/teacher/TeacherHome';
-import TeacherSchedule from './pages/teacher/TeacherSchedule';
 import TeacherClasses from './pages/teacher/TeacherClasses';
-import CreateAssignment from './pages/teacher/CreateAssignment';
-import TeacherAssignments from './pages/teacher/TeacherAssignments';
 import SearchStudent from './pages/teacher/SearchStudent';
 import GradeAssignment from './pages/teacher/GradeAssignment';
+import ClassResults from './pages/teacher/ClassResults';
 import Dashboard from './components/Dashboard';
 
 const App = () => {
@@ -59,12 +57,10 @@ const App = () => {
             
             <Route path="/teacher" element={<TeacherDashboard />}>
               <Route index element={<TeacherHome />} />
-              <Route path="schedule" element={<TeacherSchedule />} />
               <Route path="classes" element={<TeacherClasses />} />
-              <Route path="create-assignment" element={<CreateAssignment />} />
-              <Route path="assignments" element={<TeacherAssignments />} />
               <Route path="grade-assignment" element={<GradeAssignment />} />
               <Route path="search-student" element={<SearchStudent />} />
+              <Route path="class-results" element={<ClassResults />} />
             </Route>
             
             <Route path="*" element={<Navigate to={user.role === 'teacher' ? '/teacher' : '/student'} replace />} />

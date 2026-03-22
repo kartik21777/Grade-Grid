@@ -10,14 +10,7 @@ const TeacherDashboard = () => {
       <div className="teacherDashboardHeader">
         <h2 className="teacherDashboardTitle">Instructor Portal</h2>
         
-        {location.pathname !== '/teacher' && (
-          <button 
-            onClick={() => navigate('/teacher')} 
-            className="backBtn"
-          >
-            ← Back to Dashboard
-          </button>
-        )}
+
       </div>
 
       

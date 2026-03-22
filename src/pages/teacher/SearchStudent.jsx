@@ -90,32 +90,32 @@ const SearchStudent = () => {
     const totalScore = Number(grades.code || 0) + Number(grades.func || 0) + Number(grades.doc || 0);
 
     return (
-      <div className="card teacherClassesCard searchStudentCardNarrow">
-        <div className="searchStudentHeader">
-          <h3 className="searchStudentTitle">Update Grades: {editingAssignment.title}</h3>
+      <div className="card teacherClassesCard gradeAssignContainerSmall">
+        <div className="gradeAssignHeader">
+          <h3 className="gradeAssignTitle">Update Grades: {editingAssignment.title}</h3>
           <button onClick={() => setEditingAssignment(null)} className="backBtnOutline">
               ← Back to Profile
           </button>
         </div>
 
-        <div className="fileInfoBox fileInfoBoxLarge">
+        <div className="fileInfoBox gradeAssignFileInfo">
           <p className="fileInfoText">
               <strong>Student:</strong> {student.name} ({student.rollNo})
           </p>
-          <div className="fileInfoTextLast fileInfoTextRow">
+          <div className="fileInfoTextLast gradeAssignFileInfoRow">
               <span><strong>Submitted File:</strong> <code>{editingAssignment.file || 'N/A'}</code></span>
-              {editingAssignment.file && <button className="submitBtn publishBtn downloadBtn">Download Work</button>}
+              {editingAssignment.file && <button className="submitBtn publishBtn gradeAssignDownloadBtn">Download Work</button>}
           </div>
         </div>
 
         <form onSubmit={handleGradeSubmit} className="form">
-          <h4 className="sectionTitle">Evaluation Rubric</h4>
+          <h4 className="gradeAssignRubricTitle">Evaluation Rubric</h4>
 
-          <div className="gradeRow">
-              <label className="teacherClassesLabel gradeLabel">Code Quality (Max: 25)</label>
+          <div className="gradeAssignInputRow">
+              <label className="teacherClassesLabel gradeAssignInputLabel">Code Quality (Max: 25)</label>
               <input
                 type="number"
-                className="input gradeInput"
+                className="input gradeAssignInputNumber"
                 name="code"
                 value={grades.code}
                 onChange={handleGradeChange}
@@ -125,11 +125,11 @@ const SearchStudent = () => {
               />
           </div>
 
-          <div className="gradeRow">
-              <label className="teacherClassesLabel gradeLabel">Functionality (Max: 50)</label>
+          <div className="gradeAssignInputRow">
+              <label className="teacherClassesLabel gradeAssignInputLabel">Functionality (Max: 50)</label>
               <input
                 type="number"
-                className="input gradeInput"
+                className="input gradeAssignInputNumber"
                 name="func"
                 value={grades.func}
                 onChange={handleGradeChange}
@@ -139,11 +139,11 @@ const SearchStudent = () => {
               />
           </div>
 
-          <div className="gradeRow">
-              <label className="teacherClassesLabel gradeLabel">Documentation (Max: 25)</label>
+          <div className="gradeAssignInputRow">
+              <label className="teacherClassesLabel gradeAssignInputLabel">Documentation (Max: 25)</label>
               <input
                 type="number"
-                className="input gradeInput"
+                className="input gradeAssignInputNumber"
                 name="doc"
                 value={grades.doc}
                 onChange={handleGradeChange}
@@ -153,12 +153,12 @@ const SearchStudent = () => {
               />
           </div>
 
-          <div className="gradeTotalBox">
-              <strong className="gradeTotalLabel">Calculated Total:</strong>
-              <strong className="gradeTotalValue">{totalScore}/100</strong>
+          <div className="gradeAssignTotalBox">
+              <strong className="gradeAssignTotalLabel">Calculated Total:</strong>
+              <strong className="gradeAssignTotalValue">{totalScore}/100</strong>
           </div>
 
-          <button type="submit" className="submitBtn saveGradesBtn">
+          <button type="submit" className="submitBtn gradeAssignSubmitBtn">
               Save Grades
           </button>
         </form>
@@ -202,8 +202,8 @@ const SearchStudent = () => {
             </div>
           </div>
 
-          <h4 className="sectionTitle">Assignment History</h4>
-          <div className="tableWrapper">
+          <h4 className="gradeAssignTitle" style={{ marginBottom: '15px' }}>Assignment History</h4>
+          <div className="gradeAssignTableContainer">
             <table className="teacherAssignTable">
               <thead>
                 <tr>
@@ -216,20 +216,20 @@ const SearchStudent = () => {
               <tbody>
                 {student.assignments.map(assignment => (
                   <tr key={assignment.id}>
-                    <td className="teacherAssignTd teacherAssignTdCustom teacherAssignTdBold">
+                    <td className="teacherAssignTd gradeAssignTdLeft">
                         {assignment.title}
                     </td>
-                    <td className="teacherAssignTd teacherAssignTdCustom">
+                    <td className="teacherAssignTd gradeAssignTdCenter">
                         <span className={assignment.status === 'Submitted' ? 'statusSubmitted statusBadge' : 'statusPending statusBadge'}>
                           {assignment.status}
                         </span>
                     </td>
-                    <td className="teacherAssignTd teacherAssignTdCustom teacherAssignTdBold">
+                    <td className="teacherAssignTd gradeAssignTdCenterBold">
                         {assignment.graded ? `${assignment.score.code + assignment.score.func + assignment.score.doc}/100` : '-'}
                     </td>
-                    <td className="teacherAssignTd teacherAssignTdCustom">
+                    <td className="teacherAssignTd gradeAssignTdCenter">
                         <button
-                          className={`gradeActionBtn ${assignment.status === 'Submitted' ? 'gradeActionBtnSubmitted' : 'gradeActionBtnPending'}`}
+                          className={`gradeAssignBtn ${assignment.status === 'Submitted' ? 'gradeAssignBtnActive' : 'gradeAssignBtnDisabled'}`}
                           onClick={() => handleEditClick(assignment)}
                           disabled={assignment.status !== 'Submitted'}
                         >

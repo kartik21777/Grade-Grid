@@ -9,7 +9,7 @@ const StudentAssignments = () => {
       title: 'Data Structures Lab 3',
       subject: 'Data Structures',
       course: 'Year 2 - CSE A',
-      dueDate: '2026-03-25',
+      dueDate: '2026-03-20',
       dueTime: '23:59',
       submitted: false,
     },
@@ -43,7 +43,12 @@ const StudentAssignments = () => {
     }
   ]);
 
-  const handleSubmit = (id, e) => {
+  const isBeforeDue = (dueDate, dueTime) => {
+    const due = new Date(`${dueDate}T${dueTime}`);
+    return new Date() < due;
+  };
+
+  const handleSubmit = (id, e, isUpdate) => {
     e.preventDefault();
     setTimeout(() => {
       setAssignments(assignments.map(a =>
@@ -51,7 +56,7 @@ const StudentAssignments = () => {
           ? { ...a, submitted: true, submissionDate: new Date().toISOString().split('T')[0] }
           : a
       ));
-      alert('Assignment submitted successfully!');
+      alert(isUpdate ? 'Assignment updated successfully!' : 'Assignment submitted successfully!');
     }, 500);
   };
 
@@ -149,12 +154,16 @@ const StudentAssignments = () => {
               </div>
             </div>
 
-            {!assignment.submitted && (
-              <form onSubmit={(e) => handleSubmit(assignment.id, e)} className="submitWorkForm">
-                <h4 className="submitWorkTitle">Submit Work</h4>
+            {(!assignment.submitted || isBeforeDue(assignment.dueDate, assignment.dueTime)) && (
+              <form onSubmit={(e) => handleSubmit(assignment.id, e, assignment.submitted)} className="submitWorkForm">
+                <h4 className="submitWorkTitle">
+                  {assignment.submitted ? 'Update Submission' : 'Submit Work'}
+                </h4>
                 <div className="submitWorkControls">
                   <input type="file" className="fileInput zeroMarginFlex" required />
-                  <button type="submit" className="submitBtn uploadBtn">Upload</button>
+                  <button type="submit" className="submitBtn uploadBtn">
+                    {assignment.submitted ? 'Update' : 'Upload'}
+                  </button>
                 </div>
               </form>
             )}

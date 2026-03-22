@@ -6,6 +6,7 @@ const TeacherClasses = () => {
   const [dueTime, setDueTime] = useState('');
   const [file, setFile] = useState(null); 
   const [selectedClasses, setSelectedClasses] = useState([]);
+  const [criteria, setCriteria] = useState([{ name: '', maxMarks: '' }]);
 
   const classes = ['Year 1 - CSE A', 'Year 2 - CSE A', 'Year 2 - CSE B', 'Year 3 - IT A'];
 
@@ -26,6 +27,21 @@ const TeacherClasses = () => {
     }
   };
 
+  const handleCriteriaChange = (index, field, value) => {
+    const newCriteria = [...criteria];
+    newCriteria[index][field] = value;
+    setCriteria(newCriteria);
+  };
+
+  const handleAddCriteria = () => {
+    setCriteria([...criteria, { name: '', maxMarks: '' }]);
+  };
+
+  const handleRemoveCriteria = (index) => {
+    const newCriteria = criteria.filter((_, i) => i !== index);
+    setCriteria(newCriteria);
+  };
+
   const handleSubmit = () => {
     if (selectedClasses.length === 0) {
       alert("Please select at least one class to assign this to.");
@@ -34,13 +50,14 @@ const TeacherClasses = () => {
     
     const fileName = file ? file.name : "No file attached";
     
-    alert(`Success! Assignment "${fileName}" assigned to:\n${selectedClasses.join('\n')}`);
+    alert(`Success! Assignment "${fileName}" assigned to:\n${selectedClasses.join('\n')}\n\nCriteria:\n${criteria.map(c => `- ${c.name} (${c.maxMarks} marks)`).join('\n')}`);
     
     setStep(1);
     setDueDate('');
     setDueTime('');
     setFile(null);
     setSelectedClasses([]);
+    setCriteria([{ name: '', maxMarks: '' }]);
   };
 
   if (step === 1) {
@@ -58,6 +75,7 @@ const TeacherClasses = () => {
               type="file" 
               className="input" 
               onChange={(e) => setFile(e.target.files[0])}
+              required
             />
           </div>
           
@@ -82,7 +100,50 @@ const TeacherClasses = () => {
               />
             </div>
 
-          <button type="submit" className="submitBtn">
+          <div style={{ marginTop: '10px', marginBottom: '25px' }}>
+            <label className="teacherClassesLabel">Grading Criteria:</label>
+            {criteria.map((crit, index) => (
+              <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                <input
+                  type="text"
+                  placeholder="Criteria Name (e.g., Code Quality)"
+                  className="input"
+                  style={{ flex: 2, marginBottom: 0 }}
+                  value={crit.name}
+                  onChange={(e) => handleCriteriaChange(index, 'name', e.target.value)}
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Max Marks"
+                  className="input"
+                  style={{ flex: 1, marginBottom: 0 }}
+                  value={crit.maxMarks}
+                  onChange={(e) => handleCriteriaChange(index, 'maxMarks', e.target.value)}
+                  required
+                  min="1"
+                />
+                {criteria.length > 1 && (
+                  <button 
+                    type="button" 
+                    onClick={() => handleRemoveCriteria(index)}
+                    style={{ padding: '0 15px', background: 'rgba(244, 63, 94, 0.2)', color: '#f43f5e', border: '1px solid rgba(244, 63, 94, 0.5)', borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s' }}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            ))}
+            <button 
+              type="button" 
+              onClick={handleAddCriteria}
+              style={{ padding: '10px 16px', background: 'rgba(59, 130, 246, 0.1)', color: '#60a5fa', border: '1px dashed rgba(59, 130, 246, 0.5)', borderRadius: '8px', cursor: 'pointer', width: '100%', marginTop: '5px', fontWeight: '600', transition: 'all 0.2s' }}
+            >
+              + Add Criterion
+            </button>
+          </div>
+
+          <button type="submit" className="submitBtn" style={{ width: '100%' }}>
             Continue to Select Classes →
           </button>
         </form>
@@ -98,8 +159,11 @@ const TeacherClasses = () => {
         <p className="fileInfoText">
           <strong>File:</strong> {file ? file.name : <span className="errorText">None attached</span>}
         </p>
+        <p className="fileInfoText">
+          <strong>Due:</strong> {dueDate} at {dueTime}
+        </p>
         <p className="fileInfoTextLast">
-          <strong>Due:</strong> {dueDate}
+          <strong>Total Marks:</strong> {criteria.reduce((sum, c) => sum + (Number(c.maxMarks) || 0), 0)}
         </p>
       </div>
 

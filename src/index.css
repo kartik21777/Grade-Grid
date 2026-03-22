@@ -1,8 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Iosevka+Charon+Mono:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+
 body {
   margin: 0;
+  font-family: 'Iosevka Charon Mono', monospace;
 }
-
-
 
 .login-container {
   display: flex;
@@ -12,7 +14,6 @@ body {
   background: #0f172a;
   position: relative;
   overflow: hidden;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
 .login-background {
@@ -144,6 +145,7 @@ body {
   border-radius: 12px;
   font-size: 1rem;
   font-weight: 600;
+  font-family: 'Iosevka Charon Mono', monospace;
   cursor: pointer;
   transition: all 0.3s;
   position: relative;
@@ -194,6 +196,45 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+.navLinks {
+  display: flex;
+  gap: 15px;
+  flex: 1;
+  margin: 0 40px;
+  align-items: center;
+  overflow-x: auto;
+}
+
+.navLinks::-webkit-scrollbar {
+  height: 4px;
+}
+.navLinks::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.navLink {
+  color: #94a3b8;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.navLink:hover {
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.navLink.active {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.15);
+  font-weight: 600;
+}
+
 .navRight {
   display: flex;
   align-items: center;
@@ -206,6 +247,7 @@ body {
   padding: 8px 15px;
   border-radius: 4px;
   cursor: pointer;
+  font-family: 'Iosevka Charon Mono', monospace;
 }
 
 .content {
@@ -1362,4 +1404,88 @@ body {
 
 .gradeAssignSubmitBtn:active {
   transform: translateY(1px);
+}
+
+/* Profile Pages */
+.profileContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  color: #f8fafc;
+  padding: 30px;
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profileAvatar {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+}
+
+.teacherAvatar {
+  background: linear-gradient(135deg, #a855f7, #6366f1);
+  box-shadow: 0 8px 16px rgba(168, 85, 247, 0.3);
+}
+
+.profileInfo h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+}
+
+.profileRole {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 16px;
+}
+
+.profileDetails h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  color: #e2e8f0;
+}
+
+.detailRow {
+  display: flex;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.detailRow:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.detailLabel {
+  width: 150px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.detailValue {
+  color: #f8fafc;
+  font-weight: 600;
+  flex: 1;
 }
