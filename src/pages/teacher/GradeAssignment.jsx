@@ -8,7 +8,8 @@ const GradeAssignment = () => {
   const [selectedAssignment, setSelectedAssignment] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null);
 
-  const [grades, setGrades] = useState({ code: '', func: '', doc: '', remark: '' });
+  const [gradeData, setGradeData] = useState({});
+  const [remark, setRemark] = useState('');
 
   const handleClassSelect = (cls) => {
     setSelectedClass(cls);
@@ -28,34 +29,34 @@ const GradeAssignment = () => {
     }
     setSelectedStudent(student);
     if (student.graded) {
-      setGrades(student.score);
+      const { remark: studentRemark, ...scores } = student.score || {};
+      setGradeData(scores || {});
+      setRemark(studentRemark || '');
     } else {
-      setGrades({ code: '', func: '', doc: '' });
+      setGradeData({});
+      setRemark('');
     }
-  };
-
-  const handleGradeChange = (e) => {
-    const { name, value } = e.target;
-    if (name === 'code' && value > 25) return;
-    if (name === 'func' && value > 50) return;
-    if (name === 'doc' && value > 25) return;
-    setGrades({ ...grades, [name]: value });
   };
 
   const handleGradeSubmit = (e) => {
     e.preventDefault();
-
-    const currentSubmissions = submissions[selectedAssignment.id] || [];
     
-    // Update global state
-    updateSubmission(selectedAssignment.id, selectedStudent.studentId, {
-      code: Number(grades.code),
-      func: Number(grades.func),
-      doc: Number(grades.doc),
-      remark: grades.remark
-    });
+    // Convert all grade values to numbers for submission
+    const numericGradeData = {};
+    for (const key in gradeData) {
+      numericGradeData[key] = Number(gradeData[key]);
+    }
 
-    alert(`Success! Grades submitted for ${selectedStudent.name}.\nCode: ${grades.code}/25\nFunctionality: ${grades.func}/50\nDocumentation: ${grades.doc}/25\nTotal: ${Number(grades.code) + Number(grades.func) + Number(grades.doc)}/100\nRemark: ${grades.remark || 'N/A'}`);
+    const submissionPayload = {
+      ...numericGradeData,
+      remark: remark
+    };
+
+    // Update global state
+    updateSubmission(selectedAssignment.id, selectedStudent.studentId, submissionPayload);
+
+    const totalCalculated = Object.values(gradeData).reduce((a, b) => Number(a) + Number(b), 0);
+    alert(`Success! Grades submitted for ${selectedStudent.name}.\nTotal Score: ${totalCalculated}\nRemark: ${remark || 'N/A'}`);
 
     setSelectedStudent(null);
   };
@@ -142,29 +143,40 @@ const GradeAssignment = () => {
               </tr>
             </thead>
             <tbody>
-              {students.map(student => (
-                <tr key={student.id}>
-                  <td className="teacherAssignTd gradeAssignTdLeft">
-                    {student.name}
-                  </td>
-                  <td className="teacherAssignTd gradeAssignTdCenter">
-                    <span className={student.status === 'Submitted' ? 'statusSubmitted statusBadge' : 'statusPending statusBadge'}>
-                      {student.status}
-                    </span>
-                  </td>
-                  <td className="teacherAssignTd gradeAssignTdCenterBold">
-                    {student.graded ? `${student.score.code + student.score.func + student.score.doc}/100` : '-'}
-                  </td>
-                  <td className="teacherAssignTd gradeAssignTdCenter">
-                    <button
-                      className={`gradeAssignBtn ${student.status === 'Submitted' ? 'gradeAssignBtnActive' : 'gradeAssignBtnDisabled'}`}
-                      onClick={() => handleStudentSelect(student)}
-                    >
-                      {student.graded ? 'Edit Grade' : 'Grade'}
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {students.map(student => {
+                let displayScore = '-';
+                if (student.graded && student.score) {
+                  const { remark: _, ...scores } = student.score;
+                  const total = Object.values(scores).reduce((a, b) => Number(a) + Number(b), 0);
+                  // Calculate max possible from rubrics
+                  const maxTotal = Object.values(selectedAssignment.rubrics || {}).reduce((a, b) => Number(a) + Number(b), 0);
+                  displayScore = `${total}/${maxTotal}`;
+                }
+
+                return (
+                  <tr key={student.id}>
+                    <td className="teacherAssignTd gradeAssignTdLeft">
+                      {student.name}
+                    </td>
+                    <td className="teacherAssignTd gradeAssignTdCenter">
+                      <span className={student.status === 'Submitted' ? 'statusSubmitted statusBadge' : 'statusPending statusBadge'}>
+                        {student.status}
+                      </span>
+                    </td>
+                    <td className="teacherAssignTd gradeAssignTdCenterBold">
+                      {displayScore}
+                    </td>
+                    <td className="teacherAssignTd gradeAssignTdCenter">
+                      <button
+                        className={`gradeAssignBtn ${student.status === 'Submitted' ? 'gradeAssignBtnActive' : 'gradeAssignBtnDisabled'}`}
+                        onClick={() => handleStudentSelect(student)}
+                      >
+                        {student.graded ? 'Edit Grade' : 'Grade'}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
               {students.length === 0 && (
                 <tr>
                   <td colSpan="4" className="teacherAssignTd gradeAssignTdCenter" style={{ color: '#94a3b8' }}>
@@ -179,7 +191,8 @@ const GradeAssignment = () => {
     );
   }
 
-  const totalScore = Number(grades.code || 0) + Number(grades.func || 0) + Number(grades.doc || 0);
+  const totalScore = Object.values(gradeData).reduce((a, b) => Number(a) + Number(b), 0);
+  const maxTotalScore = Object.values(selectedAssignment.rubrics || {}).reduce((a, b) => Number(a) + Number(b), 0);
 
   return (
     <div className="card gradeAssignContainerSmall">
@@ -196,8 +209,7 @@ const GradeAssignment = () => {
         </p>
         <div className="fileInfoTextLast gradeAssignFileInfoRow">
           <span><strong>Submitted File:</strong> <code>{selectedStudent.file}</code></span>
-          {console.log("TEACHER DOWNLOAD HREF GENERATED:", `http://localhost:5000${selectedStudent.file.startsWith('/') ? '' : '/'}${selectedStudent.file}`)}
-          <a href={`http://localhost:5000${selectedStudent.file.startsWith('/') ? '' : '/'}${selectedStudent.file}`} download>
+          <a href={`http://localhost:5000${selectedStudent.file?.startsWith('/') ? '' : '/'}${selectedStudent.file}`} download>
             <button className="submitBtn publishBtn gradeAssignDownloadBtn">Download Work</button>
           </a>
         </div>
@@ -208,55 +220,34 @@ const GradeAssignment = () => {
           Evaluation Rubric
         </h4>
 
-        <div className="gradeAssignInputRow">
-          <label className=" gradeAssignInputLabel">Code Quality (Max: 25)</label>
-          <input
-            type="number"
-            className="input gradeAssignInputNumber"
-            name="code"
-            value={grades.code}
-            onChange={handleGradeChange}
-            min="0"
-            max="25"
-            required
-          />
-        </div>
-
-        <div className="gradeAssignInputRow">
-          <label className="gradeAssignInputLabel">Functionality (Max: 50)</label>
-          <input
-            type="number"
-            className="input gradeAssignInputNumber"
-            name="func"
-            value={grades.func}
-            onChange={handleGradeChange}
-            min="0"
-            max="50"
-            required
-          />
-        </div>
-
-        <div className="gradeAssignInputRow">
-          <label className="gradeAssignInputLabel">Documentation (Max: 25)</label>
-          <input
-            type="number"
-            className="input gradeAssignInputNumber"
-            name="doc"
-            value={grades.doc}
-            onChange={handleGradeChange}
-            min="0"
-            max="25"
-            required
-          />
-        </div>
+        {Object.entries(selectedAssignment.rubrics || {}).map(([criterion, maxPoints]) => (
+          <div key={criterion} className="gradeAssignInputRow">
+            <label className="gradeAssignInputLabel">
+              {criterion.charAt(0).toUpperCase() + criterion.slice(1)} (Max: {maxPoints})
+            </label>
+            <input
+              type="number"
+              className="input gradeAssignInputNumber"
+              value={gradeData[criterion] || ''}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val !== '' && Number(val) > Number(maxPoints)) return;
+                setGradeData({ ...gradeData, [criterion]: val });
+              }}
+              min="0"
+              max={maxPoints}
+              required
+            />
+          </div>
+        ))}
 
         <div className="gradeAssignInputRow" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
           <label className="gradeAssignInputLabel" style={{ marginBottom: '8px' }}>Instructor Remarks</label>
           <textarea
             className="input"
             name="remark"
-            value={grades.remark}
-            onChange={handleGradeChange}
+            value={remark}
+            onChange={(e) => setRemark(e.target.value)}
             placeholder="Add a remark (e.g., Well done!, Needs improvement in...)"
             style={{ width: '100%', minHeight: '80px', paddingTop: '10px' }}
           />
@@ -264,15 +255,16 @@ const GradeAssignment = () => {
 
         <div className="gradeAssignTotalBox">
           <strong className="gradeAssignTotalLabel">Calculated Total:</strong>
-          <strong className="gradeAssignTotalValue">{totalScore}/100</strong>
+          <strong className="gradeAssignTotalValue">{totalScore}/{maxTotalScore}</strong>
         </div>
 
         <button type="submit" className="submitBtn gradeAssignSubmitBtn">
           Submit Final Grades
         </button>
       </form>
-    </div >
+    </div>
   );
 };
 
 export default GradeAssignment;
+

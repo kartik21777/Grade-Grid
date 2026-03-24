@@ -54,6 +54,15 @@ const TeacherClasses = () => {
 
     const fileName = file ? file.name : "No file attached";
 
+    // Format criteria into rubrics object expected by backend
+    const rubricsObj = {};
+    criteria.forEach(c => {
+      const key = c.name.trim();
+      if (key !== '') {
+        rubricsObj[key] = Number(c.maxMarks) || 0;
+      }
+    });
+
     // Add to global state
     selectedClasses.forEach(clsName => {
       const cls = mockClasses.find(c => c.name === clsName);
@@ -64,7 +73,8 @@ const TeacherClasses = () => {
           classId: cls.id,
           dueDate: dueDate,
           dueTime: dueTime,
-          file: file
+          file: file,
+          rubrics: Object.keys(rubricsObj).length > 0 ? rubricsObj : undefined
         });
       }
     });
