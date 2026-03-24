@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useDataContext } from '../../context/DataContext';
 
 const StudentAssignments = () => {
-  const { getStudentAssignmentsByRoll, submitWork } = useDataContext();
+  const { currentUser, getStudentAssignmentsByRoll, submitWork } = useDataContext();
   const [selectedSubject, setSelectedSubject] = useState(null);
 
   // Derive assignments from context to ensure reactivity
-  const assignments = getStudentAssignmentsByRoll('CS-101');
+  const assignments = getStudentAssignmentsByRoll(currentUser.id);
 
   const isBeforeDue = (dueDate, dueTime) => {
     const due = new Date(`${dueDate}T${dueTime}`);
@@ -17,7 +17,7 @@ const StudentAssignments = () => {
     e.preventDefault();
     setTimeout(() => {
       // Update global state via context
-      submitWork(id, 'S1', 'submission.zip'); // Hardcoded S1 for now
+      submitWork(id, currentUser.id, 'submission.zip');
       
       alert(isUpdate ? 'Assignment updated successfully!' : 'Assignment submitted successfully!');
     }, 500);

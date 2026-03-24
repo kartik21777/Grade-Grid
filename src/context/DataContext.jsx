@@ -1,11 +1,22 @@
 import React, { createContext, useContext, useState, useMemo } from 'react';
 import { CLASSES, STUDENTS, ASSIGNMENTS as INITIAL_ASSIGNMENTS, SUBMISSIONS as INITIAL_SUBMISSIONS } from '../data/mockData';
 
+export const SUBJECTS = [
+  'Data Structures',
+  'Algorithms',
+  'Web Development',
+  'Database Management',
+  'Python',
+  'Operating Systems',
+  'Computer Networks'
+];
+
 const DataContext = createContext();
 
-export const DataProvider = ({ children }) => {
+export const DataProvider = ({ children, user }) => {
   const [assignments, setAssignments] = useState(INITIAL_ASSIGNMENTS);
   const [submissions, setSubmissions] = useState(INITIAL_SUBMISSIONS);
+  const currentUser = user;
 
   // Actions
   const addAssignment = (newAssignment) => {
@@ -181,8 +192,10 @@ export const DataProvider = ({ children }) => {
   };
 
   const value = {
+    currentUser,
     classes: CLASSES,
     students: STUDENTS,
+    subjects: SUBJECTS,
     assignments,
     submissions,
     facultyClasses,

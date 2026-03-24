@@ -1,8 +1,8 @@
 import { useDataContext } from '../../context/DataContext';
 
 const StudentResults = () => {
-  const { getStudentResultsByRoll } = useDataContext();
-  const results = getStudentResultsByRoll('CS-101');
+  const { currentUser, getStudentResultsByRoll } = useDataContext();
+  const results = getStudentResultsByRoll(currentUser.id);
 
   return (
     <div className="contentWrapper">

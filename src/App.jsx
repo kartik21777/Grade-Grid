@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import { USER_CREDENTIALS } from './data/mockData';
 import './index.css';
 import Login from './pages/Login';
 import StudentDashboard from './pages/StudentDashboard';
@@ -29,9 +30,10 @@ const App = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (credentials.id && credentials.password) {
-      const mockRole = credentials.id === '101' ? 'teacher' : 'student';
-      const newUser = { id: credentials.id, role: mockRole };
+    const userCreds = USER_CREDENTIALS[credentials.id];
+    
+    if (userCreds && userCreds.password === credentials.password) {
+      const newUser = { id: credentials.id, role: userCreds.role };
       setUser(newUser);
       setIsLoggedIn(true);
       
@@ -46,7 +48,7 @@ const App = () => {
   };
 
   return (
-    <DataProvider>
+    <DataProvider user={user}>
       {isLoggedIn ? (
         <Dashboard user={user} setIsLoggedIn={setIsLoggedIn}>
           <Routes>

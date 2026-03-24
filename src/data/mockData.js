@@ -4,6 +4,17 @@
  * It also exports derived structures to maintain compatibility with existing components.
  */
 
+export const USER_CREDENTIALS = {
+  '101': { password: 'password123', role: 'teacher' },
+  'CS-101': { password: 'password123', role: 'student' },
+  'CS-102': { password: 'password123', role: 'student' },
+  'IT-201': { password: 'password123', role: 'student' },
+  'IT-202': { password: 'password123', role: 'student' },
+  'CS-103': { password: 'password123', role: 'student' },
+  'CS-104': { password: 'password123', role: 'student' },
+  'CS-105': { password: 'password123', role: 'student' }
+};
+
 // Base Data: Classes
 export const CLASSES = [
   { id: 1, name: 'Year 2 - CSE A' },

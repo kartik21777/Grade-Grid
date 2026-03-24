@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useDataContext } from '../../context/DataContext';
 
 const TeacherClasses = () => {
-  const { classes: mockClasses, addAssignment } = useDataContext();
+  const { classes: mockClasses, subjects, addAssignment } = useDataContext();
   const [step, setStep] = useState(1);
-  const [subject, setSubject] = useState('');
+  const [assignmentName, setAssignmentName] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [dueTime, setDueTime] = useState('');
   const [file, setFile] = useState(null);
@@ -15,8 +16,8 @@ const TeacherClasses = () => {
 
   const handleNextStep = (e) => {
     e.preventDefault();
-    if (!dueDate) {
-      alert("Please select a due date before continuing.");
+    if (!assignmentName || !selectedSubject || !dueDate || !dueTime) {
+      alert("Please fill all fields before continuing.");
       return;
     }
     setStep(2);
@@ -51,7 +52,6 @@ const TeacherClasses = () => {
       return;
     }
 
-
     const fileName = file ? file.name : "No file attached";
 
     // Add to global state
@@ -59,8 +59,8 @@ const TeacherClasses = () => {
       const cls = mockClasses.find(c => c.name === clsName);
       if (cls) {
         addAssignment({
-          title: fileName,
-          subject: subject,
+          title: assignmentName,
+          subject: selectedSubject,
           classId: cls.id,
           dueDate: dueDate,
           dueTime: dueTime
@@ -68,10 +68,11 @@ const TeacherClasses = () => {
       }
     });
 
-    alert(`Success! Assignment "${fileName}" for "${subject}" assigned to:\n${selectedClasses.join('\n')}\n\nCriteria:\n${criteria.map(c => `- ${c.name} (${c.maxMarks} marks)`).join('\n')}`);
+    alert(`Success! Assignment "${assignmentName}" for "${selectedSubject}" assigned to:\n${selectedClasses.join('\n')}\n\nCriteria:\n${criteria.map(c => `- ${c.name} (${c.maxMarks} marks)`).join('\n')}`);
 
     setStep(1);
-    setSubject('');
+    setAssignmentName('');
+    setSelectedSubject('');
     setDueDate('');
     setDueTime('');
     setFile(null);
@@ -88,16 +89,32 @@ const TeacherClasses = () => {
         </p>
 
         <form onSubmit={handleNextStep} className="form">
-          <div>
-            <label className="teacherClassesLabel">Subject:</label>
+          <div className="formGroup">
+            <label className="teacherClassesLabel">Assignment Name:</label>
             <input
               type="text"
               className="input"
-              placeholder="e.g. Data Structures"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
+              placeholder="e.g. Data Structures Lab 3"
+              value={assignmentName}
+              onChange={(e) => setAssignmentName(e.target.value)}
               required
             />
+          </div>
+
+          <div className="formGroup">
+            <label className="teacherClassesLabel">Subject:</label>
+            <select
+              className="input"
+              value={selectedSubject}
+              onChange={(e) => setSelectedSubject(e.target.value)}
+              required
+              style={{ color: 'white', backgroundColor: '#1c2534' }}
+            >
+              <option value="" disabled>Select a subject</option>
+              {subjects.map(subj => (
+                <option key={subj} value={subj} style={{ color: 'white' }}>{subj}</option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -188,10 +205,13 @@ const TeacherClasses = () => {
 
       <div className="fileInfoBox">
         <p>
-          <strong>File:</strong> {file ? file.name : <span className="errorText">None attached</span>}
+          <strong>Name:</strong> {assignmentName || <span className="errorText">Not named</span>}
         </p>
         <p>
-          <strong>Subject:</strong> {subject || <span className="errorText">Not specified</span>}
+          <strong>Subject:</strong> {selectedSubject || <span className="errorText">Not specified</span>}
+        </p>
+        <p>
+          <strong>File:</strong> {file ? file.name : <span className="errorText">None attached</span>}
         </p>
         <p>
           <strong>Due:</strong> {dueDate} at {dueTime}
