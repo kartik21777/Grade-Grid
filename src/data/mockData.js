@@ -53,14 +53,14 @@ export const STUDENTS = [
 // Base Data: Assignments
 export const ASSIGNMENTS = [
   // Class 1
-  { id: 101, title: 'Data Structures Lab 3', subject: 'Data Structures', classId: 1, dueDate: '2026-03-20', dueTime: '23:59' },
-  { id: 102, title: 'Data Structures Midterm', subject: 'Data Structures', classId: 1, dueDate: '2026-03-25', dueTime: '12:00' },
-  { id: 103, title: 'Assignment 3', subject: 'Data Structures', classId: 1, dueDate: '2026-04-01', dueTime: '23:59' },
+  { id: 101, title: 'Data Structures Lab 3', subject: 'Data Structures', classId: 1, dueDate: '2026-03-20', dueTime: '23:59', file: '/uploads/assignments/lab3_template.pdf' },
+  { id: 102, title: 'Data Structures Midterm', subject: 'Data Structures', classId: 1, dueDate: '2026-03-25', dueTime: '12:00', file: '/uploads/assignments/midterm_rules.pdf' },
+  { id: 103, title: 'Assignment 3', subject: 'Data Structures', classId: 1, dueDate: '2026-04-01', dueTime: '23:59', file: '/uploads/assignments/assignment3.pdf' },
   // Class 2
-  { id: 201, title: 'Web Dev Mini Project', subject: 'Web Development', classId: 2, dueDate: '2026-03-22', dueTime: '23:59' },
-  { id: 202, title: 'Database Design', subject: 'Database Management', classId: 2, dueDate: '2026-03-25', dueTime: '23:59' },
+  { id: 201, title: 'Web Dev Mini Project', subject: 'Web Development', classId: 2, dueDate: '2026-03-22', dueTime: '23:59', file: '/uploads/assignments/mini_project.zip' },
+  { id: 202, title: 'Database Design', subject: 'Database Management', classId: 2, dueDate: '2026-03-25', dueTime: '23:59', file: '/uploads/assignments/db_schema_guide.pdf' },
   // Class 3
-  { id: 301, title: 'Intro to Python Assignment 1', subject: 'Python', classId: 3, dueDate: '2026-03-24', dueTime: '10:00' }
+  { id: 301, title: 'Intro to Python Assignment 1', subject: 'Python', classId: 3, dueDate: '2026-03-24', dueTime: '10:00', file: '/uploads/assignments/python_basics.pdf' }
 ];
 
 // Base Data: Submissions and Grades (Added Dates, Feedback, and Ungraded Scenarios)

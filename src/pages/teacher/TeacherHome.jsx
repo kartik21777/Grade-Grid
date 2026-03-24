@@ -82,10 +82,8 @@ const TeacherHome = () => {
             className="card" 
             style={{ 
               padding: 24, 
-              cursor: 'pointer',
               borderBottom: `3px solid ${card.color}`
             }}
-            onClick={() => navigate(card.path)}
           >
             <div style={{ fontSize: 24, marginBottom: 12 }}>{card.icon}</div>
             <div style={{ color: '#8892b0', fontSize: 13, fontWeight: 500, marginBottom: 4 }}>{card.label}</div>

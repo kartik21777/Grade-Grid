@@ -12,6 +12,7 @@ import Class from './models/Class.model.js';
 import Student from './models/Student.model.js';
 import Assignment from './models/Assignment.model.js';
 import Score from './models/Score.model.js';
+import Note from './models/Note.model.js';
 
 dotenv.config();
 
@@ -25,9 +26,11 @@ app.use(express.json());
 // Setup file uploads
 const assignmentsDir = path.join(__dirname, 'uploads', 'assignments');
 const submissionsDir = path.join(__dirname, 'uploads', 'submissions');
+const notesDir = path.join(__dirname, 'uploads', 'notes');
 
 if (!fs.existsSync(assignmentsDir)) fs.mkdirSync(assignmentsDir, { recursive: true });
 if (!fs.existsSync(submissionsDir)) fs.mkdirSync(submissionsDir, { recursive: true });
+if (!fs.existsSync(notesDir)) fs.mkdirSync(notesDir, { recursive: true });
 
 // Serve uploaded files statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -36,6 +39,8 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     if (req.originalUrl.includes('/api/assignments')) {
       cb(null, assignmentsDir);
+    } else if (req.originalUrl.includes('/api/notes')) {
+      cb(null, notesDir);
     } else {
       cb(null, submissionsDir);
     }
@@ -43,6 +48,8 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const cleanName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
     if (req.originalUrl.includes('/api/assignments')) {
+      cb(null, `${Date.now()}-${cleanName}`);
+    } else if (req.originalUrl.includes('/api/notes')) {
       cb(null, `${Date.now()}-${cleanName}`);
     } else {
       const { studentId, assignmentId } = req.params;
@@ -58,11 +65,12 @@ connectDB();
 // 1. GET /api/data - Fetch all initial data using Promise.all
 app.get('/api/data', async (req, res) => {
   try {
-    const [classes, students, assignments, scores] = await Promise.all([
+    const [classes, students, assignments, scores, notes] = await Promise.all([
       Class.find({}).lean(),
       Student.find({}).lean(),
       Assignment.find({}).lean(),
-      Score.find({}).populate('studentId', 'name originalId').lean()
+      Score.find({}).populate('studentId', 'name originalId').lean(),
+      Note.find({}).lean()
     ]);
 
     const mappedClasses = classes.map(c => ({
@@ -135,7 +143,15 @@ app.get('/api/data', async (req, res) => {
       classes: mappedClasses,
       students: mappedStudents,
       assignments: mappedAssignments,
-      submissions: mappedSubmissions
+      submissions: mappedSubmissions,
+      notes: notes.map(n => {
+        const cls = classes.find(c => c._id.toString() === n.classId?.toString());
+        return {
+          ...n,
+          id: n._id.toString(),
+          classId: cls ? (cls.originalId ? cls.originalId.toString() : cls._id.toString()) : null
+        };
+      })
     });
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -257,6 +273,36 @@ app.put('/api/submissions/:studentId/:assignmentId', upload.single('file'), asyn
   } catch (error) {
     console.error("PUT Error", error);
     res.status(500).json({ message: 'Server error updating submission' });
+  }
+});
+
+// 4. POST /api/notes
+app.post('/api/notes', upload.single('file'), async (req, res) => {
+  try {
+    const { title, subject, classId } = req.body;
+    const cls = await Class.findOne({ originalId: classId });
+    const filePath = req.file ? `/uploads/notes/${req.file.filename}` : null;
+
+    const newNote = new Note({
+      title,
+      subject,
+      classId: cls ? cls._id : null,
+      file: filePath,
+      date: new Date().toLocaleDateString('en-GB') // DD/MM/YYYY
+    });
+
+    await newNote.save();
+    
+    const mappedNote = {
+      ...newNote.toObject(),
+      id: newNote._id.toString(),
+      classId: classId // return originalId to match frontend
+    };
+
+    res.status(201).json({ message: 'Note shared successfully', note: mappedNote });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error sharing note' });
   }
 });
 

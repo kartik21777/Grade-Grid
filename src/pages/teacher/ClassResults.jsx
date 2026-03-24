@@ -8,15 +8,9 @@ const ClassResults = () => {
   const currentData = selectedClass ? classData[selectedClass.id] : null;
 
   const calculateAggregate = (scores) => {
-    let total = 0;
-    let count = 0;
-    scores.forEach(s => {
-      if (s !== null) {
-        total += s;
-        count += 1;
-      }
-    });
-    return count === 0 ? '-' : (total / count).toFixed(2);
+    if (!scores || scores.length === 0) return '-';
+    const total = scores.reduce((sum, s) => sum + (s?.value || 0), 0);
+    return (total / scores.length).toFixed(2);
   };
 
   const downloadCSV = () => {
@@ -29,7 +23,11 @@ const ClassResults = () => {
     currentData.students.forEach(student => {
       const row = [
         student.name,
-        ...student.scores.map(s => s === null ? "Pending" : s),
+        ...student.scores.map(s => {
+          if (s.status === 'Graded') return s.value;
+          if (s.status === 'Missed') return "0 (Missed)";
+          return "0 (Pending)";
+        }),
         calculateAggregate(student.scores)
       ];
       csvContent += row.join(",") + "\r\n";
@@ -112,11 +110,24 @@ const ClassResults = () => {
                   <td className="teacherAssignTd gradeAssignTdLeft" style={{ fontWeight: 'bold' }}>
                     {student.name}
                   </td>
-                  {student.scores.map((score, sIdx) => (
-                    <td key={sIdx} className="teacherAssignTd gradeAssignTdCenter">
-                      {score === null ? <span style={{ color: '#94a3b8' }}>Pending</span> : score}
-                    </td>
-                  ))}
+                  {student.scores.map((scoreObj, sIdx) => {
+                    const { value, status } = scoreObj;
+                    if (status === 'Graded') return (
+                      <td key={sIdx} className="teacherAssignTd gradeAssignTdCenter">
+                        {value}
+                      </td>
+                    );
+                    if (status === 'Missed') return (
+                      <td key={sIdx} className="teacherAssignTd gradeAssignTdCenter" style={{ color: '#ef4444' }}>
+                        0
+                      </td>
+                    );
+                    return (
+                      <td key={sIdx} className="teacherAssignTd gradeAssignTdCenter" style={{ color: '#94a3b8' }}>
+                        0 <small>(P)</small>
+                      </td>
+                    );
+                  })}
                   <td className="teacherAssignTd gradeAssignTdCenterBold" style={{ backgroundColor: 'rgba(59, 130, 246, 0.05)', color: '#60a5fa' }}>
                     {agg}{agg !== '-' ? '%' : ''}
                   </td>

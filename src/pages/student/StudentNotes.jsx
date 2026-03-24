@@ -21,7 +21,7 @@ const NoteCard = ({ note }) => {
         <button 
           className="submitBtn uploadBtn" 
           style={{ width: '100%', background: 'linear-gradient(135deg, #a855f7, #7e22ce)' }}
-          onClick={() => alert(`Opening "${note.file}"...`)}
+          onClick={() => window.open(`http://localhost:5000${note.file}`, '_blank')}
         >
           View / Download Notes
         </button>

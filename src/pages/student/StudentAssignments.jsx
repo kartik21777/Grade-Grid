@@ -27,6 +27,28 @@ const AssignmentCard = ({ assignment, isBeforeDue, onSubmit }) => {
           <p className="studentCardDue">
             <strong>Due:</strong> {assignment.dueDate} at {assignment.dueTime}
           </p>
+          {assignment.teacherFile && (
+            <div style={{ marginTop: '10px' }}>
+              <button 
+                onClick={() => window.open(`http://localhost:5000${assignment.teacherFile}`, '_blank')}
+                style={{
+                  background: 'rgba(66, 202, 179, 0.1)',
+                  color: '#42cab3ff',
+                  border: '1px solid rgba(66, 202, 179, 0.3)',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <span>📥</span> Download Assignment
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="studentCardMeta">
@@ -59,6 +81,7 @@ const AssignmentCard = ({ assignment, isBeforeDue, onSubmit }) => {
               id={`file-${assignment.id}`}
               type="file" 
               className="hidden-file-input" 
+              accept=".pdf"
               onChange={handleFileChange}
               required 
             />

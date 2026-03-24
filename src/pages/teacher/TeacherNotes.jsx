@@ -28,30 +28,29 @@ const TeacherNotes = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (selectedClasses.length === 0) {
       alert("Please select at least one class to share these notes with.");
       return;
     }
 
-    const fileName = file ? file.name : "No file attached";
-
-    // Add to global state
-    selectedClasses.forEach(clsName => {
+    // Add to global state (sequentially or in parallel)
+    const sharePromises = selectedClasses.map(clsName => {
       const cls = mockClasses.find(c => c.name === clsName);
       if (cls) {
-        addNotes({
+        return addNotes({
           title: notesName,
           subject: selectedSubject,
           classId: cls.id,
-          file: fileName
+          file: file // Passing the File object
         });
       }
+      return Promise.resolve();
     });
 
-    alert(`Success! Notes "${notesName}" for "${selectedSubject}" shared with:\n${selectedClasses.join('\n')}`);
+    await Promise.all(sharePromises);
 
-    // Reset form
+    // Reset form after successful share (or if at least one attempt was made)
     setStep(1);
     setNotesName('');
     setSelectedSubject('');
@@ -101,6 +100,7 @@ const TeacherNotes = () => {
             <input
               type="file"
               className="input"
+              accept=".pdf"
               onChange={(e) => setFile(e.target.files[0])}
               required
             />

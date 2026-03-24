@@ -59,10 +59,7 @@ const StudentHome = () => {
           <div
             key={card.label}
             className="card"
-            onClick={() => navigate(card.path)}
-            style={{ cursor: 'pointer', padding: '20px', textAlign: 'center', borderTop: `3px solid ${card.color}`, transition: 'transform 0.15s' }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+            style={{ padding: '20px', textAlign: 'center', borderTop: `3px solid ${card.color}` }}
           >
             <div style={{ fontSize: 28, marginBottom: 8 }}>{card.icon}</div>
             <div style={{ color: card.color, fontSize: 30, fontWeight: 'bold' }}>{card.value}</div>
@@ -72,10 +69,7 @@ const StudentHome = () => {
         {overall !== null && (
           <div
             className="card"
-            onClick={() => navigate('/student/results')}
-            style={{ cursor: 'pointer', padding: '20px', textAlign: 'center', borderTop: '3px solid #42cab3ff', transition: 'transform 0.15s' }}
-            onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
-            onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
+            style={{ padding: '20px', textAlign: 'center', borderTop: '3px solid #42cab3ff' }}
           >
             <div style={{ fontSize: 28, marginBottom: 8 }}>📊</div>
             <div style={{ color: '#42cab3ff', fontSize: 30, fontWeight: 'bold' }}>{overall}%</div>

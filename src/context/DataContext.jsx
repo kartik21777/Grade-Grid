@@ -19,7 +19,7 @@ export const DataProvider = ({ children, user }) => {
   const [students, setStudents] = useState([]);
   const [assignments, setAssignments] = useState([]);
   const [submissions, setSubmissions] = useState([]);
-  const [notes, setNotes] = useState(NOTES || []);
+  const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const currentUser = user;
   const calculateTotal = (score) => {
@@ -39,6 +39,7 @@ export const DataProvider = ({ children, user }) => {
         setStudents(data.students || []);
         setAssignments(data.assignments || []);
         setSubmissions(data.submissions || []);
+        setNotes(data.notes || []);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -169,6 +170,9 @@ export const DataProvider = ({ children, user }) => {
   const facultyClasses = useMemo(() => classes, [classes]);
 
   const classData = useMemo(() => {
+    const now = new Date();
+    const isBeforeDue = (dueDate, dueTime) => new Date(`${dueDate}T${dueTime}`) > now;
+
     return classes.reduce((acc, cls) => {
       const clsAssignments = assignments.filter(a => a.classId == cls.id);
       const clsStudents = students.filter(s => s.classId == cls.id);
@@ -179,11 +183,18 @@ export const DataProvider = ({ children, user }) => {
           const studentSubmissions = submissions.filter(s => String(s.studentId) === String(student.id));
           const scores = clsAssignments.map(assignment => {
             const sub = studentSubmissions.find(s => String(s.assignmentId) === String(assignment.id));
-            // Use the helper here!
+            
             if (sub && sub.graded && sub.score) {
-              return calculateTotal(sub.score);
+              return { value: calculateTotal(sub.score), status: 'Graded' };
             }
-            return null;
+
+            const isSubmitted = sub && sub.status === 'Submitted';
+            const isMissed = !isSubmitted && !isBeforeDue(assignment.dueDate, assignment.dueTime);
+            
+            return { 
+              value: 0, 
+              status: isMissed ? 'Missed' : 'Pending' 
+            };
           });
           return { name: student.name, scores };
         })
@@ -273,7 +284,8 @@ export const DataProvider = ({ children, user }) => {
         dueDate: a.dueDate,
         dueTime: a.dueTime,
         submitted: sub ? sub.status === 'Submitted' : false,
-        submissionDate: sub ? (sub.submissionDate || '2026-03-20') : null
+        submissionDate: sub ? (sub.submissionDate || '2026-03-20') : null,
+        teacherFile: a.file
       };
     });
   };
@@ -288,33 +300,64 @@ export const DataProvider = ({ children, user }) => {
     }));
   };
 
-  const addNotes = (newNote) => {
-    // Basic mock implementation array push
-    setNotes(prev => [...prev, { ...newNote, id: Date.now() }]);
+  const addNotes = async (noteData) => {
+    try {
+      const formData = new FormData();
+      formData.append('title', noteData.title);
+      formData.append('subject', noteData.subject);
+      formData.append('classId', noteData.classId);
+      formData.append('file', noteData.file); // The actual File object
+
+      const res = await fetch('http://localhost:5000/api/notes', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setNotes(prev => [...prev, data.note]);
+        alert('Notes shared successfully!');
+      } else {
+        alert('Failed to share notes: ' + data.message);
+      }
+    } catch (error) {
+      console.error("Error adding notes:", error);
+      alert('Error connecting to server while sharing notes.');
+    }
   };
 
   const getStudentResultsByRoll = (rollNo) => {
     const student = students.find(s => s.rollNo === rollNo);
     if (!student) return [];
 
-    const studentSubmissions = submissions.filter(s => String(s.studentId) === String(student.id) && s.graded);
+    const now = new Date();
+    const isBeforeDue = (dueDate, dueTime) => new Date(`${dueDate}T${dueTime}`) > now;
 
-    return studentSubmissions.map(sub => {
-      const assignment = assignments.find(a => String(a.id) === String(sub.assignmentId));
-      const assignmentRubric = assignment?.rubrics || {};
+    // Filter assignments for the student's class
+    const studentAssignments = assignments.filter(a => String(a.classId) === String(student.classId));
+
+    return studentAssignments.map(assignment => {
+      const sub = submissions.find(s => String(s.studentId) === String(student?.id) && String(s.assignmentId) === String(assignment.id));
+      const assignmentRubric = assignment?.rubrics || { code: 25, func: 50, doc: 25 };
+
+      const isSubmitted = sub && sub.status === 'Submitted';
+      const isGraded = sub && sub.graded && sub.score;
+      const isMissed = !isSubmitted && !isBeforeDue(assignment.dueDate, assignment.dueTime);
+
+      const obtainedScore = isGraded ? sub.score : null;
 
       return {
-        id: sub.assignmentId,
-        title: assignment?.title || 'Unknown Assignment',
-        subject: assignment?.subject || 'General',
-        course: classes.find(c => String(c.id) === String(assignment?.classId))?.name || 'Unknown',
-        checkedDate: sub.submissionDate || '2026-03-24',
-        feedback: sub.feedback || 'Graded successfully.',
+        id: assignment.id,
+        title: assignment.title || 'Unknown Assignment',
+        subject: assignment.subject || 'General',
+        course: classes.find(c => String(c.id) === String(assignment.classId))?.name || 'Unknown',
+        checkedDate: sub?.submissionDate || (isMissed ? 'N/A' : 'TBD'),
+        feedback: isMissed ? 'Deadline missed' : (sub?.feedback || (isGraded ? 'Graded successfully.' : 'Pending Grade')),
         totalMarks: calculateTotal(assignmentRubric),
-        obtainedMarks: calculateTotal(sub.score),
+        obtainedMarks: isGraded ? calculateTotal(obtainedScore) : 0,
+        isMissed,
         criteria: Object.keys(assignmentRubric).map(key => ({
           name: key.charAt(0).toUpperCase() + key.slice(1),
-          marks: sub.score?.[key] || 0,
+          marks: obtainedScore?.[key] || 0,
           max: assignmentRubric[key]
         }))
       };

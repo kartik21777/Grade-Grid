@@ -133,6 +133,7 @@ const TeacherClasses = () => {
             <input
               type="file"
               className="input"
+              accept=".pdf"
               onChange={(e) => setFile(e.target.files[0])}
               required
             />
