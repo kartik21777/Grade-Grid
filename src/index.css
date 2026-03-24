@@ -751,6 +751,121 @@ body {
   box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
 }
 
+/* Premium Dashboard Buttons */
+.dash-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.dash-btn-primary {
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: white;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.dash-btn-primary:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(168, 85, 247, 0.4);
+  filter: brightness(1.1);
+}
+
+.dash-btn-secondary {
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(8px);
+  color: #f8fafc;
+}
+
+.dash-btn-secondary:hover {
+  background: rgba(51, 65, 85, 0.8);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.dash-btn-urgent {
+  background: linear-gradient(135deg, #f43f5e, #fb7185);
+  color: white;
+  box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
+}
+
+.dash-btn-urgent:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 25px rgba(244, 63, 94, 0.4);
+}
+
+.dash-btn-small {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  border-radius: 8px;
+}
+
+.dash-btn:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Custom File Upload Styling */
+.file-upload-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
+  width: 100%;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+
+.file-upload-wrapper:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.file-upload-label {
+  background: #f1f5f9;
+  color: #0f172a;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.file-upload-label:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+}
+
+.file-name-display {
+  color: black;
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-name-display.has-file {
+  color: black;
+  font-weight: 500;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
 .backBtnOutline {
   background: rgba(255, 255, 255, 0.1);
   color: #f8fafc;
@@ -765,7 +880,6 @@ body {
 .backBtnOutline:hover {
   background: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
-
 }
 
 .publishBtn {

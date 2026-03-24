@@ -1,6 +1,80 @@
 import React, { useState } from 'react';
 import { useDataContext } from '../../context/DataContext';
 
+const AssignmentCard = ({ assignment, isBeforeDue, onSubmit }) => {
+  const [file, setFile] = useState(null);
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    if (!file) {
+      alert("Please select a file first.");
+      return;
+    }
+    onSubmit(assignment.id, file, assignment.submitted);
+    // Optionally reset file after submission, but alert happens in parent
+  };
+
+  return (
+    <div className="card studentCard" style={{ width: '100%', boxSizing: 'border-box' }}>
+      <div className="studentCardHeader">
+        <div>
+          <h3 className="studentCardTitle">{assignment.title}</h3>
+          <p className="studentCardCourse"><strong>Course:</strong> {assignment.course}</p>
+          <p className="studentCardDue">
+            <strong>Due:</strong> {assignment.dueDate} at {assignment.dueTime}
+          </p>
+        </div>
+
+        <div className="studentCardMeta">
+          <span className={`statusBadge ${assignment.submitted ? 'statusSubmitted' : (!isBeforeDue(assignment.dueDate, assignment.dueTime) ? 'statusLate' : 'statusPending')}`}>
+            {assignment.submitted ? 'Submitted' : (!isBeforeDue(assignment.dueDate, assignment.dueTime) ? 'Late' : 'Pending')}
+          </span>
+
+          {assignment.submitted && (
+            <p className="submissionDate">
+              on {assignment.submissionDate}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {(isBeforeDue(assignment.dueDate, assignment.dueTime)) && (
+        <form onSubmit={handleFormSubmit} className="submitWorkForm">
+          <h4 className="submitWorkTitle" style={{ color: 'black' }}>
+            {assignment.submitted ? 'Update Submission' : 'Submit Work'}
+          </h4>
+          
+          <div className="file-upload-wrapper">
+            <label htmlFor={`file-${assignment.id}`} className="file-upload-label">
+              Choose File
+            </label>
+            <span className={`file-name-display ${file ? 'has-file' : ''}`}>
+              {file ? file.name : 'No file chosen'}
+            </span>
+            <input 
+              id={`file-${assignment.id}`}
+              type="file" 
+              className="hidden-file-input" 
+              onChange={handleFileChange}
+              required 
+            />
+          </div>
+
+          <div className="submitWorkControls">
+            <button type="submit" className="submitBtn uploadBtn" style={{ width: '100%' }}>
+              {assignment.submitted ? 'Update' : 'Upload'}
+            </button>
+          </div>
+        </form>
+      )}
+    </div>
+  );
+};
+
 const StudentAssignments = () => {
   const { currentUser, getStudentAssignmentsByRoll, submitWork } = useDataContext();
   const [selectedSubject, setSelectedSubject] = useState(null);
@@ -13,22 +87,11 @@ const StudentAssignments = () => {
     return new Date() < due;
   };
 
-  const handleSubmit = (id, e, isUpdate) => {
-    e.preventDefault();
-    const fileInput = e.target.querySelector('input[type="file"]');
-    const selectedFile = fileInput?.files[0];
-    
-    if (!selectedFile) {
-      alert("Please select a file first.");
-      return;
-    }
-
+  const handleAssignmentSubmit = (id, selectedFile, isUpdate) => {
+    // Artificial delay to match previous UX
     setTimeout(() => {
-      // Pass the actual File object instead of a string
       submitWork(id, currentUser.id, selectedFile);
-      
       alert(isUpdate ? 'Assignment updated successfully!' : 'Assignment submitted successfully!');
-      e.target.reset();
     }, 500);
   };
 
@@ -108,43 +171,12 @@ const StudentAssignments = () => {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         {filteredAssignments.map(assignment => (
-          <div key={assignment.id} className="card studentCard" style={{ width: '100%', boxSizing: 'border-box' }}>
-            <div className="studentCardHeader">
-              <div>
-                <h3 className="studentCardTitle">{assignment.title}</h3>
-                <p className="studentCardCourse"><strong>Course:</strong> {assignment.course}</p>
-                <p className="studentCardDue">
-                  <strong>Due:</strong> {assignment.dueDate} at {assignment.dueTime}
-                </p>
-              </div>
-
-              <div className="studentCardMeta">
-                <span className={`statusBadge ${assignment.submitted ? 'statusSubmitted' : (!isBeforeDue(assignment.dueDate, assignment.dueTime) ? 'statusLate' : 'statusPending')}`}>
-                  {assignment.submitted ? 'Submitted' : (!isBeforeDue(assignment.dueDate, assignment.dueTime) ? 'Late' : 'Pending')}
-                </span>
-
-                {assignment.submitted && (
-                  <p className="submissionDate">
-                    on {assignment.submissionDate}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {(isBeforeDue(assignment.dueDate, assignment.dueTime)) && (
-              <form onSubmit={(e) => handleSubmit(assignment.id, e, assignment.submitted)} className="submitWorkForm">
-                <h4 className="submitWorkTitle" style={{ color: 'black' }}>
-                  {assignment.submitted ? 'Update Submission' : 'Submit Work'}
-                </h4>
-                <div className="submitWorkControls">
-                  <input type="file" className="fileInput zeroMarginFlex" required />
-                  <button type="submit" className="submitBtn uploadBtn">
-                    {assignment.submitted ? 'Update' : 'Upload'}
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
+          <AssignmentCard 
+            key={assignment.id} 
+            assignment={assignment} 
+            isBeforeDue={isBeforeDue} 
+            onSubmit={handleAssignmentSubmit} 
+          />
         ))}
         {filteredAssignments.length === 0 && (
           <p>No assignments currently pending.</p>

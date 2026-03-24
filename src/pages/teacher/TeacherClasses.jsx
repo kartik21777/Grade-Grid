@@ -118,7 +118,7 @@ const TeacherClasses = () => {
             </select>
           </div>
 
-          <div>
+          <div className="formGroup">
             <label className="teacherClassesLabel">Assignment File:</label>
             <input
               type="file"

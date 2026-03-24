@@ -128,10 +128,11 @@ const TeacherHome = () => {
                       <div style={{ color: '#8892b0', fontSize: 12 }}>{assignment?.title || 'Unknown Assignment'}</div>
                     </div>
                     <button 
-                      className="filterBtn" 
-                      style={{ padding: '4px 12px', fontSize: 11 }}
+                      className="dash-btn dash-btn-secondary dash-btn-small" 
                       onClick={() => navigate('/teacher/grade-assignment')}
-                    >Grade Now</button>
+                    >
+                      <span>📝</span> Grade Now
+                    </button>
                   </div>
                 );
               })}
@@ -150,10 +151,28 @@ const TeacherHome = () => {
           {/* Quick Actions */}
           <div className="card" style={{ padding: 24 }}>
             <h3 style={{ color: 'white', fontSize: 18, marginBottom: 20 }}>⚡ Quick Actions</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <button className="submitBtn" style={{ width: '100%' }} onClick={() => navigate('/teacher/classes')}>New Assignment</button>
-              <button className="filterBtn" style={{ width: '100%' }} onClick={() => navigate('/teacher/notes')}>Upload Notes</button>
-              <button className="filterBtn" style={{ width: '100%' }} onClick={() => navigate('/teacher/search-student')}>Search Student</button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <button 
+                className="dash-btn dash-btn-primary" 
+                style={{ width: '100%', justifyContent: 'flex-start' }} 
+                onClick={() => navigate('/teacher/classes')}
+              >
+                <span>➕</span> New Assignment
+              </button>
+              <button 
+                className="dash-btn dash-btn-secondary" 
+                style={{ width: '100%', justifyContent: 'flex-start' }} 
+                onClick={() => navigate('/teacher/notes')}
+              >
+                <span>📂</span> Upload Notes
+              </button>
+              <button 
+                className="dash-btn dash-btn-secondary" 
+                style={{ width: '100%', justifyContent: 'flex-start' }} 
+                onClick={() => navigate('/teacher/search-student')}
+              >
+                <span>🔍</span> Search Student
+              </button>
             </div>
           </div>
 
