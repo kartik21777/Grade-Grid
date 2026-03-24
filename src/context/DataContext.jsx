@@ -83,7 +83,16 @@ export const DataProvider = ({ children, user }) => {
 
   const updateSubmission = async (assignmentId, studentId, gradeData) => {
     try {
-      const payload = { graded: true, status: 'Submitted', score: gradeData };
+      const { remark, feedback: gradeFeedback, ...scoreObj } = gradeData;
+      const feedbackMessage = remark || gradeFeedback;
+
+      const payload = { 
+        graded: true, 
+        status: 'Submitted', 
+        score: scoreObj,
+        ...(feedbackMessage && { feedback: feedbackMessage })
+      };
+      
       const res = await fetch(`http://localhost:5000/api/submissions/${studentId}/${assignmentId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },

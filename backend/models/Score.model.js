@@ -7,6 +7,7 @@ const scoreSchema = new mongoose.Schema({
   file: { type: String },
   graded: { type: Boolean, default: false },
   score: { type: mongoose.Schema.Types.Mixed },
+  feedback: { type: String },
   submissionDate: { type: String }
 }, { timestamps: true });
 
