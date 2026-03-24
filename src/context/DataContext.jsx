@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
+import { NOTES } from '../data/mockData';
 
 // SUBJECTS can remain static since it's just strings
 const SUBJECTS = [
@@ -18,6 +19,7 @@ export const DataProvider = ({ children, user }) => {
   const [students, setStudents] = useState([]);
   const [assignments, setAssignments] = useState([]);
   const [submissions, setSubmissions] = useState([]);
+  const [notes, setNotes] = useState(NOTES || []);
   const [loading, setLoading] = useState(true);
   const currentUser = user;
 
@@ -28,7 +30,7 @@ export const DataProvider = ({ children, user }) => {
       try {
         const res = await fetch('http://localhost:5000/api/data');
         const data = await res.json();
-        
+
         setClasses(data.classes || []);
         setStudents(data.students || []);
         setAssignments(data.assignments || []);
@@ -54,7 +56,7 @@ export const DataProvider = ({ children, user }) => {
       formData.append('dueDate', newAssignment.dueDate);
       formData.append('dueTime', newAssignment.dueTime);
       formData.append('rubrics', JSON.stringify(newAssignment.rubrics || { code: 25, func: 50, doc: 25 }));
-      
+
       if (newAssignment.file) {
         formData.append('file', newAssignment.file);
       }
@@ -64,7 +66,7 @@ export const DataProvider = ({ children, user }) => {
         body: formData
       });
       const data = await res.json();
-      
+
       // Update local state to immediately reflect the change
       if (data.newAssignment) {
         setAssignments(prev => [...prev, data.newAssignment]);
@@ -84,7 +86,7 @@ export const DataProvider = ({ children, user }) => {
         body: JSON.stringify(payload)
       });
       const data = await res.json();
-      
+
       if (res.ok && data.updatedScore) {
         setSubmissions(prev => {
           const existingIdx = prev.findIndex(s => s.assignmentId == assignmentId && s.studentId == studentId);
@@ -108,7 +110,7 @@ export const DataProvider = ({ children, user }) => {
       const formData = new FormData();
       formData.append('status', 'Submitted');
       formData.append('submissionDate', submissionDate);
-      
+
       if (typeof fileOrString === 'object' && fileOrString !== null) {
         formData.append('file', fileOrString);
       } else {
@@ -117,10 +119,10 @@ export const DataProvider = ({ children, user }) => {
 
       const res = await fetch(`http://localhost:5000/api/submissions/${studentId}/${assignmentId}`, {
         method: 'PUT',
-        body: formData 
+        body: formData
       });
       const data = await res.json();
-      
+
       if (res.ok && data.updatedScore) {
         setSubmissions(prev => {
           const existingIdx = prev.findIndex(s => s.assignmentId == assignmentId && s.studentId == studentId);
@@ -133,7 +135,7 @@ export const DataProvider = ({ children, user }) => {
           }
         });
       }
-      
+
     } catch (err) {
       console.error("Failed to submit work", err);
     }
@@ -187,9 +189,9 @@ export const DataProvider = ({ children, user }) => {
 
   const mockStudents = useMemo(() => {
     return students.reduce((acc, student) => {
-      const studentSubmissions = submissions.filter(s => s.studentId === student.id);
-      const studentAssignments = assignments.filter(a => a.classId === student.classId).map(a => {
-        const sub = studentSubmissions.find(s => s.assignmentId === a.id);
+      const studentSubmissions = submissions.filter(s => s.studentId == student.id);
+      const studentAssignments = assignments.filter(a => a.classId == student.classId).map(a => {
+        const sub = studentSubmissions.find(s => s.assignmentId == a.id);
         return {
           id: a.id,
           title: a.title,
@@ -204,7 +206,7 @@ export const DataProvider = ({ children, user }) => {
       acc[student.rollNo] = {
         rollNo: student.rollNo,
         name: student.name,
-        class: classes.find(c => c.id === student.classId)?.name || 'Unknown',
+        class: classes.find(c => c.id == student.classId)?.name || 'Unknown',
         assignments: studentAssignments
       };
       return acc;
@@ -215,8 +217,8 @@ export const DataProvider = ({ children, user }) => {
     const student = students.find(s => s.rollNo === rollNo);
     if (!student) return [];
 
-    return assignments.filter(a => a.classId === student.classId).map(a => {
-      const sub = submissions.find(s => s.studentId === student.id && s.assignmentId === a.id);
+    return assignments.filter(a => a.classId == student.classId).map(a => {
+      const sub = submissions.find(s => s.studentId == student.id && s.assignmentId == a.id);
       return {
         id: a.id,
         title: a.title,
@@ -230,13 +232,28 @@ export const DataProvider = ({ children, user }) => {
     });
   };
 
+  const getStudentNotesByRoll = (rollNo) => {
+    const student = students.find(s => s.rollNo === rollNo);
+    if (!student) return [];
+
+    return notes.filter(n => n.classId === student.classId).map(n => ({
+      ...n,
+      course: classes.find(c => c.id === n.classId)?.name || 'Unknown'
+    }));
+  };
+
+  const addNotes = (newNote) => {
+    // Basic mock implementation array push
+    setNotes(prev => [...prev, { ...newNote, id: Date.now() }]);
+  };
+
   const getStudentResultsByRoll = (rollNo) => {
     const student = students.find(s => s.rollNo === rollNo);
     if (!student) return [];
 
-    const studentSubmissions = submissions.filter(s => s.studentId === student.id && s.graded);
+    const studentSubmissions = submissions.filter(s => s.studentId == student.id && s.graded);
     return studentSubmissions.map(sub => {
-      const assignment = assignments.find(a => a.id === sub.assignmentId);
+      const assignment = assignments.find(a => a.id == sub.assignmentId);
       const totalMarks = (sub.score?.code || 0) + (sub.score?.func || 0) + (sub.score?.doc || 0);
       return {
         id: sub.assignmentId,
@@ -262,6 +279,7 @@ export const DataProvider = ({ children, user }) => {
     subjects: SUBJECTS,
     assignments,
     submissions,
+    notes,
     facultyClasses,
     classData,
     classAssignmentsByClassId,
@@ -269,7 +287,9 @@ export const DataProvider = ({ children, user }) => {
     mockStudents,
     getStudentAssignmentsByRoll,
     getStudentResultsByRoll,
+    getStudentNotesByRoll,
     addAssignment,
+    addNotes,
     updateSubmission,
     submitWork
   };

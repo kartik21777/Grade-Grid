@@ -62,7 +62,7 @@ app.get('/api/data', async (req, res) => {
       Class.find({}).lean(),
       Student.find({}).lean(),
       Assignment.find({}).lean(),
-      Score.find({}).populate('studentId', 'name').lean()
+      Score.find({}).populate('studentId', 'name originalId').lean()
     ]);
 
     const mappedClasses = classes.map(c => ({
@@ -71,35 +71,65 @@ app.get('/api/data', async (req, res) => {
       _id: c._id.toString()
     }));
 
-    const mappedStudents = students.map(s => ({
-      ...s,
-      id: s.originalId ? s.originalId.toString() : s._id.toString(),
-      _id: s._id.toString(),
-      classId: s.classId ? s.classId.toString() : null
-    }));
+    const mappedStudents = students.map(s => {
+      const cls = classes.find(c => c._id.toString() === s.classId?.toString());
+      return {
+        ...s,
+        id: s.originalId ? s.originalId.toString() : s._id.toString(),
+        _id: s._id.toString(),
+        classId: cls ? (cls.originalId ? cls.originalId.toString() : cls._id.toString()) : null
+      };
+    });
 
-    const mappedAssignments = assignments.map(a => ({
-      ...a,
-      id: a.originalId ? a.originalId.toString() : a._id.toString(),
-      _id: a._id.toString(),
-      classId: a.classId ? a.classId.toString() : null,
-      file: a.file || null
-    }));
+    const mappedAssignments = assignments.map(a => {
+      const cls = classes.find(c => c._id.toString() === a.classId?.toString());
+      return {
+        ...a,
+        id: a.originalId ? a.originalId.toString() : a._id.toString(),
+        _id: a._id.toString(),
+        classId: cls ? (cls.originalId ? cls.originalId.toString() : cls._id.toString()) : null,
+        file: a.file || null
+      };
+    });
 
-    const mappedSubmissions = scores.map(s => ({
-      ...s,
-      id: s._id.toString(),
-      _id: s._id.toString(),
-      studentId: s.studentId ? (s.studentId.originalId ? s.studentId.originalId.toString() : s.studentId._id.toString()) : null,
-      studentName: s.studentId ? s.studentId.name : 'Unknown',
-      assignmentId: s.assignmentId ? s.assignmentId.toString() : null,
-      status: s.status || 'Pending',
-      file: s.file || null,
-      graded: s.graded || false,
-      score: s.score || null,
-      submissionDate: s.submissionDate || null,
-      feedback: s.feedback || null
-    }));
+    const mappedSubmissions = scores.map(s => {
+      const assignment = assignments.find(a => a._id.toString() === s.assignmentId?.toString());
+      
+      // Populate may not resolve if studentId was stored as a plain string (legacy data)
+      // so we fall back to manual lookup in the students array
+      let resolvedStudentId = null;
+      let resolvedStudentName = 'Unknown';
+      if (s.studentId && typeof s.studentId === 'object') {
+        // Populated successfully
+        resolvedStudentId = s.studentId.originalId ? s.studentId.originalId.toString() : s.studentId._id.toString();
+        resolvedStudentName = s.studentId.name;
+      } else if (s.studentId) {
+        // Plain string/ObjectId - look up manually
+        const foundStudent = students.find(st => st._id.toString() === s.studentId.toString());
+        if (foundStudent) {
+          resolvedStudentId = foundStudent.originalId ? foundStudent.originalId.toString() : foundStudent._id.toString();
+          resolvedStudentName = foundStudent.name;
+        }
+      }
+
+      return {
+        ...s,
+        id: s._id.toString(),
+        _id: s._id.toString(),
+        studentId: resolvedStudentId,
+        studentName: resolvedStudentName,
+        assignmentId: assignment ? (assignment.originalId ? assignment.originalId.toString() : assignment._id.toString()) : null,
+        status: s.status || 'Pending',
+        file: s.file || null,
+        graded: s.graded || false,
+        score: s.score || null,
+        submissionDate: s.submissionDate || null,
+        feedback: s.feedback || null
+      };
+    });
+
+    console.log("=== GET /api/data RESPONSE ===");
+    console.log("Submissions Flattened Payload (Sample 1):", mappedSubmissions[0]);
 
     res.json({
       classes: mappedClasses,
@@ -178,7 +208,9 @@ app.put('/api/submissions/:studentId/:assignmentId', upload.single('file'), asyn
       fileNameToSave = `/uploads/submissions/${req.file.filename}`;
     }
 
-    const student = await Student.findOne({ originalId: studentId });
+    const student = await Student.findOne({ 
+      $or: [{ rollNo: studentId }, { originalId: studentId }]
+    });
     // Keep support for both String or Number assignmentIds based on migration mapping
     const assignment = await Assignment.findOne({ 
       $or: [{ originalId: Number(assignmentId) }, { originalId: String(assignmentId) }] 
