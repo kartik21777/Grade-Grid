@@ -1,15 +1,94 @@
+import React, { useState } from 'react';
 import { useDataContext } from '../../context/DataContext';
 
 const StudentResults = () => {
   const { currentUser, getStudentResultsByRoll } = useDataContext();
   const results = getStudentResultsByRoll(currentUser.id);
+  const [selectedSubject, setSelectedSubject] = useState(null);
+
+  const subjects = [...new Set(results.map(r => r.subject))];
+
+  if (!selectedSubject) {
+    return (
+      <div className="contentWrapper">
+        <h2 style={{ color: 'white', marginBottom: '5px' }}>Academic Performance</h2>
+        <p style={{ color: '#42cab3ff', marginBottom: '25px', fontSize: '15px' }}>View your graded work and feedback by subject.</p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {subjects.map(subject => {
+            const subjectResults = results.filter(r => r.subject === subject);
+            const totalScore = subjectResults.reduce((acc, curr) => acc + curr.obtainedMarks, 0);
+            const maxScore = subjectResults.reduce((acc, curr) => acc + curr.totalMarks, 0);
+            const average = maxScore > 0 ? ((totalScore / maxScore) * 100).toFixed(1) : 0;
+
+            return (
+              <div
+                key={subject}
+                className="card studentCard"
+                style={{
+                  cursor: 'pointer',
+                  borderLeft: '4px solid #42cab3ff',
+                  padding: '25px',
+                  transition: 'background 0.2s',
+                  margin: 0,
+                  width: '100%',
+                }}
+                onClick={() => setSelectedSubject(subject)}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <h3 className="studentCardTitle" style={{ fontSize: '20px', marginBottom: '8px' }}>{subject}</h3>
+                    <p style={{ color: '#8892b0', fontSize: '14px' }}>
+                      <strong>{subjectResults.length}</strong> Graded Assignments
+                    </p>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ color: '#42cab3ff', fontSize: '24px', fontWeight: 'bold' }}>{average}%</div>
+                    <div style={{ color: '#8892b0', fontSize: '12px' }}>Average Performance</div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          {subjects.length === 0 && (
+            <div className="noDataBox">
+              <p>No graded results available yet.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Filtered Detailed Results View
+  const filteredResults = results.filter(r => r.subject === selectedSubject);
 
   return (
     <div className="contentWrapper">
-      <h2 style={{ color: 'white' }}>My Results</h2>
+      <div className="headerContainer" style={{ marginBottom: '25px' }}>
+        <button 
+          onClick={() => setSelectedSubject(null)}
+          className="backButton"
+          style={{ 
+            background: 'none', 
+            border: 'none', 
+            color: '#42cab3ff', 
+            cursor: 'pointer',
+            padding: 0,
+            marginBottom: '15px',
+            display: 'flex',
+            alignItems: 'center',
+            fontSize: '14px',
+            fontWeight: '600'
+          }}
+        >
+          ← Back to All Subjects
+        </button>
+        <h2 style={{ color: 'white' }}>Results: {selectedSubject}</h2>
+      </div>
 
       <div className="card-container">
-        {results.map(result => (
+        {filteredResults.map(result => (
           <div key={result.id} className="card studentCard">
             <div className="studentCardHeader resultHeaderBorder">
               <div>
@@ -45,9 +124,6 @@ const StudentResults = () => {
             </div>
           </div>
         ))}
-        {results.length === 0 && (
-          <p>No results available yet.</p>
-        )}
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useMemo } from 'react';
-import { CLASSES, STUDENTS, ASSIGNMENTS as INITIAL_ASSIGNMENTS, SUBMISSIONS as INITIAL_SUBMISSIONS } from '../data/mockData';
+import { CLASSES, STUDENTS, ASSIGNMENTS as INITIAL_ASSIGNMENTS, SUBMISSIONS as INITIAL_SUBMISSIONS, NOTES as INITIAL_NOTES } from '../data/mockData';
 
 export const SUBJECTS = [
   'Data Structures',
@@ -16,12 +16,19 @@ const DataContext = createContext();
 export const DataProvider = ({ children, user }) => {
   const [assignments, setAssignments] = useState(INITIAL_ASSIGNMENTS);
   const [submissions, setSubmissions] = useState(INITIAL_SUBMISSIONS);
+  const [notes, setNotes] = useState(INITIAL_NOTES);
   const currentUser = user;
 
   // Actions
   const addAssignment = (newAssignment) => {
     const id = Date.now();
     setAssignments(prev => [...prev, { ...newAssignment, id }]);
+    return id;
+  };
+
+  const addNotes = (newNote) => {
+    const id = Date.now();
+    setNotes(prev => [...prev, { ...newNote, id }]);
     return id;
   };
 
@@ -166,6 +173,16 @@ export const DataProvider = ({ children, user }) => {
     });
   };
 
+  const getStudentNotesByRoll = (rollNo) => {
+    const student = STUDENTS.find(s => s.rollNo === rollNo);
+    if (!student) return [];
+
+    return notes.filter(n => n.classId === student.classId).map(n => ({
+      ...n,
+      course: CLASSES.find(c => c.id === n.classId)?.name || 'Unknown'
+    }));
+  };
+
   const getStudentResultsByRoll = (rollNo) => {
     const student = STUDENTS.find(s => s.rollNo === rollNo);
     if (!student) return [];
@@ -177,6 +194,7 @@ export const DataProvider = ({ children, user }) => {
       return {
         id: sub.assignmentId,
         title: assignment?.title || 'Unknown Assignment',
+        subject: assignment?.subject || 'Other',
         course: CLASSES.find(c => c.id === assignment?.classId)?.name || 'Unknown',
         checkedDate: '2026-03-24',
         totalMarks: 100,
@@ -198,6 +216,7 @@ export const DataProvider = ({ children, user }) => {
     subjects: SUBJECTS,
     assignments,
     submissions,
+    notes,
     facultyClasses,
     classData,
     classAssignmentsByClassId,
@@ -205,7 +224,9 @@ export const DataProvider = ({ children, user }) => {
     mockStudents,
     getStudentAssignmentsByRoll,
     getStudentResultsByRoll,
+    getStudentNotesByRoll,
     addAssignment,
+    addNotes,
     updateSubmission,
     submitWork
   };

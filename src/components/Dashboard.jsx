@@ -5,9 +5,11 @@ const Dashboard = ({ user, setIsLoggedIn, children }) => {
     const navigate = useNavigate();
 
     const studentLinks = [
-        { path: '/student', label: 'Profile', end: true },
+        { path: '/student', label: 'Dashboard', end: true },
         { path: '/student/assignments', label: 'Assignments' },
         { path: '/student/results', label: 'Results' },
+        { path: '/student/notes', label: 'Notes' },
+        { path: '/student/deadlines', label: '⏰ Deadlines' },
     ];
 
     const teacherLinks = [
@@ -16,6 +18,7 @@ const Dashboard = ({ user, setIsLoggedIn, children }) => {
         { path: '/teacher/grade-assignment', label: 'Grade Assignment' },
         { path: '/teacher/search-student', label: 'Search Student' },
         { path: '/teacher/class-results', label: 'Class Results' },
+        { path: '/teacher/notes', label: 'Upload Notes' },
     ];
 
     const links = user?.role === 'teacher' ? teacherLinks : studentLinks;

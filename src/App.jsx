@@ -7,12 +7,15 @@ import StudentDashboard from './pages/StudentDashboard';
 import StudentHome from './pages/student/StudentHome';
 import StudentAssignments from './pages/student/StudentAssignments';
 import StudentResults from './pages/student/StudentResults';
+import StudentNotes from './pages/student/StudentNotes';
+import StudentDeadlines from './pages/student/StudentDeadlines';
 import TeacherDashboard from './pages/TeacherDashboard';
 import TeacherHome from './pages/teacher/TeacherHome';
 import TeacherClasses from './pages/teacher/TeacherClasses';
 import SearchStudent from './pages/teacher/SearchStudent';
 import GradeAssignment from './pages/teacher/GradeAssignment';
 import ClassResults from './pages/teacher/ClassResults';
+import TeacherNotes from './pages/teacher/TeacherNotes';
 import Dashboard from './components/Dashboard';
 import { DataProvider } from './context/DataContext';
 
@@ -56,6 +59,8 @@ const App = () => {
               <Route index element={<StudentHome />} />
               <Route path="assignments" element={<StudentAssignments />} />
               <Route path="results" element={<StudentResults />} />
+              <Route path="notes" element={<StudentNotes />} />
+              <Route path="deadlines" element={<StudentDeadlines />} />
             </Route>
             
             <Route path="/teacher" element={<TeacherDashboard />}>
@@ -64,6 +69,7 @@ const App = () => {
               <Route path="grade-assignment" element={<GradeAssignment />} />
               <Route path="search-student" element={<SearchStudent />} />
               <Route path="class-results" element={<ClassResults />} />
+              <Route path="notes" element={<TeacherNotes />} />
             </Route>
             
             <Route path="*" element={<Navigate to={user.role === 'teacher' ? '/teacher' : '/student'} replace />} />

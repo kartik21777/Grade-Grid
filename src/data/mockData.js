@@ -218,3 +218,9 @@ export const getStudentResults = (rollNo) => {
     };
   });
 };
+
+export const NOTES = [
+  { id: 1, title: 'Introduction to Trees', subject: 'Data Structures', classId: 1, file: 'trees_intro.pdf' },
+  { id: 2, title: 'Complexity Analysis Cheat Sheet', subject: 'Algorithms', classId: 1, file: 'complexity.pdf' },
+  { id: 3, title: 'React Hooks Overview', subject: 'Web Development', classId: 2, file: 'hooks.pdf' }
+];
