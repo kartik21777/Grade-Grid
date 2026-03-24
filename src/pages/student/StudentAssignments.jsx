@@ -83,7 +83,7 @@ const AssignmentCard = ({ assignment, isBeforeDue, onSubmit }) => {
               className="hidden-file-input" 
               accept=".pdf"
               onChange={handleFileChange}
-              required 
+              required
             />
           </div>
 

@@ -40,7 +40,7 @@ const GradeAssignment = () => {
 
   const handleGradeSubmit = (e) => {
     e.preventDefault();
-    
+
     // Convert all grade values to numbers for submission
     const numericGradeData = {};
     for (const key in gradeData) {
@@ -208,7 +208,7 @@ const GradeAssignment = () => {
           <strong>Assignment:</strong> {selectedAssignment.title}
         </p>
         <div className="fileInfoTextLast gradeAssignFileInfoRow">
-          <span><strong>Submitted File:</strong> <code>{selectedStudent.file}</code></span>
+          <span style={{ wordBreak: 'break-all' }}><strong>Submitted File:</strong> <code>{selectedStudent.file}</code></span>
           <a href={`http://localhost:5000${selectedStudent.file?.startsWith('/') ? '' : '/'}${selectedStudent.file}`} download>
             <button className="submitBtn publishBtn gradeAssignDownloadBtn">Download Work</button>
           </a>
