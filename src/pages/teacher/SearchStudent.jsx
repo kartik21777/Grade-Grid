@@ -93,7 +93,14 @@ const SearchStudent = () => {
           </p>
           <div className="fileInfoTextLast gradeAssignFileInfoRow">
             <span><strong>Submitted File:</strong> <code>{editingAssignment.file || 'N/A'}</code></span>
-            {editingAssignment.file && <button className="submitBtn publishBtn gradeAssignDownloadBtn">Download Work</button>}
+            {editingAssignment.file && (
+              <>
+                {console.log("SEARCH STUDENT DOWNLOAD HREF GENERATED:", `http://localhost:5000${editingAssignment.file.startsWith('/') ? '' : '/'}${editingAssignment.file}`)}
+                <a href={`http://localhost:5000${editingAssignment.file.startsWith('/') ? '' : '/'}${editingAssignment.file}`} download>
+                  <button className="submitBtn publishBtn gradeAssignDownloadBtn">Download Work</button>
+                </a>
+              </>
+            )}
           </div>
         </div>
 

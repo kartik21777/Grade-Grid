@@ -196,7 +196,10 @@ const GradeAssignment = () => {
         </p>
         <div className="fileInfoTextLast gradeAssignFileInfoRow">
           <span><strong>Submitted File:</strong> <code>{selectedStudent.file}</code></span>
-          <button className="submitBtn publishBtn gradeAssignDownloadBtn">Download Work</button>
+          {console.log("TEACHER DOWNLOAD HREF GENERATED:", `http://localhost:5000${selectedStudent.file.startsWith('/') ? '' : '/'}${selectedStudent.file}`)}
+          <a href={`http://localhost:5000${selectedStudent.file.startsWith('/') ? '' : '/'}${selectedStudent.file}`} download>
+            <button className="submitBtn publishBtn gradeAssignDownloadBtn">Download Work</button>
+          </a>
         </div>
       </div>
 

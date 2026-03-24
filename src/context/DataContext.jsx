@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useState, useMemo } from 'react';
-import { CLASSES, STUDENTS, ASSIGNMENTS as INITIAL_ASSIGNMENTS, SUBMISSIONS as INITIAL_SUBMISSIONS } from '../data/mockData';
+import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
 
-export const SUBJECTS = [
+// SUBJECTS can remain static since it's just strings
+const SUBJECTS = [
   'Data Structures',
   'Algorithms',
   'Web Development',
@@ -14,75 +14,138 @@ export const SUBJECTS = [
 const DataContext = createContext();
 
 export const DataProvider = ({ children, user }) => {
-  const [assignments, setAssignments] = useState(INITIAL_ASSIGNMENTS);
-  const [submissions, setSubmissions] = useState(INITIAL_SUBMISSIONS);
+  const [classes, setClasses] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [assignments, setAssignments] = useState([]);
+  const [submissions, setSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true);
   const currentUser = user;
 
+  // Exclude mock definitions here for length, but dynamically generate them if needed dynamically
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/data');
+        const data = await res.json();
+        
+        setClasses(data.classes || []);
+        setStudents(data.students || []);
+        setAssignments(data.assignments || []);
+        setSubmissions(data.submissions || []);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
   // Actions
-  const addAssignment = (newAssignment) => {
-    const id = Date.now();
-    setAssignments(prev => [...prev, { ...newAssignment, id }]);
-    return id;
-  };
-
-  const updateSubmission = (assignmentId, studentId, gradeData) => {
-    setSubmissions(prev => {
-      const existingIdx = prev.findIndex(s => s.assignmentId === assignmentId && s.studentId === studentId);
-      if (existingIdx > -1) {
-        const updated = [...prev];
-        updated[existingIdx] = { 
-          ...updated[existingIdx], 
-          status: 'Submitted', 
-          graded: true, 
-          score: gradeData 
-        };
-        return updated;
-      } else {
-        return [...prev, { 
-          assignmentId, 
-          studentId, 
-          status: 'Submitted', 
-          graded: true, 
-          score: gradeData,
-          file: 'manual_entry.pdf'
-        }];
+  const addAssignment = async (newAssignment) => {
+    try {
+      const id = Date.now();
+      const formData = new FormData();
+      formData.append('id', id);
+      formData.append('title', newAssignment.title);
+      formData.append('subject', newAssignment.subject);
+      formData.append('classId', newAssignment.classId);
+      formData.append('dueDate', newAssignment.dueDate);
+      formData.append('dueTime', newAssignment.dueTime);
+      formData.append('rubrics', JSON.stringify(newAssignment.rubrics || { code: 25, func: 50, doc: 25 }));
+      
+      if (newAssignment.file) {
+        formData.append('file', newAssignment.file);
       }
-    });
+
+      const res = await fetch('http://localhost:5000/api/assignments', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      
+      // Update local state to immediately reflect the change
+      if (data.newAssignment) {
+        setAssignments(prev => [...prev, data.newAssignment]);
+      }
+      return id;
+    } catch (err) {
+      console.error("Failed to add assignment", err);
+    }
   };
 
-  const submitWork = (assignmentId, studentId, file) => {
-    setSubmissions(prev => {
-      const existingIdx = prev.findIndex(s => s.assignmentId === assignmentId && s.studentId === studentId);
+  const updateSubmission = async (assignmentId, studentId, gradeData) => {
+    try {
+      const payload = { graded: true, status: 'Submitted', score: gradeData };
+      const res = await fetch(`http://localhost:5000/api/submissions/${studentId}/${assignmentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      
+      if (res.ok && data.updatedScore) {
+        setSubmissions(prev => {
+          const existingIdx = prev.findIndex(s => s.assignmentId == assignmentId && s.studentId == studentId);
+          if (existingIdx > -1) {
+            const updated = [...prev];
+            updated[existingIdx] = data.updatedScore;
+            return updated;
+          } else {
+            return [...prev, data.updatedScore];
+          }
+        });
+      }
+    } catch (err) {
+      console.error("Failed to update submission grade", err);
+    }
+  };
+
+  const submitWork = async (assignmentId, studentId, fileOrString) => {
+    try {
       const submissionDate = new Date().toISOString().split('T')[0];
-      if (existingIdx > -1) {
-        const updated = [...prev];
-        updated[existingIdx] = { 
-          ...updated[existingIdx], 
-          status: 'Submitted', 
-          file, 
-          submissionDate 
-        };
-        return updated;
+      const formData = new FormData();
+      formData.append('status', 'Submitted');
+      formData.append('submissionDate', submissionDate);
+      
+      if (typeof fileOrString === 'object' && fileOrString !== null) {
+        formData.append('file', fileOrString);
       } else {
-        return [...prev, { 
-          assignmentId, 
-          studentId, 
-          status: 'Submitted', 
-          file, 
-          submissionDate, 
-          graded: false 
-        }];
+        formData.append('file', fileOrString);
       }
-    });
+
+      const res = await fetch(`http://localhost:5000/api/submissions/${studentId}/${assignmentId}`, {
+        method: 'PUT',
+        body: formData 
+      });
+      const data = await res.json();
+      
+      if (res.ok && data.updatedScore) {
+        setSubmissions(prev => {
+          const existingIdx = prev.findIndex(s => s.assignmentId == assignmentId && s.studentId == studentId);
+          if (existingIdx > -1) {
+            const updated = [...prev];
+            updated[existingIdx] = data.updatedScore;
+            return updated;
+          } else {
+            return [...prev, data.updatedScore];
+          }
+        });
+      }
+      
+    } catch (err) {
+      console.error("Failed to submit work", err);
+    }
   };
 
   // Derived Data (Memoized for performance)
-  const facultyClasses = useMemo(() => CLASSES, []);
+  const facultyClasses = useMemo(() => classes, [classes]);
 
   const classData = useMemo(() => {
-    return CLASSES.reduce((acc, cls) => {
-      const clsAssignments = assignments.filter(a => a.classId === cls.id);
-      const clsStudents = STUDENTS.filter(s => s.classId === cls.id);
+    return classes.reduce((acc, cls) => {
+      const clsAssignments = assignments.filter(a => a.classId == cls.id);
+      const clsStudents = students.filter(s => s.classId == cls.id);
 
       acc[cls.id] = {
         assignments: clsAssignments.map(a => a.title),
@@ -90,7 +153,7 @@ export const DataProvider = ({ children, user }) => {
           const studentSubmissions = submissions.filter(s => s.studentId === student.id);
           const scores = clsAssignments.map(assignment => {
             const sub = studentSubmissions.find(s => s.assignmentId === assignment.id);
-            if (sub && sub.graded) {
+            if (sub && sub.graded && sub.score) {
               return (sub.score.code || 0) + (sub.score.func || 0) + (sub.score.doc || 0);
             }
             return null;
@@ -100,30 +163,30 @@ export const DataProvider = ({ children, user }) => {
       };
       return acc;
     }, {});
-  }, [assignments, submissions]);
+  }, [classes, students, assignments, submissions]);
 
   const classAssignmentsByClassId = useMemo(() => {
-    return CLASSES.reduce((acc, cls) => {
-      acc[cls.id] = assignments.filter(a => a.classId === cls.id);
+    return classes.reduce((acc, cls) => {
+      acc[cls.id] = assignments.filter(a => a.classId == cls.id);
       return acc;
     }, {});
-  }, [assignments]);
+  }, [classes, assignments]);
 
   const submissionsByAssignment = useMemo(() => {
     return assignments.reduce((acc, assignment) => {
       acc[assignment.id] = submissions
-        .filter(s => s.assignmentId === assignment.id)
+        .filter(s => s.assignmentId == assignment.id)
         .map(s => ({
           ...s,
           id: s.studentId + "_" + s.assignmentId,
-          name: STUDENTS.find(stu => stu.id === s.studentId)?.name || 'Unknown'
+          name: s.studentName || students.find(stu => stu.id == s.studentId)?.name || 'Unknown'
         }));
       return acc;
     }, {});
-  }, [assignments, submissions]);
+  }, [assignments, submissions, students]);
 
   const mockStudents = useMemo(() => {
-    return STUDENTS.reduce((acc, student) => {
+    return students.reduce((acc, student) => {
       const studentSubmissions = submissions.filter(s => s.studentId === student.id);
       const studentAssignments = assignments.filter(a => a.classId === student.classId).map(a => {
         const sub = studentSubmissions.find(s => s.assignmentId === a.id);
@@ -133,22 +196,23 @@ export const DataProvider = ({ children, user }) => {
           status: sub ? sub.status : 'Pending',
           file: sub ? sub.file : null,
           graded: sub ? sub.graded : false,
-          score: sub ? sub.score : null
+          score: sub ? sub.score : null,
+          submissionDate: sub ? sub.submissionDate : null
         };
       });
 
       acc[student.rollNo] = {
         rollNo: student.rollNo,
         name: student.name,
-        class: CLASSES.find(c => c.id === student.classId)?.name || 'Unknown',
+        class: classes.find(c => c.id === student.classId)?.name || 'Unknown',
         assignments: studentAssignments
       };
       return acc;
     }, {});
-  }, [assignments, submissions]);
+  }, [classes, students, assignments, submissions]);
 
   const getStudentAssignmentsByRoll = (rollNo) => {
-    const student = STUDENTS.find(s => s.rollNo === rollNo);
+    const student = students.find(s => s.rollNo === rollNo);
     if (!student) return [];
 
     return assignments.filter(a => a.classId === student.classId).map(a => {
@@ -157,7 +221,7 @@ export const DataProvider = ({ children, user }) => {
         id: a.id,
         title: a.title,
         subject: a.subject,
-        course: CLASSES.find(c => c.id === a.classId)?.name || 'Unknown',
+        course: classes.find(c => c.id === a.classId)?.name || 'Unknown',
         dueDate: a.dueDate,
         dueTime: a.dueTime,
         submitted: sub ? sub.status === 'Submitted' : false,
@@ -167,25 +231,25 @@ export const DataProvider = ({ children, user }) => {
   };
 
   const getStudentResultsByRoll = (rollNo) => {
-    const student = STUDENTS.find(s => s.rollNo === rollNo);
+    const student = students.find(s => s.rollNo === rollNo);
     if (!student) return [];
 
     const studentSubmissions = submissions.filter(s => s.studentId === student.id && s.graded);
     return studentSubmissions.map(sub => {
       const assignment = assignments.find(a => a.id === sub.assignmentId);
-      const totalMarks = (sub.score.code || 0) + (sub.score.func || 0) + (sub.score.doc || 0);
+      const totalMarks = (sub.score?.code || 0) + (sub.score?.func || 0) + (sub.score?.doc || 0);
       return {
         id: sub.assignmentId,
         title: assignment?.title || 'Unknown Assignment',
-        course: CLASSES.find(c => c.id === assignment?.classId)?.name || 'Unknown',
-        checkedDate: '2026-03-24',
+        course: classes.find(c => c.id === assignment?.classId)?.name || 'Unknown',
+        checkedDate: sub.submissionDate || '2026-03-24',
         totalMarks: 100,
         obtainedMarks: totalMarks,
-        feedback: sub.score.remark || 'Good effort, keep it up!',
+        feedback: sub.feedback || 'Graded successfully.',
         criteria: [
-          { name: 'Code Quality', marks: sub.score.code, max: 25 },
-          { name: 'Functionality', marks: sub.score.func, max: 50 },
-          { name: 'Documentation', marks: sub.score.doc, max: 25 },
+          { name: 'Code Quality', marks: sub.score?.code || 0, max: 25 },
+          { name: 'Functionality', marks: sub.score?.func || 0, max: 50 },
+          { name: 'Documentation', marks: sub.score?.doc || 0, max: 25 },
         ]
       };
     });
@@ -193,8 +257,8 @@ export const DataProvider = ({ children, user }) => {
 
   const value = {
     currentUser,
-    classes: CLASSES,
-    students: STUDENTS,
+    classes,
+    students,
     subjects: SUBJECTS,
     assignments,
     submissions,
@@ -209,6 +273,10 @@ export const DataProvider = ({ children, user }) => {
     updateSubmission,
     submitWork
   };
+
+  if (loading) {
+    return <div style={{ color: 'white', padding: '20px', textAlign: 'center' }}>Loading Data from MongoDB...</div>;
+  }
 
   return (
     <DataContext.Provider value={value}>

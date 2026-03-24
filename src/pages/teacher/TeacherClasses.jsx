@@ -63,7 +63,8 @@ const TeacherClasses = () => {
           subject: selectedSubject,
           classId: cls.id,
           dueDate: dueDate,
-          dueTime: dueTime
+          dueTime: dueTime,
+          file: file
         });
       }
     });

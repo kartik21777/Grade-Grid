@@ -40,6 +40,8 @@ const Dashboard = ({ user, setIsLoggedIn, children }) => {
                     <span className="navUserId">ID: {user?.id} ({user?.role})</span>
                     <button
                         onClick={() => {
+                            localStorage.removeItem('isLoggedIn');
+                            localStorage.removeItem('user');
                             setIsLoggedIn(false);
                             navigate('/');
                         }}

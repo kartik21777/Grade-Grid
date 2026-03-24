@@ -11,6 +11,7 @@ const assignmentSchema = new mongoose.Schema({
     func: { type: Number, default: 50 },
     doc: { type: Number, default: 25 }
   },
+  file: { type: String },
   originalId: { type: Number } // Used to maintain mapping during migration
 }, { timestamps: true });
 

@@ -15,11 +15,20 @@ const StudentAssignments = () => {
 
   const handleSubmit = (id, e, isUpdate) => {
     e.preventDefault();
+    const fileInput = e.target.querySelector('input[type="file"]');
+    const selectedFile = fileInput?.files[0];
+    
+    if (!selectedFile) {
+      alert("Please select a file first.");
+      return;
+    }
+
     setTimeout(() => {
-      // Update global state via context
-      submitWork(id, currentUser.id, 'submission.zip');
+      // Pass the actual File object instead of a string
+      submitWork(id, currentUser.id, selectedFile);
       
       alert(isUpdate ? 'Assignment updated successfully!' : 'Assignment submitted successfully!');
+      e.target.reset();
     }, 500);
   };
 
