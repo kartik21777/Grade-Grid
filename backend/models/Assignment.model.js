@@ -6,10 +6,9 @@ const assignmentSchema = new mongoose.Schema({
   classId: { type: mongoose.Schema.Types.ObjectId, ref: 'Class', required: true },
   dueDate: { type: String, required: true },
   dueTime: { type: String, required: true },
-  rubrics: {
-    code: { type: Number, default: 25 },
-    func: { type: Number, default: 50 },
-    doc: { type: Number, default: 25 }
+  rubrics: { 
+    type: mongoose.Schema.Types.Mixed, 
+    default: () => ({ code: 25, func: 50, doc: 25 }) 
   },
   file: { type: String },
   originalId: { type: Number } // Used to maintain mapping during migration

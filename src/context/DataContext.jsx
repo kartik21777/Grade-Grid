@@ -22,6 +22,10 @@ export const DataProvider = ({ children, user }) => {
   const [notes, setNotes] = useState(NOTES || []);
   const [loading, setLoading] = useState(true);
   const currentUser = user;
+  const calculateTotal = (score) => {
+    if (!score) return 0;
+    return Object.values(score).reduce((sum, val) => sum + (Number(val) || 0), 0);
+  };
 
   // Exclude mock definitions here for length, but dynamically generate them if needed dynamically
 
@@ -166,8 +170,9 @@ export const DataProvider = ({ children, user }) => {
           const studentSubmissions = submissions.filter(s => String(s.studentId) === String(student.id));
           const scores = clsAssignments.map(assignment => {
             const sub = studentSubmissions.find(s => String(s.assignmentId) === String(assignment.id));
+            // Use the helper here!
             if (sub && sub.graded && sub.score) {
-              return (sub.score.code || 0) + (sub.score.func || 0) + (sub.score.doc || 0);
+              return calculateTotal(sub.score);
             }
             return null;
           });
@@ -188,10 +193,10 @@ export const DataProvider = ({ children, user }) => {
   const submissionsByAssignment = useMemo(() => {
     return assignments.reduce((acc, assignment) => {
       const classStudents = students.filter(stu => String(stu.classId) === String(assignment.classId));
-      
+
       acc[assignment.id] = classStudents.map(student => {
-        const sub = submissions.find(s => 
-          String(s.assignmentId) === String(assignment.id) && 
+        const sub = submissions.find(s =>
+          String(s.assignmentId) === String(assignment.id) &&
           String(s.studentId) === String(student.id)
         );
 
@@ -249,6 +254,12 @@ export const DataProvider = ({ children, user }) => {
     const student = students.find(s => s.rollNo === rollNo);
     if (!student) return [];
 
+    const calculateTotal = (score) => {
+      if (!score) return 0;
+      // Sums up all numerical values in the score object dynamically
+      return Object.values(score).reduce((sum, val) => sum + (Number(val) || 0), 0);
+    };
+
     return assignments.filter(a => String(a.classId) === String(student.classId)).map(a => {
       const sub = submissions.find(s => String(s.studentId) === String(student.id) && String(s.assignmentId) === String(a.id));
       return {
@@ -284,23 +295,21 @@ export const DataProvider = ({ children, user }) => {
     if (!student) return [];
 
     const studentSubmissions = submissions.filter(s => String(s.studentId) === String(student.id) && s.graded);
+
     return studentSubmissions.map(sub => {
       const assignment = assignments.find(a => String(a.id) === String(sub.assignmentId));
-      const totalMarks = (sub.score?.code || 0) + (sub.score?.func || 0) + (sub.score?.doc || 0);
+      const assignmentRubric = assignment?.rubrics || {};
+
       return {
         id: sub.assignmentId,
         title: assignment?.title || 'Unknown Assignment',
-        subject: assignment?.subject || 'General',
-        course: classes.find(c => String(c.id) === String(assignment?.classId))?.name || 'Unknown',
-        checkedDate: sub.submissionDate || '2026-03-24',
-        totalMarks: 100,
-        obtainedMarks: totalMarks,
-        feedback: sub.feedback || 'Graded successfully.',
-        criteria: [
-          { name: 'Code Quality', marks: sub.score?.code || 0, max: 25 },
-          { name: 'Functionality', marks: sub.score?.func || 0, max: 50 },
-          { name: 'Documentation', marks: sub.score?.doc || 0, max: 25 },
-        ]
+        totalMarks: calculateTotal(assignmentRubric),
+        obtainedMarks: calculateTotal(sub.score),
+        criteria: Object.keys(assignmentRubric).map(key => ({
+          name: key.charAt(0).toUpperCase() + key.slice(1),
+          marks: sub.score?.[key] || 0,
+          max: assignmentRubric[key]
+        }))
       };
     });
   };

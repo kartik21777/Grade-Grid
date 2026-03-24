@@ -34,16 +34,16 @@ const App = () => {
   const handleLogin = (e) => {
     e.preventDefault();
     const userCreds = USER_CREDENTIALS[credentials.id];
-    
+
     if (userCreds && userCreds.password === credentials.password) {
       const newUser = { id: credentials.id, role: userCreds.role };
       setUser(newUser);
       setIsLoggedIn(true);
-      
+
       // Persist to localStorage
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('user', JSON.stringify(newUser));
-      
+
       navigate(mockRole === 'teacher' ? '/teacher' : '/student');
     } else {
       setError('Invalid ID or Password');
@@ -62,7 +62,7 @@ const App = () => {
               <Route path="notes" element={<StudentNotes />} />
               <Route path="deadlines" element={<StudentDeadlines />} />
             </Route>
-            
+
             <Route path="/teacher" element={<TeacherDashboard />}>
               <Route index element={<TeacherHome />} />
               <Route path="classes" element={<TeacherClasses />} />
@@ -71,7 +71,7 @@ const App = () => {
               <Route path="class-results" element={<ClassResults />} />
               <Route path="notes" element={<TeacherNotes />} />
             </Route>
-            
+
             <Route path="*" element={<Navigate to={user.role === 'teacher' ? '/teacher' : '/student'} replace />} />
           </Routes>
         </Dashboard>

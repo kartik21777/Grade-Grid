@@ -6,11 +6,7 @@ const scoreSchema = new mongoose.Schema({
   status: { type: String, enum: ['Pending', 'Submitted'], default: 'Pending' },
   file: { type: String },
   graded: { type: Boolean, default: false },
-  score: {
-    code: { type: Number },
-    func: { type: Number },
-    doc: { type: Number }
-  },
+  score: { type: mongoose.Schema.Types.Mixed },
   submissionDate: { type: String }
 }, { timestamps: true });
 
