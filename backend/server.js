@@ -170,7 +170,7 @@ app.post('/api/assignments', upload.single('file'), async (req, res) => {
       id: newAssignment.originalId?.toString() || newAssignment._id.toString(),
       title: newAssignment.title,
       subject: newAssignment.subject,
-      classId: newAssignment.classId?.toString(),
+      classId: cls ? (cls.originalId ? cls.originalId.toString() : cls._id.toString()) : newAssignment.classId?.toString(),
       dueDate: newAssignment.dueDate,
       dueTime: newAssignment.dueTime,
       file: newAssignment.file,

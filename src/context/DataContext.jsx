@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
-import { NOTES } from '../data/mockData';
+import { NOTES, TEACHERS } from '../data/mockData';
 
 // SUBJECTS can remain static since it's just strings
 const SUBJECTS = [
@@ -105,39 +105,50 @@ export const DataProvider = ({ children, user }) => {
   };
 
   const submitWork = async (assignmentId, studentId, fileOrString) => {
+    const submissionDate = new Date().toISOString().split('T')[0];
+    const fileName = typeof fileOrString === 'object' && fileOrString?.name
+      ? fileOrString.name
+      : (fileOrString || 'submission.zip');
+
+    // Find student internal ID from rollNo if needed
+    const student = students.find(s => s.rollNo === studentId || s.id === studentId);
+    const internalStudentId = student?.id || studentId;
+
+    // Optimistic local state update — happens immediately so UI reflects the change
+    setSubmissions(prev => {
+      const existingIdx = prev.findIndex(
+        s => String(s.assignmentId) === String(assignmentId) && (s.studentId === internalStudentId || s.studentId === studentId)
+      );
+      const newEntry = {
+        assignmentId: Number(assignmentId) || assignmentId,
+        studentId: internalStudentId,
+        status: 'Submitted',
+        file: fileName,
+        submissionDate,
+        graded: false,
+        score: null
+      };
+      if (existingIdx > -1) {
+        const updated = [...prev];
+        updated[existingIdx] = { ...updated[existingIdx], ...newEntry };
+        return updated;
+      }
+      return [...prev, newEntry];
+    });
+
+    // Backend sync (best-effort, won't block UI)
     try {
-      const submissionDate = new Date().toISOString().split('T')[0];
       const formData = new FormData();
       formData.append('status', 'Submitted');
       formData.append('submissionDate', submissionDate);
+      formData.append('file', fileOrString);
 
-      if (typeof fileOrString === 'object' && fileOrString !== null) {
-        formData.append('file', fileOrString);
-      } else {
-        formData.append('file', fileOrString);
-      }
-
-      const res = await fetch(`http://localhost:5000/api/submissions/${studentId}/${assignmentId}`, {
+      await fetch(`http://localhost:5000/api/submissions/${studentId}/${assignmentId}`, {
         method: 'PUT',
         body: formData
       });
-      const data = await res.json();
-
-      if (res.ok && data.updatedScore) {
-        setSubmissions(prev => {
-          const existingIdx = prev.findIndex(s => s.assignmentId == assignmentId && s.studentId == studentId);
-          if (existingIdx > -1) {
-            const updated = [...prev];
-            updated[existingIdx] = data.updatedScore;
-            return updated;
-          } else {
-            return [...prev, data.updatedScore];
-          }
-        });
-      }
-
     } catch (err) {
-      console.error("Failed to submit work", err);
+      console.warn("Backend sync failed (submission recorded locally):", err.message);
     }
   };
 
@@ -152,9 +163,9 @@ export const DataProvider = ({ children, user }) => {
       acc[cls.id] = {
         assignments: clsAssignments.map(a => a.title),
         students: clsStudents.map(student => {
-          const studentSubmissions = submissions.filter(s => s.studentId === student.id);
+          const studentSubmissions = submissions.filter(s => String(s.studentId) === String(student.id));
           const scores = clsAssignments.map(assignment => {
-            const sub = studentSubmissions.find(s => s.assignmentId === assignment.id);
+            const sub = studentSubmissions.find(s => String(s.assignmentId) === String(assignment.id));
             if (sub && sub.graded && sub.score) {
               return (sub.score.code || 0) + (sub.score.func || 0) + (sub.score.doc || 0);
             }
@@ -169,29 +180,50 @@ export const DataProvider = ({ children, user }) => {
 
   const classAssignmentsByClassId = useMemo(() => {
     return classes.reduce((acc, cls) => {
-      acc[cls.id] = assignments.filter(a => a.classId == cls.id);
+      acc[cls.id] = assignments.filter(a => String(a.classId) === String(cls.id));
       return acc;
     }, {});
   }, [classes, assignments]);
 
   const submissionsByAssignment = useMemo(() => {
     return assignments.reduce((acc, assignment) => {
-      acc[assignment.id] = submissions
-        .filter(s => s.assignmentId == assignment.id)
-        .map(s => ({
-          ...s,
-          id: s.studentId + "_" + s.assignmentId,
-          name: s.studentName || students.find(stu => stu.id == s.studentId)?.name || 'Unknown'
-        }));
+      const classStudents = students.filter(stu => String(stu.classId) === String(assignment.classId));
+      
+      acc[assignment.id] = classStudents.map(student => {
+        const sub = submissions.find(s => 
+          String(s.assignmentId) === String(assignment.id) && 
+          String(s.studentId) === String(student.id)
+        );
+
+        if (sub) {
+          return {
+            ...sub,
+            id: student.id + "_" + assignment.id,
+            name: student.name
+          };
+        }
+
+        // Virtual "Pending" submission for roster completeness
+        return {
+          id: student.id + "_" + assignment.id,
+          studentId: student.id,
+          assignmentId: assignment.id,
+          name: student.name,
+          status: 'Pending',
+          graded: false,
+          score: null,
+          file: null
+        };
+      });
       return acc;
     }, {});
   }, [assignments, submissions, students]);
 
   const mockStudents = useMemo(() => {
     return students.reduce((acc, student) => {
-      const studentSubmissions = submissions.filter(s => s.studentId == student.id);
-      const studentAssignments = assignments.filter(a => a.classId == student.classId).map(a => {
-        const sub = studentSubmissions.find(s => s.assignmentId == a.id);
+      const studentSubmissions = submissions.filter(s => String(s.studentId) === String(student.id));
+      const studentAssignments = assignments.filter(a => String(a.classId) === String(student.classId)).map(a => {
+        const sub = studentSubmissions.find(s => String(s.assignmentId) === String(a.id));
         return {
           id: a.id,
           title: a.title,
@@ -217,8 +249,8 @@ export const DataProvider = ({ children, user }) => {
     const student = students.find(s => s.rollNo === rollNo);
     if (!student) return [];
 
-    return assignments.filter(a => a.classId == student.classId).map(a => {
-      const sub = submissions.find(s => s.studentId == student.id && s.assignmentId == a.id);
+    return assignments.filter(a => String(a.classId) === String(student.classId)).map(a => {
+      const sub = submissions.find(s => String(s.studentId) === String(student.id) && String(s.assignmentId) === String(a.id));
       return {
         id: a.id,
         title: a.title,
@@ -236,9 +268,9 @@ export const DataProvider = ({ children, user }) => {
     const student = students.find(s => s.rollNo === rollNo);
     if (!student) return [];
 
-    return notes.filter(n => n.classId === student.classId).map(n => ({
+    return notes.filter(n => String(n.classId) === String(student.classId)).map(n => ({
       ...n,
-      course: classes.find(c => c.id === n.classId)?.name || 'Unknown'
+      course: classes.find(c => String(c.id) === String(n.classId))?.name || 'Unknown'
     }));
   };
 
@@ -251,14 +283,15 @@ export const DataProvider = ({ children, user }) => {
     const student = students.find(s => s.rollNo === rollNo);
     if (!student) return [];
 
-    const studentSubmissions = submissions.filter(s => s.studentId == student.id && s.graded);
+    const studentSubmissions = submissions.filter(s => String(s.studentId) === String(student.id) && s.graded);
     return studentSubmissions.map(sub => {
-      const assignment = assignments.find(a => a.id == sub.assignmentId);
+      const assignment = assignments.find(a => String(a.id) === String(sub.assignmentId));
       const totalMarks = (sub.score?.code || 0) + (sub.score?.func || 0) + (sub.score?.doc || 0);
       return {
         id: sub.assignmentId,
         title: assignment?.title || 'Unknown Assignment',
-        course: classes.find(c => c.id === assignment?.classId)?.name || 'Unknown',
+        subject: assignment?.subject || 'General',
+        course: classes.find(c => String(c.id) === String(assignment?.classId))?.name || 'Unknown',
         checkedDate: sub.submissionDate || '2026-03-24',
         totalMarks: 100,
         obtainedMarks: totalMarks,
@@ -276,6 +309,7 @@ export const DataProvider = ({ children, user }) => {
     currentUser,
     classes,
     students,
+    teachers: TEACHERS,
     subjects: SUBJECTS,
     assignments,
     submissions,
