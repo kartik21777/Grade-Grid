@@ -13,6 +13,7 @@ import SearchStudent from './pages/teacher/SearchStudent';
 import GradeAssignment from './pages/teacher/GradeAssignment';
 import ClassResults from './pages/teacher/ClassResults';
 import Dashboard from './components/Dashboard';
+import { DataProvider } from './context/DataContext';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -45,7 +46,7 @@ const App = () => {
   };
 
   return (
-    <>
+    <DataProvider>
       {isLoggedIn ? (
         <Dashboard user={user} setIsLoggedIn={setIsLoggedIn}>
           <Routes>
@@ -72,7 +73,7 @@ const App = () => {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       )}
-    </>
+    </DataProvider>
   );
 };
 

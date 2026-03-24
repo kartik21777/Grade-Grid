@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useDataContext } from '../../context/DataContext';
 
 const TeacherClasses = () => {
+  const { classes: mockClasses, addAssignment } = useDataContext();
   const [step, setStep] = useState(1);
+  const [subject, setSubject] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [dueTime, setDueTime] = useState('');
   const [file, setFile] = useState(null);
   const [selectedClasses, setSelectedClasses] = useState([]);
   const [criteria, setCriteria] = useState([{ name: '', maxMarks: '' }]);
 
-  const classes = ['Year 1 - CSE A', 'Year 2 - CSE A', 'Year 2 - CSE B', 'Year 3 - IT A'];
+  const classes = mockClasses.map(c => c.name);
 
   const handleNextStep = (e) => {
     e.preventDefault();
@@ -48,11 +51,27 @@ const TeacherClasses = () => {
       return;
     }
 
+
     const fileName = file ? file.name : "No file attached";
 
-    alert(`Success! Assignment "${fileName}" assigned to:\n${selectedClasses.join('\n')}\n\nCriteria:\n${criteria.map(c => `- ${c.name} (${c.maxMarks} marks)`).join('\n')}`);
+    // Add to global state
+    selectedClasses.forEach(clsName => {
+      const cls = mockClasses.find(c => c.name === clsName);
+      if (cls) {
+        addAssignment({
+          title: fileName,
+          subject: subject,
+          classId: cls.id,
+          dueDate: dueDate,
+          dueTime: dueTime
+        });
+      }
+    });
+
+    alert(`Success! Assignment "${fileName}" for "${subject}" assigned to:\n${selectedClasses.join('\n')}\n\nCriteria:\n${criteria.map(c => `- ${c.name} (${c.maxMarks} marks)`).join('\n')}`);
 
     setStep(1);
+    setSubject('');
     setDueDate('');
     setDueTime('');
     setFile(null);
@@ -69,6 +88,18 @@ const TeacherClasses = () => {
         </p>
 
         <form onSubmit={handleNextStep} className="form">
+          <div>
+            <label className="teacherClassesLabel">Subject:</label>
+            <input
+              type="text"
+              className="input"
+              placeholder="e.g. Data Structures"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              required
+            />
+          </div>
+
           <div>
             <label className="teacherClassesLabel">Assignment File:</label>
             <input
@@ -158,6 +189,9 @@ const TeacherClasses = () => {
       <div className="fileInfoBox">
         <p>
           <strong>File:</strong> {file ? file.name : <span className="errorText">None attached</span>}
+        </p>
+        <p>
+          <strong>Subject:</strong> {subject || <span className="errorText">Not specified</span>}
         </p>
         <p>
           <strong>Due:</strong> {dueDate} at {dueTime}

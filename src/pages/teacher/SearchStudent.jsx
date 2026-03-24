@@ -1,34 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useDataContext } from '../../context/DataContext';
 
 const SearchStudent = () => {
+  const { mockStudents, updateSubmission } = useDataContext();
   const [searchTerm, setSearchTerm] = useState('');
   const [student, setStudent] = useState(null);
   const [editingAssignment, setEditingAssignment] = useState(null);
-  const [grades, setGrades] = useState({ code: '', func: '', doc: '' });
+  const [grades, setGrades] = useState({ code: '', func: '', doc: '', remark: '' });
   const [errorText, setErrorText] = useState('');
-
-  const mockStudents = {
-    'CS-101': {
-      rollNo: 'CS-101',
-      name: 'Alice Smith',
-      class: 'Year 2 - CSE A',
-      assignments: [
-        { id: 'a1', title: 'Data Structures Lab 3', status: 'Submitted', file: 'alice_lab3.zip', graded: true, score: { code: 20, func: 45, doc: 20 } },
-        { id: 'a2', title: 'OS Assignment 1', status: 'Pending', file: null, graded: false },
-        { id: 'a3', title: 'Algorithm Analysis', status: 'Submitted', file: 'alice_algo.pdf', graded: true, score: { code: 25, func: 48, doc: 22 } },
-      ]
-    },
-    'IT-201': {
-      rollNo: 'IT-201',
-      name: 'Charlie Brown',
-      class: 'Year 3 - IT A',
-      assignments: [
-        { id: 'b1', title: 'Web Dev Mini Project', status: 'Submitted', file: 'charlie_project.rar', graded: false },
-        { id: 'b2', title: 'Database Design', status: 'Submitted', file: 'db_charlie.sql', graded: true, score: { code: 18, func: 40, doc: 15 } },
-      ]
-    }
-  };
-
   const handleSearch = (e) => {
     e.preventDefault();
     const query = searchTerm.trim().toUpperCase();
@@ -73,7 +52,8 @@ const SearchStudent = () => {
           score: {
             code: Number(grades.code),
             func: Number(grades.func),
-            doc: Number(grades.doc)
+            doc: Number(grades.doc),
+            remark: grades.remark
           }
         };
       }
@@ -82,6 +62,15 @@ const SearchStudent = () => {
     });
 
     setStudent({ ...student, assignments: updatedAssignments });
+    
+    // Update global state
+    updateSubmission(editingAssignment.id, student.id || student.rollNo, {
+      code: Number(grades.code),
+      func: Number(grades.func),
+      doc: Number(grades.doc),
+      remark: grades.remark
+    });
+
     setEditingAssignment(null);
     alert(`Grades updated for ${editingAssignment.title}!`);
   };

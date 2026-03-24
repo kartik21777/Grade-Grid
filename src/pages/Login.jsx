@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Login = ({ credentials, onChange, onLogin, error }) => {
   return (
     <div className="login-container">

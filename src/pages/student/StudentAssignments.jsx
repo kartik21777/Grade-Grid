@@ -1,47 +1,12 @@
 import React, { useState } from 'react';
+import { useDataContext } from '../../context/DataContext';
 
 const StudentAssignments = () => {
+  const { getStudentAssignmentsByRoll, submitWork } = useDataContext();
   const [selectedSubject, setSelectedSubject] = useState(null);
 
-  const [assignments, setAssignments] = useState([
-    {
-      id: 1,
-      title: 'Data Structures Lab 3',
-      subject: 'Data Structures',
-      course: 'Year 2 - CSE A',
-      dueDate: '2026-03-20',
-      dueTime: '23:59',
-      submitted: false,
-    },
-    {
-      id: 2,
-      title: 'Algorithms Homework 2',
-      subject: 'Algorithms',
-      course: 'Year 2 - CSE A',
-      dueDate: '2026-03-28',
-      dueTime: '18:00',
-      submitted: true,
-      submissionDate: '2026-03-16'
-    },
-    {
-      id: 3,
-      title: 'DBMS Project Proposal',
-      subject: 'Database Management',
-      course: 'Year 2 - CSE A',
-      dueDate: '2026-03-20',
-      dueTime: '12:00',
-      submitted: false,
-    },
-    {
-      id: 4,
-      title: 'Binary Search Trees Assignment',
-      subject: 'Data Structures',
-      course: 'Year 2 - CSE A',
-      dueDate: '2026-04-05',
-      dueTime: '11:59',
-      submitted: false,
-    }
-  ]);
+  // Derive assignments from context to ensure reactivity
+  const assignments = getStudentAssignmentsByRoll('CS-101');
 
   const isBeforeDue = (dueDate, dueTime) => {
     const due = new Date(`${dueDate}T${dueTime}`);
@@ -51,11 +16,9 @@ const StudentAssignments = () => {
   const handleSubmit = (id, e, isUpdate) => {
     e.preventDefault();
     setTimeout(() => {
-      setAssignments(assignments.map(a =>
-        a.id === id
-          ? { ...a, submitted: true, submissionDate: new Date().toISOString().split('T')[0] }
-          : a
-      ));
+      // Update global state via context
+      submitWork(id, 'S1', 'submission.zip'); // Hardcoded S1 for now
+      
       alert(isUpdate ? 'Assignment updated successfully!' : 'Assignment submitted successfully!');
     }, 500);
   };

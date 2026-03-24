@@ -1,4 +1,3 @@
-import React from 'react';
 
 const TeacherHome = () => {
     const user = JSON.parse(localStorage.getItem('user')) || { id: 'Unknown' };

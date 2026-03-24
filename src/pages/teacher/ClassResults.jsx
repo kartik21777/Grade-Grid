@@ -1,38 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useDataContext } from '../../context/DataContext';
 
 const ClassResults = () => {
+  const { facultyClasses, classData } = useDataContext();
   const [selectedClass, setSelectedClass] = useState(null);
-
-  const facultyClasses = [
-    { id: 1, name: 'Year 2 - CSE A' },
-    { id: 2, name: 'Year 3 - IT A' },
-    { id: 3, name: 'Year 1 - CSE B' }
-  ];
-
-  const classData = {
-    1: {
-      assignments: ['Data Structures Lab 3', 'Data Structures Midterm', 'Assignment 3', 'Assignment 4', 'Assignment 5', 'Assignment 6', 'Assignment 7', 'Assignment 8', 'Assignment 9', 'Assignment 10', 'Assignment 11', 'Assignment 12'],
-      students: [
-        { name: 'Alice Smith', scores: [85, 92, 90, 88, 95, 80, 85, 87, 89, 91, 95, 99] },
-        { name: 'Bob Jones', scores: [85, 76, 80, 85, 82, 70, 75, 79, 81, 85, 87, 90] },
-        { name: 'Charlie Brown', scores: [null, 81, 75, 80, 85, 80, null, 85, 90, 88, 85, 84] }
-      ]
-    },
-    2: {
-      assignments: ['Web Dev Mini Project'],
-      students: [
-        { name: 'Diana Prince', scores: [95] },
-        { name: 'Evan Wright', scores: [88] }
-      ]
-    },
-    3: {
-      assignments: ['Intro to Python Assignment 1', 'Intro to Python Assignment 2'],
-      students: [
-        { name: 'Fiona Gallagher', scores: [90, 85] },
-        { name: 'George Miller', scores: [70, null] }
-      ]
-    }
-  };
 
   const currentData = selectedClass ? classData[selectedClass.id] : null;
 

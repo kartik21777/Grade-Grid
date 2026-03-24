@@ -1,50 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useDataContext } from '../../context/DataContext';
 
 const GradeAssignment = () => {
+  const { facultyClasses, classAssignmentsByClassId: classAssignments, submissionsByAssignment: submissions, updateSubmission } = useDataContext();
+
   const [selectedClass, setSelectedClass] = useState(null);
   const [selectedAssignment, setSelectedAssignment] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null);
 
-  const facultyClasses = [
-    { id: 1, name: 'Year 2 - CSE A' },
-    { id: 2, name: 'Year 3 - IT A' },
-    { id: 3, name: 'Year 1 - CSE B' }
-  ];
-
-  const classAssignments = {
-    1: [
-      { id: 101, title: 'Data Structures Lab 3' },
-      { id: 102, title: 'Data Structures Midterm' }
-    ],
-    2: [
-      { id: 201, title: 'Web Dev Mini Project' }
-    ],
-    3: [
-      { id: 301, title: 'Intro to Python Assignment 1' },
-      { id: 302, title: 'Intro to Python Assignment 2' }
-    ]
-  };
-
-  const [submissions, setSubmissions] = useState({
-    101: [
-      { id: 1011, name: 'Alice Smith', status: 'Submitted', file: 'alice_lab3.zip', graded: false },
-      { id: 1012, name: 'Bob Jones', status: 'Submitted', file: 'bob_lab3.zip', graded: true, score: { code: 20, func: 45, doc: 20 } },
-    ],
-    102: [
-      { id: 1021, name: 'Alice Smith', status: 'Pending', file: null, graded: false },
-    ],
-    201: [
-      { id: 2011, name: 'Charlie Brown', status: 'Submitted', file: 'charlie_project.rar', graded: false },
-      { id: 2012, name: 'Diana Prince', status: 'Submitted', file: 'diana_webapp.zip', graded: false },
-    ],
-    301: [
-      { id: 3011, name: 'Evan Wright', status: 'Pending', file: null, graded: false },
-      { id: 3012, name: 'Fiona Gallagher', status: 'Submitted', file: 'fiona_python.py', graded: false },
-    ],
-    302: []
-  });
-
-  const [grades, setGrades] = useState({ code: '', func: '', doc: '' });
+  const [grades, setGrades] = useState({ code: '', func: '', doc: '', remark: '' });
 
   const handleClassSelect = (cls) => {
     setSelectedClass(cls);
@@ -82,27 +46,16 @@ const GradeAssignment = () => {
     e.preventDefault();
 
     const currentSubmissions = submissions[selectedAssignment.id] || [];
-    const updatedStudents = currentSubmissions.map(student => {
-      if (student.id === selectedStudent.id) {
-        return {
-          ...student,
-          graded: true,
-          score: {
-            code: Number(grades.code),
-            func: Number(grades.func),
-            doc: Number(grades.doc)
-          }
-        };
-      }
-      return student;
+    
+    // Update global state
+    updateSubmission(selectedAssignment.id, selectedStudent.studentId, {
+      code: Number(grades.code),
+      func: Number(grades.func),
+      doc: Number(grades.doc),
+      remark: grades.remark
     });
 
-    setSubmissions({
-      ...submissions,
-      [selectedAssignment.id]: updatedStudents
-    });
-
-    alert(`Success! Grades submitted for ${selectedStudent.name}.\nCode: ${grades.code}/25\nFunctionality: ${grades.func}/50\nDocumentation: ${grades.doc}/25\nTotal: ${Number(grades.code) + Number(grades.func) + Number(grades.doc)}/100`);
+    alert(`Success! Grades submitted for ${selectedStudent.name}.\nCode: ${grades.code}/25\nFunctionality: ${grades.func}/50\nDocumentation: ${grades.doc}/25\nTotal: ${Number(grades.code) + Number(grades.func) + Number(grades.doc)}/100\nRemark: ${grades.remark || 'N/A'}`);
 
     setSelectedStudent(null);
   };
@@ -291,6 +244,18 @@ const GradeAssignment = () => {
             min="0"
             max="25"
             required
+          />
+        </div>
+
+        <div className="gradeAssignInputRow" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+          <label className="gradeAssignInputLabel" style={{ marginBottom: '8px' }}>Instructor Remarks</label>
+          <textarea
+            className="input"
+            name="remark"
+            value={grades.remark}
+            onChange={handleGradeChange}
+            placeholder="Add a remark (e.g., Well done!, Needs improvement in...)"
+            style={{ width: '100%', minHeight: '80px', paddingTop: '10px' }}
           />
         </div>
 

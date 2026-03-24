@@ -1,35 +1,8 @@
-import React from 'react';
+import { useDataContext } from '../../context/DataContext';
 
 const StudentResults = () => {
-  const results = [
-    {
-      id: 1,
-      title: 'Data Structures Lab 1',
-      course: 'Year 2 - CSE A',
-      checkedDate: '2026-02-15',
-      totalMarks: 100,
-      obtainedMarks: 92,
-      feedback: 'Excellent work on the linked list implementation.',
-      criteria: [
-        { name: 'Code Quality', marks: 25, max: 25 },
-        { name: 'Functionality', marks: 45, max: 50 },
-        { name: 'Documentation', marks: 22, max: 25 },
-      ]
-    },
-    {
-      id: 2,
-      title: 'Algorithms Homework 1',
-      course: 'Year 2 - CSE A',
-      checkedDate: '2026-03-05',
-      totalMarks: 50,
-      obtainedMarks: 38,
-      feedback: 'Good try, but the sorting algorithm could be optimized further.',
-      criteria: [
-        { name: 'Correctness', marks: 25, max: 30 },
-        { name: 'Time Complexity', marks: 13, max: 20 },
-      ]
-    }
-  ];
+  const { getStudentResultsByRoll } = useDataContext();
+  const results = getStudentResultsByRoll('CS-101');
 
   return (
     <div className="contentWrapper">
