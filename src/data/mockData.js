@@ -21,11 +21,7 @@ export const USER_CREDENTIALS = {
   'IT-202': { password: 'password123', role: 'student' },
 };
 
-// NEW: Base Data: Teachers
-export const TEACHERS = [
-  { id: 'T1', empId: '101', name: 'Dr. Aris Thorne', dept: 'Computer Science', assignedClasses: [1, 3] },
-  { id: 'T2', empId: '102', name: 'Prof. Sarah Connor', dept: 'Information Technology', assignedClasses: [2] }
-];
+// Removed TEACHERS array - now fetched from MongoDB
 
 // Base Data: Classes
 export const CLASSES = [
@@ -51,41 +47,10 @@ export const STUDENTS = [
 ];
 
 // Base Data: Assignments
-export const ASSIGNMENTS = [
-  // Class 1
-  { id: 101, title: 'Data Structures Lab 3', subject: 'Data Structures', classId: 1, dueDate: '2026-03-20', dueTime: '23:59', file: '/uploads/assignments/lab3_template.pdf' },
-  { id: 102, title: 'Data Structures Midterm', subject: 'Data Structures', classId: 1, dueDate: '2026-03-25', dueTime: '12:00', file: '/uploads/assignments/midterm_rules.pdf' },
-  { id: 103, title: 'Assignment 3', subject: 'Data Structures', classId: 1, dueDate: '2026-04-01', dueTime: '23:59', file: '/uploads/assignments/assignment3.pdf' },
-  // Class 2
-  { id: 201, title: 'Web Dev Mini Project', subject: 'Web Development', classId: 2, dueDate: '2026-03-22', dueTime: '23:59', file: '/uploads/assignments/mini_project.zip' },
-  { id: 202, title: 'Database Design', subject: 'Database Management', classId: 2, dueDate: '2026-03-25', dueTime: '23:59', file: '/uploads/assignments/db_schema_guide.pdf' },
-  // Class 3
-  { id: 301, title: 'Intro to Python Assignment 1', subject: 'Python', classId: 3, dueDate: '2026-03-24', dueTime: '10:00', file: '/uploads/assignments/python_basics.pdf' }
-];
+export const ASSIGNMENTS = [];
 
-// Base Data: Submissions and Grades (Added Dates, Feedback, and Ungraded Scenarios)
-export const SUBMISSIONS = [
-  // Alice Smith (S1) - Fully Graded
-  { studentId: 'S1', assignmentId: 101, status: 'Submitted', submissionDate: '2026-03-19T14:30:00Z', file: 'alice_lab3.zip', graded: true, score: { code: 25, func: 45, doc: 22 }, feedback: 'Excellent logic, but add more comments next time.' },
-  { studentId: 'S1', assignmentId: 102, status: 'Submitted', submissionDate: '2026-03-24T09:15:00Z', file: 'alice_midterm.zip', graded: true, score: { code: 24, func: 48, doc: 20 }, feedback: 'Great performance under pressure.' },
-
-  // Bob Jones (S2) - Mix of Graded and Ungraded
-  { studentId: 'S2', assignmentId: 101, status: 'Submitted', submissionDate: '2026-03-20T23:50:00Z', file: 'bob_lab3.zip', graded: true, score: { code: 20, func: 45, doc: 20 }, feedback: 'Good, but submitted very close to the deadline.' },
-  { studentId: 'S2', assignmentId: 102, status: 'Submitted', submissionDate: '2026-03-24T11:45:00Z', file: 'bob_midterm.zip', graded: false, score: null, feedback: null }, // UNGRADED to test Teacher Flow
-
-  // New Class 1 Students - Ungraded volume to test Teacher Dashboard
-  { studentId: 'S8', assignmentId: 101, status: 'Submitted', submissionDate: '2026-03-19T10:00:00Z', file: 'david_lab3.zip', graded: false, score: null, feedback: null },
-  { studentId: 'S9', assignmentId: 101, status: 'Submitted', submissionDate: '2026-03-20T12:00:00Z', file: 'emma_lab3.zip', graded: false, score: null, feedback: null },
-  { studentId: 'S10', assignmentId: 101, status: 'Submitted', submissionDate: '2026-03-21T08:00:00Z', file: 'frank_lab3.zip', graded: true, score: { code: 15, func: 30, doc: 10 }, feedback: 'Late submission. Core functions are failing.' }, // LATE & GRADED
-
-  // Class 2 Students
-  { studentId: 'S3', assignmentId: 201, status: 'Submitted', submissionDate: '2026-03-22T20:00:00Z', file: 'charlie_project.rar', graded: false, score: null, feedback: null },
-  { studentId: 'S4', assignmentId: 201, status: 'Submitted', submissionDate: '2026-03-21T15:30:00Z', file: 'diana_webapp.zip', graded: true, score: { code: 24, func: 48, doc: 23 }, feedback: 'Perfect execution.' },
-
-  // Class 3 Students
-  { studentId: 'S6', assignmentId: 301, status: 'Submitted', submissionDate: '2026-03-23T18:00:00Z', file: 'fiona_python.py', graded: true, score: { code: 22, func: 45, doc: 23 }, feedback: 'Solid grasp of Python basics.' },
-  { studentId: 'S7', assignmentId: 301, status: 'Pending', submissionDate: null, file: null, graded: false, score: null, feedback: null }
-];
+// Base Data: Submissions and Grades 
+export const SUBMISSIONS = [];
 
 
 /* =========================================================================

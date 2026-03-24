@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useDataContext } from '../../context/DataContext';
+import { useAlert } from '../../context/AlertContext';
 
 const GradeAssignment = () => {
   const { facultyClasses, classAssignmentsByClassId: classAssignments, submissionsByAssignment: submissions, updateSubmission } = useDataContext();
+  const { showAlert } = useAlert();
 
   const [selectedClass, setSelectedClass] = useState(null);
   const [selectedAssignment, setSelectedAssignment] = useState(null);
@@ -24,7 +26,7 @@ const GradeAssignment = () => {
 
   const handleStudentSelect = (student) => {
     if (student.status !== 'Submitted') {
-      alert("This student has not submitted the assignment yet.");
+      showAlert("This student has not submitted the assignment yet.", "error");
       return;
     }
     setSelectedStudent(student);
@@ -56,7 +58,7 @@ const GradeAssignment = () => {
     updateSubmission(selectedAssignment.id, selectedStudent.studentId, submissionPayload);
 
     const totalCalculated = Object.values(gradeData).reduce((a, b) => Number(a) + Number(b), 0);
-    alert(`Success! Grades submitted for ${selectedStudent.name}.\nTotal Score: ${totalCalculated}\nRemark: ${remark || 'N/A'}`);
+    showAlert(`Success! Grades submitted for ${selectedStudent.name}.\nTotal Score: ${totalCalculated}\nRemark: ${remark || 'N/A'}`, "success");
 
     setSelectedStudent(null);
   };

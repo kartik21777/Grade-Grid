@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useDataContext } from '../../context/DataContext';
+import { useAlert } from '../../context/AlertContext';
 
 const SearchStudent = () => {
   const { mockStudents, updateSubmission } = useDataContext();
+  const { showAlert } = useAlert();
   const [searchTerm, setSearchTerm] = useState('');
   const [student, setStudent] = useState(null);
   const [editingAssignment, setEditingAssignment] = useState(null);
@@ -72,7 +74,7 @@ const SearchStudent = () => {
     });
 
     setEditingAssignment(null);
-    alert(`Grades updated for ${editingAssignment.title}!`);
+    showAlert(`Grades updated for ${editingAssignment.title}!`, "success");
   };
 
   if (editingAssignment) {

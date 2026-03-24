@@ -18,6 +18,7 @@ import ClassResults from './pages/teacher/ClassResults';
 import TeacherNotes from './pages/teacher/TeacherNotes';
 import Dashboard from './components/Dashboard';
 import { DataProvider } from './context/DataContext';
+import { AlertProvider } from './context/AlertContext';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -44,44 +45,46 @@ const App = () => {
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('user', JSON.stringify(newUser));
 
-      navigate(mockRole === 'teacher' ? '/teacher' : '/student');
+      navigate(userCreds.role === 'teacher' ? '/teacher' : '/student');
     } else {
       setError('Invalid ID or Password');
     }
   };
 
   return (
-    <DataProvider user={user}>
-      {isLoggedIn ? (
-        <Dashboard user={user} setIsLoggedIn={setIsLoggedIn}>
+    <AlertProvider>
+      <DataProvider user={user}>
+        {isLoggedIn ? (
+          <Dashboard user={user} setIsLoggedIn={setIsLoggedIn}>
+            <Routes>
+              <Route path="/student" element={<StudentDashboard />}>
+                <Route index element={<StudentHome />} />
+                <Route path="assignments" element={<StudentAssignments />} />
+                <Route path="results" element={<StudentResults />} />
+                <Route path="notes" element={<StudentNotes />} />
+                <Route path="deadlines" element={<StudentDeadlines />} />
+              </Route>
+
+              <Route path="/teacher" element={<TeacherDashboard />}>
+                <Route index element={<TeacherHome />} />
+                <Route path="classes" element={<TeacherClasses />} />
+                <Route path="grade-assignment" element={<GradeAssignment />} />
+                <Route path="search-student" element={<SearchStudent />} />
+                <Route path="class-results" element={<ClassResults />} />
+                <Route path="notes" element={<TeacherNotes />} />
+              </Route>
+
+              <Route path="*" element={<Navigate to={user.role === 'teacher' ? '/teacher' : '/student'} replace />} />
+            </Routes>
+          </Dashboard>
+        ) : (
           <Routes>
-            <Route path="/student" element={<StudentDashboard />}>
-              <Route index element={<StudentHome />} />
-              <Route path="assignments" element={<StudentAssignments />} />
-              <Route path="results" element={<StudentResults />} />
-              <Route path="notes" element={<StudentNotes />} />
-              <Route path="deadlines" element={<StudentDeadlines />} />
-            </Route>
-
-            <Route path="/teacher" element={<TeacherDashboard />}>
-              <Route index element={<TeacherHome />} />
-              <Route path="classes" element={<TeacherClasses />} />
-              <Route path="grade-assignment" element={<GradeAssignment />} />
-              <Route path="search-student" element={<SearchStudent />} />
-              <Route path="class-results" element={<ClassResults />} />
-              <Route path="notes" element={<TeacherNotes />} />
-            </Route>
-
-            <Route path="*" element={<Navigate to={user.role === 'teacher' ? '/teacher' : '/student'} replace />} />
+            <Route path="/" element={<Login credentials={credentials} onChange={(e) => setCredentials({ ...credentials, [e.target.name]: e.target.value })} onLogin={handleLogin} error={error} />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-        </Dashboard>
-      ) : (
-        <Routes>
-          <Route path="/" element={<Login credentials={credentials} onChange={(e) => setCredentials({ ...credentials, [e.target.name]: e.target.value })} onLogin={handleLogin} error={error} />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      )}
-    </DataProvider>
+        )}
+      </DataProvider>
+    </AlertProvider>
   );
 };
 

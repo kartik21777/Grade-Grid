@@ -13,6 +13,7 @@ import Student from './models/Student.model.js';
 import Assignment from './models/Assignment.model.js';
 import Score from './models/Score.model.js';
 import Note from './models/Note.model.js';
+import Teacher from './models/Teacher.model.js';
 
 dotenv.config();
 
@@ -65,12 +66,31 @@ connectDB();
 // 1. GET /api/data - Fetch all initial data using Promise.all
 app.get('/api/data', async (req, res) => {
   try {
-    const [classes, students, assignments, scores, notes] = await Promise.all([
+    // 1a. Seed Teacher Data if Empty (Migration Step)
+    const teacherCount = await Teacher.countDocuments();
+    let teachersData = [];
+    if (teacherCount === 0) {
+      // Find classes to link
+      const csea = await Class.findOne({ originalId: 1 }); // Year 2 - CSE A
+      const ita = await Class.findOne({ originalId: 2 });  // Year 3 - IT A
+      const cseb = await Class.findOne({ originalId: 3 }); // Year 1 - CSE B
+
+      const INITIAL_TEACHERS = [
+        { originalId: 'T1', empId: '101', name: 'Dr. Aris Thorne', dept: 'Computer Science', assignedClasses: [csea?._id, cseb?._id].filter(Boolean) },
+        { originalId: 'T2', empId: '102', name: 'Prof. Sarah Connor', dept: 'Information Technology', assignedClasses: [ita?._id].filter(Boolean) }
+      ];
+
+      await Teacher.insertMany(INITIAL_TEACHERS);
+      console.log('Seeded initial teachers into MongoDB');
+    }
+
+    const [classes, students, assignments, scores, notes, teachers] = await Promise.all([
       Class.find({}).lean(),
       Student.find({}).lean(),
       Assignment.find({}).lean(),
       Score.find({}).populate('studentId', 'name originalId').lean(),
-      Note.find({}).lean()
+      Note.find({}).lean(),
+      Teacher.find({}).lean()
     ]);
 
     const mappedClasses = classes.map(c => ({
@@ -136,6 +156,21 @@ app.get('/api/data', async (req, res) => {
       };
     });
 
+    const mappedTeachers = teachers.map(t => {
+      // Map ObjectId back to originalId (Numbers) for the frontend if needed
+      const mappedClassIds = (t.assignedClasses || []).map(clsObjId => {
+        const foundCls = classes.find(c => c._id.toString() === clsObjId.toString());
+        return foundCls ? (foundCls.originalId ? foundCls.originalId : foundCls._id.toString()) : clsObjId;
+      });
+
+      return {
+        ...t,
+        id: t.originalId ? t.originalId : t._id.toString(),
+        _id: t._id.toString(),
+        assignedClasses: mappedClassIds
+      };
+    });
+
     console.log("=== GET /api/data RESPONSE ===");
     console.log("Submissions Flattened Payload (Sample 1):", mappedSubmissions[0]);
 
@@ -144,6 +179,7 @@ app.get('/api/data', async (req, res) => {
       students: mappedStudents,
       assignments: mappedAssignments,
       submissions: mappedSubmissions,
+      teachers: mappedTeachers,
       notes: notes.map(n => {
         const cls = classes.find(c => c._id.toString() === n.classId?.toString());
         return {

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useDataContext } from '../../context/DataContext';
+import { useAlert } from '../../context/AlertContext';
 
 const AssignmentCard = ({ assignment, isBeforeDue, onSubmit }) => {
   const [file, setFile] = useState(null);
+  const { showAlert } = useAlert();
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -11,7 +13,7 @@ const AssignmentCard = ({ assignment, isBeforeDue, onSubmit }) => {
   const handleFormSubmit = (e) => {
     e.preventDefault();
     if (!file) {
-      alert("Please select a file first.");
+      showAlert("Please select a file first.", "error");
       return;
     }
     onSubmit(assignment.id, file, assignment.submitted);
@@ -100,6 +102,7 @@ const AssignmentCard = ({ assignment, isBeforeDue, onSubmit }) => {
 
 const StudentAssignments = () => {
   const { currentUser, getStudentAssignmentsByRoll, submitWork } = useDataContext();
+  const { showAlert } = useAlert();
   const [selectedSubject, setSelectedSubject] = useState(null);
 
   // Derive assignments from context to ensure reactivity
@@ -114,7 +117,7 @@ const StudentAssignments = () => {
     // Artificial delay to match previous UX
     setTimeout(() => {
       submitWork(id, currentUser.id, selectedFile);
-      alert(isUpdate ? 'Assignment updated successfully!' : 'Assignment submitted successfully!');
+      showAlert(isUpdate ? 'Assignment updated successfully!' : 'Assignment submitted successfully!', "success");
     }, 500);
   };
 

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useDataContext } from '../../context/DataContext';
+import { useAlert } from '../../context/AlertContext';
 
 const TeacherNotes = () => {
   const { classes: mockClasses, subjects, addNotes } = useDataContext();
+  const { showAlert } = useAlert();
   const [step, setStep] = useState(1);
   const [notesName, setNotesName] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
@@ -14,7 +16,7 @@ const TeacherNotes = () => {
   const handleNextStep = (e) => {
     e.preventDefault();
     if (!notesName || !selectedSubject || !file) {
-      alert("Please fill all fields and attach a file before continuing.");
+      showAlert("Please fill all fields and attach a file before continuing.", "error");
       return;
     }
     setStep(2);
@@ -30,7 +32,7 @@ const TeacherNotes = () => {
 
   const handleSubmit = async () => {
     if (selectedClasses.length === 0) {
-      alert("Please select at least one class to share these notes with.");
+      showAlert("Please select at least one class to share these notes with.", "error");
       return;
     }
 

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
-import { NOTES, TEACHERS } from '../data/mockData';
+import { useAlert } from './AlertContext';
+import { NOTES } from '../data/mockData';
 
 // SUBJECTS can remain static since it's just strings
 const SUBJECTS = [
@@ -20,7 +21,9 @@ export const DataProvider = ({ children, user }) => {
   const [assignments, setAssignments] = useState([]);
   const [submissions, setSubmissions] = useState([]);
   const [notes, setNotes] = useState([]);
+  const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { showAlert } = useAlert();
   const currentUser = user;
   const calculateTotal = (score) => {
     if (!score) return 0;
@@ -40,6 +43,7 @@ export const DataProvider = ({ children, user }) => {
         setAssignments(data.assignments || []);
         setSubmissions(data.submissions || []);
         setNotes(data.notes || []);
+        setTeachers(data.teachers || []);
         setLoading(false);
       } catch (err) {
         console.error("Error fetching data:", err);
@@ -167,7 +171,15 @@ export const DataProvider = ({ children, user }) => {
   };
 
   // Derived Data (Memoized for performance)
-  const facultyClasses = useMemo(() => classes, [classes]);
+  const facultyClasses = useMemo(() => {
+    if (!currentUser || currentUser.role !== 'teacher') return [];
+    const teacherProfile = teachers.find(t => t.empId === currentUser.id);
+    if (!teacherProfile) return [];
+    
+    // Ensure all IDs are strings for safe comparison
+    const assignedClassIds = (teacherProfile.assignedClasses || []).map(id => String(id));
+    return classes.filter(c => assignedClassIds.includes(String(c.id)));
+  }, [currentUser, teachers, classes]);
 
   const classData = useMemo(() => {
     const now = new Date();
@@ -315,13 +327,13 @@ export const DataProvider = ({ children, user }) => {
       const data = await res.json();
       if (res.ok) {
         setNotes(prev => [...prev, data.note]);
-        alert('Notes shared successfully!');
+        showAlert('Notes shared successfully!', 'success');
       } else {
-        alert('Failed to share notes: ' + data.message);
+        showAlert('Failed to share notes: ' + data.message, 'error');
       }
     } catch (error) {
       console.error("Error adding notes:", error);
-      alert('Error connecting to server while sharing notes.');
+      showAlert('Error connecting to server while sharing notes.', 'error');
     }
   };
 
@@ -368,7 +380,7 @@ export const DataProvider = ({ children, user }) => {
     currentUser,
     classes,
     students,
-    teachers: TEACHERS,
+    teachers,
     subjects: SUBJECTS,
     assignments,
     submissions,

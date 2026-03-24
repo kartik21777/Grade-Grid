@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useDataContext } from '../../context/DataContext';
+import { useAlert } from '../../context/AlertContext';
 
 const TeacherClasses = () => {
   const { classes: mockClasses, subjects, addAssignment } = useDataContext();
+  const { showAlert } = useAlert();
   const [step, setStep] = useState(1);
   const [assignmentName, setAssignmentName] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
@@ -17,7 +19,7 @@ const TeacherClasses = () => {
   const handleNextStep = (e) => {
     e.preventDefault();
     if (!assignmentName || !selectedSubject || !dueDate || !dueTime) {
-      alert("Please fill all fields before continuing.");
+      showAlert("Please fill all fields before continuing.", "error");
       return;
     }
     setStep(2);
@@ -48,7 +50,7 @@ const TeacherClasses = () => {
 
   const handleSubmit = () => {
     if (selectedClasses.length === 0) {
-      alert("Please select at least one class to assign this to.");
+      showAlert("Please select at least one class to assign this to.", "error");
       return;
     }
 
@@ -79,7 +81,7 @@ const TeacherClasses = () => {
       }
     });
 
-    alert(`Success! Assignment "${assignmentName}" for "${selectedSubject}" assigned to:\n${selectedClasses.join('\n')}\n\nCriteria:\n${criteria.map(c => `- ${c.name} (${c.maxMarks} marks)`).join('\n')}`);
+    showAlert(`Success! Assignment "${assignmentName}" for "${selectedSubject}" assigned to:\n${selectedClasses.join('\n')}\n\nCriteria:\n${criteria.map(c => `- ${c.name} (${c.maxMarks} marks)`).join('\n')}`, "success");
 
     setStep(1);
     setAssignmentName('');
