@@ -254,12 +254,6 @@ export const DataProvider = ({ children, user }) => {
     const student = students.find(s => s.rollNo === rollNo);
     if (!student) return [];
 
-    const calculateTotal = (score) => {
-      if (!score) return 0;
-      // Sums up all numerical values in the score object dynamically
-      return Object.values(score).reduce((sum, val) => sum + (Number(val) || 0), 0);
-    };
-
     return assignments.filter(a => String(a.classId) === String(student.classId)).map(a => {
       const sub = submissions.find(s => String(s.studentId) === String(student.id) && String(s.assignmentId) === String(a.id));
       return {
@@ -303,6 +297,10 @@ export const DataProvider = ({ children, user }) => {
       return {
         id: sub.assignmentId,
         title: assignment?.title || 'Unknown Assignment',
+        subject: assignment?.subject || 'General',
+        course: classes.find(c => String(c.id) === String(assignment?.classId))?.name || 'Unknown',
+        checkedDate: sub.submissionDate || '2026-03-24',
+        feedback: sub.feedback || 'Graded successfully.',
         totalMarks: calculateTotal(assignmentRubric),
         obtainedMarks: calculateTotal(sub.score),
         criteria: Object.keys(assignmentRubric).map(key => ({
