@@ -8,7 +8,7 @@ const SearchStudent = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [student, setStudent] = useState(null);
   const [editingAssignment, setEditingAssignment] = useState(null);
-  const [grades, setGrades] = useState({ code: '', func: '', doc: '', remark: '' });
+  const [grades, setGrades] = useState({});
   const [errorText, setErrorText] = useState('');
   const handleSearch = (e) => {
     e.preventDefault();
@@ -26,59 +26,51 @@ const SearchStudent = () => {
 
   const handleEditClick = (assignment) => {
     setEditingAssignment(assignment);
-    if (assignment.graded) {
-      setGrades(assignment.score);
+    if (assignment.graded && assignment.score) {
+      // Pre-fill with existing scores
+      const scoreEntries = Object.keys(assignment.rubrics || {}).map(k => [k, assignment.score[k] ?? '']);
+      setGrades({
+        ...Object.fromEntries(scoreEntries),
+        remark: assignment.feedback || ''
+      });
     } else {
-      setGrades({ code: '', func: '', doc: '' });
+      // Empty state for each rubric key
+      setGrades({
+        ...Object.fromEntries(Object.keys(assignment.rubrics || {}).map(k => [k, ''])),
+        remark: ''
+      });
     }
   };
 
-  const handleGradeChange = (e) => {
+  const handleGradeChange = (e, maxPoints) => {
     const { name, value } = e.target;
-
-    if (name === 'code' && value > 25) return;
-    if (name === 'func' && value > 50) return;
-    if (name === 'doc' && value > 25) return;
-
+    if (value !== '' && Number(value) > maxPoints) return;
     setGrades({ ...grades, [name]: value });
   };
 
   const handleGradeSubmit = (e) => {
     e.preventDefault();
+    const rubricKeys = Object.keys(editingAssignment.rubrics || {});
+    const numericScores = Object.fromEntries(rubricKeys.map(k => [k, Number(grades[k] || 0)]));
+    const payload = { ...numericScores, remark: grades.remark || '' };
 
     const updatedAssignments = student.assignments.map(a => {
       if (a.id === editingAssignment.id) {
-        return {
-          ...a,
-          graded: true,
-          score: {
-            code: Number(grades.code),
-            func: Number(grades.func),
-            doc: Number(grades.doc),
-            remark: grades.remark
-          }
-        };
+        return { ...a, graded: true, score: numericScores };
       }
-
       return a;
     });
 
     setStudent({ ...student, assignments: updatedAssignments });
-    
-    // Update global state
-    updateSubmission(editingAssignment.id, student.id || student.rollNo, {
-      code: Number(grades.code),
-      func: Number(grades.func),
-      doc: Number(grades.doc),
-      remark: grades.remark
-    });
-
+    updateSubmission(editingAssignment.id, student.id || student.rollNo, payload);
     setEditingAssignment(null);
     showAlert(`Grades updated for ${editingAssignment.title}!`, "success");
   };
 
   if (editingAssignment) {
-    const totalScore = Number(grades.code || 0) + Number(grades.func || 0) + Number(grades.doc || 0);
+    const rubrics = editingAssignment.rubrics || {};
+    const maxTotal = Object.values(rubrics).reduce((a, b) => a + Number(b), 0);
+    const totalScore = Object.entries(rubrics).reduce((a, [k]) => a + Number(grades[k] || 0), 0);
 
     return (
       <div className="card teacherClassesCard gradeAssignContainerSmall">
@@ -93,15 +85,12 @@ const SearchStudent = () => {
           <p className="fileInfoText">
             <strong>Student:</strong> {student.name} ({student.rollNo})
           </p>
-          <div className="fileInfoTextLast gradeAssignFileInfoRow">
-            <span><strong>Submitted File:</strong> <code>{editingAssignment.file || 'N/A'}</code></span>
+          <div className="fileInfoTextLast gradeAssignFileInfoRow" style={{ flexWrap: 'wrap', gap: '8px', alignItems: 'flex-start' }}>
+            <span style={{ wordBreak: 'break-all', flex: '1 1 60%' }}><strong>Submitted File:</strong> <code>{editingAssignment.file || 'N/A'}</code></span>
             {editingAssignment.file && (
-              <>
-                {console.log("SEARCH STUDENT DOWNLOAD HREF GENERATED:", `http://localhost:5000${editingAssignment.file.startsWith('/') ? '' : '/'}${editingAssignment.file}`)}
-                <a href={`http://localhost:5000${editingAssignment.file.startsWith('/') ? '' : '/'}${editingAssignment.file}`} download>
-                  <button className="submitBtn publishBtn gradeAssignDownloadBtn">Download Work</button>
-                </a>
-              </>
+              <a href={`http://localhost:5000${editingAssignment.file.startsWith('/') ? '' : '/'}${editingAssignment.file}`} download style={{ flexShrink: 0 }}>
+                <button className="submitBtn publishBtn gradeAssignDownloadBtn">Download Work</button>
+              </a>
             )}
           </div>
         </div>
@@ -109,51 +98,39 @@ const SearchStudent = () => {
         <form onSubmit={handleGradeSubmit} className="form">
           <h4 className="gradeAssignRubricTitle">Evaluation Rubric</h4>
 
-          <div className="gradeAssignInputRow">
-            <label className="teacherClassesLabel gradeAssignInputLabel">Code Quality (Max: 25)</label>
-            <input
-              type="number"
-              className="input gradeAssignInputNumber"
-              name="code"
-              value={grades.code}
-              onChange={handleGradeChange}
-              min="0"
-              max="25"
-              required
-            />
-          </div>
-
-          <div className="gradeAssignInputRow">
-            <label className="teacherClassesLabel gradeAssignInputLabel">Functionality (Max: 50)</label>
-            <input
-              type="number"
-              className="input gradeAssignInputNumber"
-              name="func"
-              value={grades.func}
-              onChange={handleGradeChange}
-              min="0"
-              max="50"
-              required
-            />
-          </div>
-
-          <div className="gradeAssignInputRow">
-            <label className="teacherClassesLabel gradeAssignInputLabel">Documentation (Max: 25)</label>
-            <input
-              type="number"
-              className="input gradeAssignInputNumber"
-              name="doc"
-              value={grades.doc}
-              onChange={handleGradeChange}
-              min="0"
-              max="25"
-              required
-            />
-          </div>
+          {Object.entries(rubrics).map(([criterion, maxPoints]) => (
+            <div key={criterion} className="gradeAssignInputRow">
+              <label className="teacherClassesLabel gradeAssignInputLabel">
+                {criterion.charAt(0).toUpperCase() + criterion.slice(1)} (Max: {maxPoints})
+              </label>
+              <input
+                type="number"
+                className="input gradeAssignInputNumber"
+                name={criterion}
+                value={grades[criterion] ?? ''}
+                onChange={(e) => handleGradeChange(e, Number(maxPoints))}
+                min="0"
+                max={maxPoints}
+                required
+              />
+            </div>
+          ))}
 
           <div className="gradeAssignTotalBox">
             <strong className="gradeAssignTotalLabel">Calculated Total:</strong>
-            <strong className="gradeAssignTotalValue">{totalScore}/100</strong>
+            <strong className="gradeAssignTotalValue">{totalScore}/{maxTotal}</strong>
+          </div>
+
+          <div className="gradeAssignInputRow" style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+            <label className="teacherClassesLabel gradeAssignInputLabel" style={{ marginBottom: '8px' }}>Instructor Remarks (Optional)</label>
+            <textarea
+              className="input"
+              name="remark"
+              value={grades.remark || ''}
+              onChange={(e) => setGrades({ ...grades, remark: e.target.value })}
+              placeholder="Add a remark (e.g., Well done!, Needs improvement in...)"
+              style={{ width: '100%', minHeight: '80px', paddingTop: '10px', boxSizing: 'border-box' }}
+            />
           </div>
 
           <button type="submit" className="submitBtn gradeAssignSubmitBtn">
@@ -208,6 +185,7 @@ const SearchStudent = () => {
                   <th className="teacherAssignTh">Title</th>
                   <th className="teacherAssignTh">Status</th>
                   <th className="teacherAssignTh">Score</th>
+                  <th className="teacherAssignTh">Remarks</th>
                   <th className="teacherAssignTh">Action</th>
                 </tr>
               </thead>
@@ -223,7 +201,14 @@ const SearchStudent = () => {
                       </span>
                     </td>
                     <td className=" gradeAssignTdCenterBold">
-                      {assignment.graded ? `${assignment.score.code + assignment.score.func + assignment.score.doc}/100` : '-'}
+                      {assignment.graded && assignment.score
+                        ? `${Object.values(assignment.score).reduce((a, b) => a + Number(b), 0)}/${Object.values(assignment.rubrics || {}).reduce((a, b) => a + Number(b), 0)}`
+                        : '-'}
+                    </td>
+                    <td className=" gradeAssignTdCenter">
+                      {assignment.graded && assignment.feedback
+                        ? <span title={assignment.feedback} style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', maxWidth: '140px', display: 'inline-block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', verticalAlign: 'middle' }}>💬 {assignment.feedback}</span>
+                        : <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>—</span>}
                     </td>
                     <td className=" gradeAssignTdCenter">
                       <button

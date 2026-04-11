@@ -268,10 +268,12 @@ export const DataProvider = ({ children, user }) => {
         return {
           id: a.id,
           title: a.title,
+          rubrics: a.rubrics || { code: 25, func: 50, doc: 25 },
           status: sub ? sub.status : 'Pending',
           file: sub ? sub.file : null,
           graded: sub ? sub.graded : false,
           score: sub ? sub.score : null,
+          feedback: sub ? (sub.feedback || null) : null,
           submissionDate: sub ? sub.submissionDate : null
         };
       });

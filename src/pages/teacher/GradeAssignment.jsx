@@ -31,9 +31,8 @@ const GradeAssignment = () => {
     }
     setSelectedStudent(student);
     if (student.graded) {
-      const { remark: studentRemark, ...scores } = student.score || {};
-      setGradeData(scores || {});
-      setRemark(studentRemark || '');
+      setGradeData(student.score || {});
+      setRemark(student.feedback || '');
     } else {
       setGradeData({});
       setRemark('');
@@ -141,6 +140,7 @@ const GradeAssignment = () => {
                 <th className="teacherAssignTh">Student Name</th>
                 <th className="teacherAssignTh">Status</th>
                 <th className="teacherAssignTh">Score</th>
+                <th className="teacherAssignTh">Remarks</th>
                 <th className="teacherAssignTh">Action</th>
               </tr>
             </thead>
@@ -169,6 +169,11 @@ const GradeAssignment = () => {
                       {displayScore}
                     </td>
                     <td className="teacherAssignTd gradeAssignTdCenter">
+                      {student.feedback
+                        ? <span title={student.feedback} style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', maxWidth: '130px', display: 'inline-block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', verticalAlign: 'middle' }}>💬 {student.feedback}</span>
+                        : <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>—</span>}
+                    </td>
+                    <td className="teacherAssignTd gradeAssignTdCenter">
                       <button
                         className={`gradeAssignBtn ${student.status === 'Submitted' ? 'gradeAssignBtnActive' : 'gradeAssignBtnDisabled'}`}
                         onClick={() => handleStudentSelect(student)}
@@ -181,7 +186,7 @@ const GradeAssignment = () => {
               })}
               {students.length === 0 && (
                 <tr>
-                  <td colSpan="4" className="teacherAssignTd gradeAssignTdCenter" style={{ color: '#94a3b8' }}>
+                  <td colSpan="5" className="teacherAssignTd gradeAssignTdCenter" style={{ color: '#94a3b8' }}>
                     No students found.
                   </td>
                 </tr>
