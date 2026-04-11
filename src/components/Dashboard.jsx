@@ -21,7 +21,13 @@ const Dashboard = ({ user, setIsLoggedIn, children }) => {
         { path: '/teacher/notes', label: 'Upload Notes' },
     ];
 
-    const links = user?.role === 'teacher' ? teacherLinks : studentLinks;
+    const adminLinks = [
+        { path: '/admin', label: 'Overview', end: true },
+        { path: '/admin/users', label: 'User Management' },
+        { path: '/admin/classes', label: 'Classes & Departments' }
+    ];
+
+    const links = user?.role === 'teacher' ? teacherLinks : user?.role === 'admin' ? adminLinks : studentLinks;
 
     return (
         <div className="dashboard">

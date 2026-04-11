@@ -4,6 +4,7 @@
  */
 
 export const USER_CREDENTIALS = {
+  'admin1': { password: 'admin', role: 'admin' },
   '101': { password: 'password123', role: 'teacher' },
   '102': { password: 'password123', role: 'teacher' },
   'CS-101': { password: 'password123', role: 'student' },

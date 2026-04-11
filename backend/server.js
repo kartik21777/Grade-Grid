@@ -342,6 +342,50 @@ app.post('/api/notes', upload.single('file'), async (req, res) => {
   }
 });
 
+// --- ADMIN ROUTES ---
+
+// 5. POST /api/classes
+app.post('/api/classes', async (req, res) => {
+  try {
+    const { name, originalId } = req.body;
+    const newClass = new Class({ name, originalId: Number(originalId) || Date.now() });
+    await newClass.save();
+    res.status(201).json({ message: 'Class created', class: { ...newClass.toObject(), id: newClass.originalId } });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error creating class' });
+  }
+});
+
+// 6. POST /api/students
+app.post('/api/students', async (req, res) => {
+  try {
+    const { rollNo, name, classId } = req.body;
+    if (Array.isArray(req.body)) {
+      // Bulk create
+      const mapped = req.body.map(s => ({ ...s, originalId: s.rollNo }));
+      const inserted = await Student.insertMany(mapped);
+      return res.status(201).json({ message: 'Bulk students created', students: inserted });
+    }
+    const cls = await Class.findOne({ originalId: classId });
+    const newStudent = new Student({ rollNo, originalId: rollNo, name, classId: cls ? cls._id : null });
+    await newStudent.save();
+    res.status(201).json({ message: 'Student created', student: { ...newStudent.toObject(), id: newStudent.originalId } });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error creating student' });
+  }
+});
+
+// 7. POST /api/teachers
+app.post('/api/teachers', async (req, res) => {
+  try {
+    const { empId, name, dept } = req.body;
+    const newTeacher = new Teacher({ empId, originalId: empId, name, dept, assignedClasses: [] });
+    await newTeacher.save();
+    res.status(201).json({ message: 'Teacher created', teacher: { ...newTeacher.toObject(), id: newTeacher.originalId } });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error creating teacher' });
+  }
+});
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

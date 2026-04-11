@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import { USER_CREDENTIALS } from './data/mockData';
 import './index.css';
@@ -17,6 +17,10 @@ import GradeAssignment from './pages/teacher/GradeAssignment';
 import ClassResults from './pages/teacher/ClassResults';
 import TeacherNotes from './pages/teacher/TeacherNotes';
 import Dashboard from './components/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminHome from './pages/admin/AdminHome';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminClasses from './pages/admin/AdminClasses';
 import { DataProvider } from './context/DataContext';
 import { AlertProvider } from './context/AlertContext';
 
@@ -45,7 +49,9 @@ const App = () => {
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('user', JSON.stringify(newUser));
 
-      navigate(userCreds.role === 'teacher' ? '/teacher' : '/student');
+      if (userCreds.role === 'admin') navigate('/admin');
+      else if (userCreds.role === 'teacher') navigate('/teacher');
+      else navigate('/student');
     } else {
       setError('Invalid ID or Password');
     }
@@ -74,7 +80,13 @@ const App = () => {
                 <Route path="notes" element={<TeacherNotes />} />
               </Route>
 
-              <Route path="*" element={<Navigate to={user.role === 'teacher' ? '/teacher' : '/student'} replace />} />
+              <Route path="/admin" element={<AdminDashboard />}>
+                <Route index element={<AdminHome />} />
+                <Route path="users" element={<AdminUsers />} />
+                <Route path="classes" element={<AdminClasses />} />
+              </Route>
+
+              <Route path="*" element={<Navigate to={user.role === 'admin' ? '/admin' : user.role === 'teacher' ? '/teacher' : '/student'} replace />} />
             </Routes>
           </Dashboard>
         ) : (
