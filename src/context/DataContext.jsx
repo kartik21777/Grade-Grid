@@ -86,8 +86,12 @@ export const DataProvider = ({ children, user }) => {
     }
   };
 
-  const updateSubmission = async (assignmentId, studentId, gradeData) => {
+  const updateSubmission = async (assignmentId, studentIdRaw, gradeData) => {
     try {
+      // Resolve studentId internal vs rollNo
+      const student = students.find(s => s.rollNo === studentIdRaw || String(s.id) === String(studentIdRaw));
+      const internalStudentId = student ? student.id : studentIdRaw;
+
       const { remark, feedback: gradeFeedback, ...scoreObj } = gradeData;
       const feedbackMessage = remark || gradeFeedback;
 
@@ -98,7 +102,7 @@ export const DataProvider = ({ children, user }) => {
         ...(feedbackMessage && { feedback: feedbackMessage })
       };
       
-      const res = await fetch(`http://localhost:5000/api/submissions/${studentId}/${assignmentId}`, {
+      const res = await fetch(`http://localhost:5000/api/submissions/${internalStudentId}/${assignmentId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -107,7 +111,7 @@ export const DataProvider = ({ children, user }) => {
 
       if (res.ok && data.updatedScore) {
         setSubmissions(prev => {
-          const existingIdx = prev.findIndex(s => s.assignmentId == assignmentId && s.studentId == studentId);
+          const existingIdx = prev.findIndex(s => String(s.assignmentId) === String(assignmentId) && String(s.studentId) === String(internalStudentId));
           if (existingIdx > -1) {
             const updated = [...prev];
             updated[existingIdx] = data.updatedScore;
