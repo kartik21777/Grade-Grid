@@ -386,6 +386,83 @@ app.post('/api/teachers', async (req, res) => {
     res.status(500).json({ message: 'Server error creating teacher' });
   }
 });
+
+// 8. PUT /api/students/:id
+app.put('/api/students/:id', async (req, res) => {
+  try {
+    const { name, rollNo, classId } = req.body;
+    const cls = classId ? await Class.findOne({ $or: [{ originalId: classId }, { originalId: Number(classId) }] }) : null;
+    const updated = await Student.findByIdAndUpdate(
+      req.params.id,
+      { name, rollNo, ...(cls && { classId: cls._id }) },
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ message: 'Student not found' });
+    res.json({ message: 'Student updated', student: updated });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error updating student' });
+  }
+});
+
+// 9. DELETE /api/students/:id
+app.delete('/api/students/:id', async (req, res) => {
+  try {
+    const deleted = await Student.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ message: 'Student not found' });
+    res.json({ message: 'Student deleted' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error deleting student' });
+  }
+});
+
+// 10. PUT /api/teachers/:id
+app.put('/api/teachers/:id', async (req, res) => {
+  try {
+    const { name, empId, dept } = req.body;
+    const updated = await Teacher.findByIdAndUpdate(
+      req.params.id,
+      { name, empId, dept },
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ message: 'Teacher not found' });
+    res.json({ message: 'Teacher updated', teacher: updated });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error updating teacher' });
+  }
+});
+
+// 11. DELETE /api/teachers/:id
+app.delete('/api/teachers/:id', async (req, res) => {
+  try {
+    const deleted = await Teacher.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ message: 'Teacher not found' });
+    res.json({ message: 'Teacher deleted' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error deleting teacher' });
+  }
+});
+
+// 12. PATCH /api/teachers/:id/classes — update a teacher's assigned class list
+app.patch('/api/teachers/:id/classes', async (req, res) => {
+  try {
+    const { classIds } = req.body; // array of originalId numbers/strings e.g. [1, 3]
+    const classDocs = await Class.find({ originalId: { $in: classIds.map(Number) } });
+    const objectIds = classDocs.map(c => c._id);
+
+    const updated = await Teacher.findByIdAndUpdate(
+      req.params.id,
+      { assignedClasses: objectIds },
+      { new: true }
+    ).lean();
+
+    if (!updated) return res.status(404).json({ message: 'Teacher not found' });
+    res.json({ message: 'Teacher classes updated', teacher: updated });
+  } catch (error) {
+    console.error('PATCH /teachers/:id/classes error:', error);
+    res.status(500).json({ message: 'Server error updating teacher classes' });
+  }
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

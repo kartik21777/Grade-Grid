@@ -143,16 +143,16 @@ const AdminHome = () => {
                             <button
                                 className="dash-btn dash-btn-primary"
                                 style={{ width: '100%', justifyContent: 'flex-start' }}
-                                onClick={() => navigate('/admin/users')}
+                                onClick={() => navigate('/admin/students')}
                             >
-                                <span>👤</span> Manage Users
+                                <span>👤</span> Manage Students
                             </button>
                             <button
                                 className="dash-btn dash-btn-secondary"
                                 style={{ width: '100%', justifyContent: 'flex-start' }}
-                                onClick={() => navigate('/admin/classes')}
+                                onClick={() => navigate('/admin/teachers')}
                             >
-                                <span>🏫</span> Manage Classes
+                                <span>👨‍🏫</span> Manage Teachers
                             </button>
                             <button
                                 className="dash-btn dash-btn-secondary"

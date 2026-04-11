@@ -23,8 +23,10 @@ const Dashboard = ({ user, setIsLoggedIn, children }) => {
 
     const adminLinks = [
         { path: '/admin', label: 'Overview', end: true },
-        { path: '/admin/users', label: 'User Management' },
-        { path: '/admin/classes', label: 'Classes & Departments' }
+        { path: '/admin/users', label: '👥 Users' },
+        { path: '/admin/students', label: '➕ Add Students' },
+        { path: '/admin/teachers', label: '➕ Add Teachers' },
+        { path: '/admin/classes', label: '🏫 Classes' }
     ];
 
     const links = user?.role === 'teacher' ? teacherLinks : user?.role === 'admin' ? adminLinks : studentLinks;

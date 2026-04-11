@@ -19,7 +19,9 @@ import TeacherNotes from './pages/teacher/TeacherNotes';
 import Dashboard from './components/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminHome from './pages/admin/AdminHome';
-import AdminUsers from './pages/admin/AdminUsers';
+import AdminAllUsers from './pages/admin/AdminAllUsers';
+import AdminStudents from './pages/admin/AdminStudents';
+import AdminTeachers from './pages/admin/AdminTeachers';
 import AdminClasses from './pages/admin/AdminClasses';
 import { DataProvider } from './context/DataContext';
 import { AlertProvider } from './context/AlertContext';
@@ -82,7 +84,9 @@ const App = () => {
 
               <Route path="/admin" element={<AdminDashboard />}>
                 <Route index element={<AdminHome />} />
-                <Route path="users" element={<AdminUsers />} />
+                <Route path="users" element={<AdminAllUsers />} />
+                <Route path="students" element={<AdminStudents />} />
+                <Route path="teachers" element={<AdminTeachers />} />
                 <Route path="classes" element={<AdminClasses />} />
               </Route>
 

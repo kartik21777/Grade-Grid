@@ -1997,3 +1997,111 @@ body {
   font-style: italic;
   font-size: 0.9rem;
 }
+
+/* ── CSV Drop Zone ── */
+.csvDropZone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 28px 20px;
+  border: 2px dashed rgba(168, 85, 247, 0.35);
+  border-radius: 12px;
+  background: rgba(168, 85, 247, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.csvDropZone:hover {
+  border-color: rgba(168, 85, 247, 0.7);
+  background: rgba(168, 85, 247, 0.1);
+}
+
+.csvDropIcon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.csvDropText {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  word-break: break-all;
+}
+
+/* ── CSV Preview ── */
+.csvPreviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.csvPreviewTable {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+/* ── Form Label ── */
+.formLabel {
+  display: block;
+  color: #8892b0;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+/* ── Allocation Row (Manage Allocations modal) ── */
+.allocRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(15, 23, 42, 0.5);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  user-select: none;
+}
+
+.allocRow:hover {
+  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.25);
+}
+
+.allocRowSelected {
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.allocCheckbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.18s ease;
+  background: transparent;
+}
+
+.allocRowSelected .allocCheckbox {
+  border-color: #6366f1;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+}
+
+.allocCheckmark {
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
