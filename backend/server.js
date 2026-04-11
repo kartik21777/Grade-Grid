@@ -66,31 +66,12 @@ connectDB();
 // 1. GET /api/data - Fetch all initial data using Promise.all
 app.get('/api/data', async (req, res) => {
   try {
-    // 1a. Seed Teacher Data if Empty (Migration Step)
-    const teacherCount = await Teacher.countDocuments();
-    let teachersData = [];
-    if (teacherCount === 0) {
-      // Find classes to link
-      const csea = await Class.findOne({ originalId: 1 }); // Year 2 - CSE A
-      const ita = await Class.findOne({ originalId: 2 });  // Year 3 - IT A
-      const cseb = await Class.findOne({ originalId: 3 }); // Year 1 - CSE B
-
-      const INITIAL_TEACHERS = [
-        { originalId: 'T1', empId: '101', name: 'Dr. Aris Thorne', dept: 'Computer Science', assignedClasses: [csea?._id, cseb?._id].filter(Boolean) },
-        { originalId: 'T2', empId: '102', name: 'Prof. Sarah Connor', dept: 'Information Technology', assignedClasses: [ita?._id].filter(Boolean) }
-      ];
-
-      await Teacher.insertMany(INITIAL_TEACHERS);
-      console.log('Seeded initial teachers into MongoDB');
-    }
-
-    const [classes, students, assignments, scores, notes, teachers] = await Promise.all([
+    const [classes, students, assignments, scores, notes] = await Promise.all([
       Class.find({}).lean(),
       Student.find({}).lean(),
       Assignment.find({}).lean(),
       Score.find({}).populate('studentId', 'name originalId').lean(),
-      Note.find({}).lean(),
-      Teacher.find({}).lean()
+      Note.find({}).lean()
     ]);
 
     const mappedClasses = classes.map(c => ({
@@ -122,7 +103,7 @@ app.get('/api/data', async (req, res) => {
 
     const mappedSubmissions = scores.map(s => {
       const assignment = assignments.find(a => a._id.toString() === s.assignmentId?.toString());
-      
+
       // Populate may not resolve if studentId was stored as a plain string (legacy data)
       // so we fall back to manual lookup in the students array
       let resolvedStudentId = null;
@@ -201,7 +182,7 @@ app.post('/api/assignments', upload.single('file'), async (req, res) => {
     const { id, title, subject, classId, dueDate, dueTime, rubrics } = req.body;
     const parsedRubrics = typeof rubrics === 'string' ? JSON.parse(rubrics) : rubrics;
     const cls = await Class.findOne({ originalId: classId });
-    
+
     const filePath = req.file ? `/uploads/assignments/${req.file.filename}` : null;
 
     const newAssignment = new Assignment({
@@ -216,7 +197,7 @@ app.post('/api/assignments', upload.single('file'), async (req, res) => {
     });
 
     await newAssignment.save();
-    
+
     const mappedAssignment = {
       _id: newAssignment._id.toString(),
       id: newAssignment.originalId?.toString() || newAssignment._id.toString(),
@@ -243,10 +224,10 @@ app.post('/api/assignments', upload.single('file'), async (req, res) => {
 app.put('/api/submissions/:studentId/:assignmentId', upload.single('file'), async (req, res) => {
   try {
     const { studentId, assignmentId } = req.params;
-    
+
     const status = req.body.status;
     const graded = req.body.graded !== undefined ? String(req.body.graded) === 'true' : undefined;
-    
+
     let score = undefined;
     if (req.body.score) {
       score = typeof req.body.score === 'string' ? JSON.parse(req.body.score) : req.body.score;
@@ -260,12 +241,12 @@ app.put('/api/submissions/:studentId/:assignmentId', upload.single('file'), asyn
       fileNameToSave = `/uploads/submissions/${req.file.filename}`;
     }
 
-    const student = await Student.findOne({ 
+    const student = await Student.findOne({
       $or: [{ rollNo: studentId }, { originalId: studentId }]
     });
     // Keep support for both String or Number assignmentIds based on migration mapping
-    const assignment = await Assignment.findOne({ 
-      $or: [{ originalId: Number(assignmentId) }, { originalId: String(assignmentId) }] 
+    const assignment = await Assignment.findOne({
+      $or: [{ originalId: Number(assignmentId) }, { originalId: String(assignmentId) }]
     });
 
     if (!student || !assignment) {
@@ -328,7 +309,7 @@ app.post('/api/notes', upload.single('file'), async (req, res) => {
     });
 
     await newNote.save();
-    
+
     const mappedNote = {
       ...newNote.toObject(),
       id: newNote._id.toString(),
@@ -342,50 +323,6 @@ app.post('/api/notes', upload.single('file'), async (req, res) => {
   }
 });
 
-// --- ADMIN ROUTES ---
-
-// 5. POST /api/classes
-app.post('/api/classes', async (req, res) => {
-  try {
-    const { name, originalId } = req.body;
-    const newClass = new Class({ name, originalId: Number(originalId) || Date.now() });
-    await newClass.save();
-    res.status(201).json({ message: 'Class created', class: { ...newClass.toObject(), id: newClass.originalId } });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error creating class' });
-  }
-});
-
-// 6. POST /api/students
-app.post('/api/students', async (req, res) => {
-  try {
-    const { rollNo, name, classId } = req.body;
-    if (Array.isArray(req.body)) {
-      // Bulk create
-      const mapped = req.body.map(s => ({ ...s, originalId: s.rollNo }));
-      const inserted = await Student.insertMany(mapped);
-      return res.status(201).json({ message: 'Bulk students created', students: inserted });
-    }
-    const cls = await Class.findOne({ originalId: classId });
-    const newStudent = new Student({ rollNo, originalId: rollNo, name, classId: cls ? cls._id : null });
-    await newStudent.save();
-    res.status(201).json({ message: 'Student created', student: { ...newStudent.toObject(), id: newStudent.originalId } });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error creating student' });
-  }
-});
-
-// 7. POST /api/teachers
-app.post('/api/teachers', async (req, res) => {
-  try {
-    const { empId, name, dept } = req.body;
-    const newTeacher = new Teacher({ empId, originalId: empId, name, dept, assignedClasses: [] });
-    await newTeacher.save();
-    res.status(201).json({ message: 'Teacher created', teacher: { ...newTeacher.toObject(), id: newTeacher.originalId } });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error creating teacher' });
-  }
-});
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
