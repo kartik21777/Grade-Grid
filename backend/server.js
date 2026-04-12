@@ -66,12 +66,13 @@ connectDB();
 // 1. GET /api/data - Fetch all initial data using Promise.all
 app.get('/api/data', async (req, res) => {
   try {
-    const [classes, students, assignments, scores, notes] = await Promise.all([
+    const [classes, students, assignments, scores, notes, teachers] = await Promise.all([
       Class.find({}).lean(),
       Student.find({}).lean(),
       Assignment.find({}).lean(),
       Score.find({}).populate('studentId', 'name originalId').lean(),
-      Note.find({}).lean()
+      Note.find({}).lean(),
+      Teacher.find({}).lean()
     ]);
 
     const mappedClasses = classes.map(c => ({
@@ -337,10 +338,39 @@ app.post('/api/classes', async (req, res) => {
   }
 });
 
+// 5b. DELETE /api/classes/:id
+app.delete('/api/classes/:id', async (req, res) => {
+  try {
+    const classId = req.params.id;
+    const cls = await Class.findById(classId);
+    if (!cls) return res.status(404).json({ message: 'Class not found' });
+
+    // Step 1: Delete the class
+    await Class.findByIdAndDelete(classId);
+
+    // Step 2: Unassign all students belonging to this class
+    await Student.updateMany(
+      { classId: cls._id },
+      { $set: { classId: null } }
+    );
+
+    // Step 3: Remove this class from all teachers' assignment arrays
+    await Teacher.updateMany(
+      { assignedClasses: cls._id },
+      { $pull: { assignedClasses: cls._id } }
+    );
+
+    res.json({ message: 'Class deleted and users unassigned successfully' });
+  } catch (error) {
+    console.error('Delete Class Error:', error);
+    res.status(500).json({ message: 'Server error deleting class' });
+  }
+});
+
 // 6. POST /api/students
 app.post('/api/students', async (req, res) => {
   try {
-    const { rollNo, name, classId } = req.body;
+    const { rollNo, name, branch, classId } = req.body;
     if (Array.isArray(req.body)) {
       // Bulk create
       const mapped = req.body.map(s => ({ ...s, originalId: s.rollNo }));
@@ -348,7 +378,7 @@ app.post('/api/students', async (req, res) => {
       return res.status(201).json({ message: 'Bulk students created', students: inserted });
     }
     const cls = await Class.findOne({ originalId: classId });
-    const newStudent = new Student({ rollNo, originalId: rollNo, name, classId: cls ? cls._id : null });
+    const newStudent = new Student({ rollNo, originalId: rollNo, name, branch: branch || '', classId: cls ? cls._id : null });
     await newStudent.save();
     res.status(201).json({ message: 'Student created', student: { ...newStudent.toObject(), id: newStudent.originalId } });
   } catch (error) {
@@ -359,8 +389,25 @@ app.post('/api/students', async (req, res) => {
 // 7. POST /api/teachers
 app.post('/api/teachers', async (req, res) => {
   try {
-    const { empId, name, dept } = req.body;
-    const newTeacher = new Teacher({ empId, originalId: empId, name, dept, assignedClasses: [] });
+    if (Array.isArray(req.body)) {
+      // Bulk create
+      const mapped = req.body.map(t => ({ 
+        ...t, 
+        originalId: t.empId,
+        assignedClasses: t.assignedClasses || []
+      }));
+      const inserted = await Teacher.insertMany(mapped);
+      return res.status(201).json({ message: 'Bulk teachers created', teachers: inserted });
+    }
+
+    const { empId, name, dept, assignedClasses } = req.body;
+    const newTeacher = new Teacher({ 
+      empId, 
+      originalId: empId, 
+      name, 
+      dept, 
+      assignedClasses: assignedClasses || [] 
+    });
     await newTeacher.save();
     res.status(201).json({ message: 'Teacher created', teacher: { ...newTeacher.toObject(), id: newTeacher.originalId } });
   } catch (error) {
@@ -371,17 +418,42 @@ app.post('/api/teachers', async (req, res) => {
 // 8. PUT /api/students/:id
 app.put('/api/students/:id', async (req, res) => {
   try {
-    const { name, rollNo, classId } = req.body;
+    const { name, rollNo, branch, classId } = req.body;
     const cls = classId ? await Class.findOne({ $or: [{ originalId: classId }, { originalId: Number(classId) }] }) : null;
     const updated = await Student.findByIdAndUpdate(
       req.params.id,
-      { name, rollNo, ...(cls && { classId: cls._id }) },
+      { name, rollNo, branch, ...(cls && { classId: cls._id }) },
       { new: true }
+
     );
     if (!updated) return res.status(404).json({ message: 'Student not found' });
     res.json({ message: 'Student updated', student: updated });
   } catch (error) {
     res.status(500).json({ message: 'Server error updating student' });
+  }
+});
+
+// 8b. PATCH /api/students/:id/class
+app.patch('/api/students/:id/class', async (req, res) => {
+  try {
+    const { classId } = req.body;
+    let clsIdToSet = null;
+    
+    if (classId) {
+      // Find the class by its _id or originalId
+      const cls = await Class.findOne({ $or: [{ _id: classId }, { originalId: classId }, { originalId: Number(classId) }] });
+      if (cls) clsIdToSet = cls._id;
+    }
+
+    const updated = await Student.findByIdAndUpdate(
+      req.params.id,
+      { classId: clsIdToSet },
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ message: 'Student not found' });
+    res.json({ message: 'Student class updated', student: updated });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error updating student class' });
   }
 });
 

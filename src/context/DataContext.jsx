@@ -32,26 +32,29 @@ export const DataProvider = ({ children, user }) => {
 
   // Exclude mock definitions here for length, but dynamically generate them if needed dynamically
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch('http://localhost:5000/api/data');
-        const data = await res.json();
+  const fetchData = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/data');
+      const data = await res.json();
+      setClasses(data.classes || []);
+      setStudents(data.students || []);
+      setAssignments(data.assignments || []);
+      setSubmissions(data.submissions || []);
+      setNotes(data.notes || []);
+      setTeachers(data.teachers || []);
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setLoading(false);
+    }
+  };
 
-        setClasses(data.classes || []);
-        setStudents(data.students || []);
-        setAssignments(data.assignments || []);
-        setSubmissions(data.submissions || []);
-        setNotes(data.notes || []);
-        setTeachers(data.teachers || []);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setLoading(false);
-      }
-    };
+  useEffect(() => {
     fetchData();
   }, []);
+
+  const refreshData = () => fetchData();
+
 
   // Actions
   const addAssignment = async (newAssignment) => {
@@ -402,12 +405,9 @@ export const DataProvider = ({ children, user }) => {
     addAssignment,
     addNotes,
     updateSubmission,
-    submitWork
+    submitWork,
+    refreshData
   };
-
-  if (loading) {
-    return <div style={{ color: 'white', padding: '20px', textAlign: 'center' }}>Loading Data from MongoDB...</div>;
-  }
 
   return (
     <DataContext.Provider value={value}>

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useDataContext } from '../../context/DataContext';
 
 const AdminTeachers = () => {
+    const { refreshData } = useDataContext();
     const [form, setForm] = useState({ name: '', empId: '', dept: '' });
     const [formStatus, setFormStatus] = useState(null);
 
@@ -22,7 +24,8 @@ const AdminTeachers = () => {
             if (res.ok) {
                 setFormStatus('success');
                 setForm({ name: '', empId: '', dept: '' });
-                setTimeout(() => setFormStatus(null), 3000);
+                await refreshData();
+                setTimeout(() => setFormStatus(null), 2000);
             } else {
                 setFormStatus('error');
             }
@@ -64,7 +67,11 @@ const AdminTeachers = () => {
             );
             const allOk = results.every(r => r.ok);
             setCsvStatus(allOk ? 'success' : 'error');
-            if (allOk) { setCsvPreview([]); setCsvFilename(''); }
+            if (allOk) {
+                await refreshData();
+                setCsvPreview([]);
+                setCsvFilename('');
+            }
         } catch {
             setCsvStatus('error');
         }

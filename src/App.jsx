@@ -23,6 +23,8 @@ import AdminAllUsers from './pages/admin/AdminAllUsers';
 import AdminStudents from './pages/admin/AdminStudents';
 import AdminTeachers from './pages/admin/AdminTeachers';
 import AdminClasses from './pages/admin/AdminClasses';
+import AdminCreateClass from './pages/admin/AdminCreateClass';
+import AdminClassAllocations from './pages/admin/AdminClassAllocations';
 import { DataProvider } from './context/DataContext';
 import { AlertProvider } from './context/AlertContext';
 
@@ -88,6 +90,8 @@ const App = () => {
                 <Route path="students" element={<AdminStudents />} />
                 <Route path="teachers" element={<AdminTeachers />} />
                 <Route path="classes" element={<AdminClasses />} />
+                <Route path="classes/:id/allocations" element={<AdminClassAllocations />} />
+                <Route path="create-class" element={<AdminCreateClass />} />
               </Route>
 
               <Route path="*" element={<Navigate to={user.role === 'admin' ? '/admin' : user.role === 'teacher' ? '/teacher' : '/student'} replace />} />

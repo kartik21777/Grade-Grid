@@ -4,59 +4,45 @@ import { useDataContext } from '../../context/DataContext';
 
 const AdminHome = () => {
     const navigate = useNavigate();
-    const { students, teachers, classes, assignments, submissions } = useDataContext();
-
-    // Derived stats
-    const stats = useMemo(() => {
-        const totalSubmissions = submissions.length;
-        const gradedSubmissions = submissions.filter(s => s.graded).length;
-        const pendingGrades = submissions.filter(s => s.status === 'Submitted' && !s.graded).length;
-        const gradingRate = totalSubmissions > 0
-            ? ((gradedSubmissions / totalSubmissions) * 100).toFixed(0)
-            : 0;
-
-        return { totalSubmissions, gradedSubmissions, pendingGrades, gradingRate };
-    }, [submissions]);
+    const { students, teachers, classes } = useDataContext();
 
     const statCards = [
-        { label: 'Total Students',  value: students.length,    icon: '👨‍🎓', color: '#42cab3' },
-        { label: 'Total Teachers',  value: teachers.length,    icon: '👨‍🏫', color: '#6366f1' },
-        { label: 'Total Classes',   value: classes.length,     icon: '🏫',  color: '#f59e0b' },
-        { label: 'Assignments',     value: assignments.length, icon: '📋',  color: '#3b82f6' },
-        { label: 'Pending Grades',  value: stats.pendingGrades, icon: '⚖️', color: '#ef4444' },
+        { label: 'Total Students', value: students.length, icon: '👨‍🎓', color: '#42cab3' },
+        { label: 'Total Teachers', value: teachers.length, icon: '👨‍🏫', color: '#6366f1' },
+        { label: 'Total Classes',  value: classes.length,  icon: '🏫',  color: '#f59e0b' },
     ];
 
-    // Per-class breakdown for the activity table
+    // Per-class breakdown
     const classBreakdown = useMemo(() => {
         return classes.map(cls => {
-            const clsStudents  = students.filter(s => String(s.classId) === String(cls.id));
-            const clsAssign    = assignments.filter(a => String(a.classId) === String(cls.id));
-            const clsSubmit    = submissions.filter(s =>
-                clsAssign.some(a => String(a.id) === String(s.assignmentId))
-            );
-            const clsTeachers  = teachers.filter(t =>
+            const clsStudents = students.filter(s => String(s.classId) === String(cls.id));
+            const clsTeachers = teachers.filter(t =>
                 (t.assignedClasses || []).some(id => String(id) === String(cls.id))
             );
             return {
-                name:      cls.name,
-                students:  clsStudents.length,
-                teachers:  clsTeachers.map(t => t.name).join(', ') || '—',
-                assignments: clsAssign.length,
-                submissions: clsSubmit.length,
+                name:     cls.name,
+                students: clsStudents.length,
+                teachers: clsTeachers.map(t => t.name).join(', ') || '—',
             };
         });
-    }, [classes, students, teachers, assignments, submissions]);
+    }, [classes, students, teachers]);
 
-    const handleExport = () => {
-        const data = { students, teachers, classes, assignments, submissions };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url  = URL.createObjectURL(blob);
-        const a    = document.createElement('a');
-        a.href     = url;
-        a.download = `gradegrid_export_${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-    };
+    // Teachers summary (name + assigned classes)
+    const teachersSummary = useMemo(() => {
+        return teachers.map(t => {
+            const assignedNames = (t.assignedClasses || [])
+                .map(id => {
+                    const cls = classes.find(c => String(c.id) === String(id));
+                    return cls ? cls.name : null;
+                })
+                .filter(Boolean);
+            return {
+                name: t.name,
+                dept: t.dept || '—',
+                classes: assignedNames.join(', ') || 'None assigned',
+            };
+        });
+    }, [teachers, classes]);
 
     return (
         <div className="contentWrapper">
@@ -67,15 +53,12 @@ const AdminHome = () => {
                     Welcome, <span style={{ color: '#a855f7' }}>Administrator</span> 🛡️
                 </h1>
                 <p style={{ color: '#8892b0', fontSize: 14 }}>
-                    Platform-wide overview — {students.length} students across {classes.length} classes.
-                    {stats.pendingGrades > 0 && (
-                        <> <strong style={{ color: '#ef4444' }}>{stats.pendingGrades} submissions</strong> are awaiting grades.</>
-                    )}
+                    Platform-wide overview — {students.length} students, {teachers.length} teachers across {classes.length} classes.
                 </p>
             </div>
 
             {/* Stat Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 16, marginBottom: 32 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 32 }}>
                 {statCards.map(card => (
                     <div
                         key={card.label}
@@ -89,13 +72,13 @@ const AdminHome = () => {
                 ))}
             </div>
 
-            {/* Bottom grid: Activity Table + Quick Actions */}
+            {/* Bottom grid: Class Breakdown + Right Column */}
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 24, alignItems: 'start' }}>
 
-                {/* Class Activity Table */}
+                {/* Class Breakdown Table */}
                 <div className="card" style={{ padding: 24 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                        <h3 style={{ color: 'white', fontSize: 18, margin: 0 }}>🏫 Class Activity</h3>
+                        <h3 style={{ color: 'white', fontSize: 18, margin: 0 }}>🏫 Class Breakdown</h3>
                         <span
                             onClick={() => navigate('/admin/classes')}
                             style={{ color: '#a855f7', fontSize: 13, cursor: 'pointer' }}
@@ -108,7 +91,7 @@ const AdminHome = () => {
                         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                             <thead>
                                 <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                                    {['Class', 'Teacher(s)', 'Students', 'Assignments', 'Submissions'].map(h => (
+                                    {['Class', 'Teacher(s)', 'Students'].map(h => (
                                         <th key={h} style={{ color: '#8892b0', fontWeight: 600, padding: '8px 10px', textAlign: 'left', textTransform: 'uppercase', fontSize: 11, letterSpacing: 0.5 }}>{h}</th>
                                     ))}
                                 </tr>
@@ -119,8 +102,6 @@ const AdminHome = () => {
                                         <td style={{ color: 'white', padding: '12px 10px', fontWeight: 600 }}>{row.name}</td>
                                         <td style={{ color: '#8892b0', padding: '12px 10px' }}>{row.teachers}</td>
                                         <td style={{ color: '#42cab3', padding: '12px 10px', fontWeight: 700 }}>{row.students}</td>
-                                        <td style={{ color: '#f59e0b', padding: '12px 10px', fontWeight: 700 }}>{row.assignments}</td>
-                                        <td style={{ color: '#6366f1', padding: '12px 10px', fontWeight: 700 }}>{row.submissions}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -157,28 +138,37 @@ const AdminHome = () => {
                             <button
                                 className="dash-btn dash-btn-secondary"
                                 style={{ width: '100%', justifyContent: 'flex-start' }}
-                                onClick={handleExport}
+                                onClick={() => navigate('/admin/classes')}
                             >
-                                <span>📥</span> Export Data (JSON)
+                                <span>🏫</span> Manage Classes
                             </button>
                         </div>
                     </div>
 
-                    {/* Platform Summary */}
+                    {/* Teachers Overview */}
                     <div className="card" style={{ padding: 24, background: 'rgba(168, 85, 247, 0.05)' }}>
-                        <h4 style={{ color: 'white', margin: '0 0 16px 0' }}>📊 Platform Summary</h4>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                            {[
-                                { label: 'Total Submissions',  value: stats.totalSubmissions, color: '#6366f1' },
-                                { label: 'Graded',             value: stats.gradedSubmissions, color: '#10b981' },
-                                { label: 'Grading Rate',       value: `${stats.gradingRate}%`, color: '#f59e0b' },
-                            ].map(item => (
-                                <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <div style={{ color: '#8892b0', fontSize: 12, textTransform: 'uppercase', letterSpacing: 0.5 }}>{item.label}</div>
-                                    <div style={{ color: item.color, fontWeight: 700, fontSize: 15 }}>{item.value}</div>
-                                </div>
-                            ))}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                            <h4 style={{ color: 'white', margin: 0 }}>👨‍🏫 Teachers</h4>
+                            <span
+                                onClick={() => navigate('/admin/users')}
+                                style={{ color: '#a855f7', fontSize: 12, cursor: 'pointer' }}
+                            >
+                                View all →
+                            </span>
                         </div>
+                        {teachersSummary.length > 0 ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                                {teachersSummary.slice(0, 5).map((t, i) => (
+                                    <div key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: 10 }}>
+                                        <div style={{ color: 'white', fontWeight: 600, fontSize: 13 }}>{t.name}</div>
+                                        <div style={{ color: '#8892b0', fontSize: 11, marginTop: 2 }}>{t.dept}</div>
+                                        <div style={{ color: '#6366f1', fontSize: 11, marginTop: 2 }}>{t.classes}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p style={{ color: '#8892b0', fontSize: 13 }}>No teachers found.</p>
+                        )}
                     </div>
 
                 </div>

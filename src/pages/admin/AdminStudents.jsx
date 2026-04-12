@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useDataContext } from '../../context/DataContext';
 
 const AdminStudents = () => {
-    const { classes } = useDataContext();
+    const { classes, refreshData } = useDataContext();
 
-    const [form, setForm] = useState({ name: '', rollNo: '', classId: '' });
+    const [form, setForm] = useState({ name: '', rollNo: '', branch: '', classId: '' });
     const [formStatus, setFormStatus] = useState(null);
 
     const [csvPreview, setCsvPreview] = useState([]);
@@ -20,12 +20,13 @@ const AdminStudents = () => {
             const res = await fetch('http://localhost:5000/api/students', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: form.name, rollNo: form.rollNo, classId: form.classId })
+                body: JSON.stringify({ name: form.name, rollNo: form.rollNo, branch: form.branch, classId: form.classId })
             });
             if (res.ok) {
                 setFormStatus('success');
-                setForm({ name: '', rollNo: '', classId: '' });
-                setTimeout(() => setFormStatus(null), 3000);
+                setForm({ name: '', rollNo: '', branch: '', classId: '' });
+                await refreshData();
+                setTimeout(() => setFormStatus(null), 2000);
             } else {
                 setFormStatus('error');
             }
@@ -56,13 +57,21 @@ const AdminStudents = () => {
     const handleBulkSubmit = async () => {
         if (!csvPreview.length) return;
         try {
+            const mappedStudents = csvPreview.map(row => ({
+                name: row.name,
+                rollNo: row.rollno || row.rollNo,
+                branch: row.branch,
+                classId: row.classid || row.classId
+            }));
+
             const res = await fetch('http://localhost:5000/api/students', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(csvPreview)
+                body: JSON.stringify(mappedStudents)
             });
             if (res.ok) {
                 setCsvStatus('success');
+                await refreshData();
                 setCsvPreview([]);
                 setCsvFilename('');
             } else {
@@ -97,6 +106,16 @@ const AdminStudents = () => {
                             <input name="rollNo" className="login-input" placeholder="e.g. CS-201" value={form.rollNo} onChange={handleFormChange} required />
                         </div>
                         <div>
+                            <label className="formLabel">Branch</label>
+                            <select name="branch" className="teacherAssignSelect" style={{ width: '100%' }} value={form.branch} onChange={handleFormChange} required>
+                                <option value="">— Select Branch —</option>
+                                <option value="CSE">CSE</option>
+                                <option value="ML">ML</option>
+                                <option value="DS">DS</option>
+                                <option value="Cyber Security">Cyber Security</option>
+                            </select>
+                        </div>
+                        <div>
                             <label className="formLabel">Assign to Class</label>
                             <select name="classId" className="teacherAssignSelect" style={{ width: '100%' }} value={form.classId} onChange={handleFormChange} required>
                                 <option value="">— Select a class —</option>
@@ -117,7 +136,7 @@ const AdminStudents = () => {
                 <div className="card" style={{ padding: 28 }}>
                     <h3 style={{ color: 'white', margin: '0 0 8px 0', fontSize: 18 }}>📤 Bulk Upload via CSV</h3>
                     <p style={{ color: '#8892b0', fontSize: 13, margin: '0 0 20px 0' }}>
-                        Required columns: <code style={{ color: '#a5b4fc' }}>name, rollNo, classId</code>
+                        Required columns: <code style={{ color: '#a5b4fc' }}>name, rollNo, branch, classId</code>
                     </p>
                     <label className="csvDropZone">
                         <span className="csvDropIcon">📂</span>
@@ -133,12 +152,13 @@ const AdminStudents = () => {
                             </div>
                             <div className="csvPreviewTable">
                                 <table className="dataTable">
-                                    <thead><tr><th>Name</th><th>Roll No</th><th>Class ID</th></tr></thead>
+                                    <thead><tr><th>Name</th><th>Roll No</th><th>Branch</th><th>Class ID</th></tr></thead>
                                     <tbody>
                                         {csvPreview.slice(0, 5).map((row, i) => (
                                             <tr key={i}>
                                                 <td>{row.name || '—'}</td>
                                                 <td>{row.rollno || row.rollNo || '—'}</td>
+                                                <td>{row.branch || '—'}</td>
                                                 <td>{row.classid || row.classId || '—'}</td>
                                             </tr>
                                         ))}

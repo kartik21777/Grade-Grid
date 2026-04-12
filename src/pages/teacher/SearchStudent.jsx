@@ -167,7 +167,7 @@ const SearchStudent = () => {
           <div className="studentProfileHeader">
             <div>
               <h4 className="studentName">{student.name}</h4>
-              <p>Roll No: <strong>{student.rollNo}</strong> | Class: <strong>{student.class}</strong></p>
+              <p>Roll No: <strong>{student.rollNo}</strong> | Branch: <strong>{student.branch || 'N/A'}</strong> | Class: <strong>{student.class}</strong></p>
             </div>
             <div className="studentStats">
               <p>Total Submissions</p>

@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useDataContext } from '../../context/DataContext';
 
 const AdminAllUsers = () => {
-    const { students, teachers, classes } = useDataContext();
+    const { students, teachers, classes, refreshData } = useDataContext();
 
     const [activeTab, setActiveTab] = useState('students');
     const [searchQuery, setSearchQuery] = useState('');
@@ -54,13 +54,13 @@ const AdminAllUsers = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(
                     type === 'student'
-                        ? { name: editForm.name, rollNo: editForm.rollNo, classId: editForm.classId }
+                        ? { name: editForm.name, rollNo: editForm.rollNo, branch: editForm.branch, classId: editForm.classId }
                         : { name: editForm.name, empId: editForm.empId, dept: editForm.dept }
                 )
             });
             if (res.ok) {
                 setEditStatus('success');
-                setTimeout(() => { setEditModal(null); setEditStatus(null); }, 1500);
+                await refreshData();
             } else {
                 setEditStatus('error');
             }
@@ -84,7 +84,7 @@ const AdminAllUsers = () => {
             const res = await fetch(url, { method: 'DELETE' });
             if (res.ok) {
                 setDeleteStatus('success');
-                setTimeout(() => setDeleteTarget(null), 1200);
+                await refreshData();
             } else {
                 setDeleteStatus('error');
             }
@@ -99,7 +99,8 @@ const AdminAllUsers = () => {
     };
 
     return (
-        <div className="contentWrapper smooth-mount">
+        <>
+            <div className="contentWrapper smooth-mount">
 
             {/* Header */}
             <div style={{ marginBottom: 28 }}>
@@ -150,6 +151,7 @@ const AdminAllUsers = () => {
                                 <tr>
                                     <th>Roll No</th>
                                     <th>Name</th>
+                                    <th>Branch</th>
                                     <th>Class</th>
                                     <th style={{ textAlign: 'right' }}>Actions</th>
                                 </tr>
@@ -161,6 +163,7 @@ const AdminAllUsers = () => {
                                     <tr key={s._id || s.rollNo}>
                                         <td style={{ color: '#a5b4fc', fontWeight: 600 }}>{s.rollNo}</td>
                                         <td style={{ color: 'white' }}>{s.name}</td>
+                                        <td style={{ color: '#94a3b8' }}>{s.branch || '—'}</td>
                                         <td style={{ color: '#8892b0' }}>
                                             {classes.find(c => String(c.id) === String(s.classId) || String(c._id) === String(s.classId))?.name || 'Unassigned'}
                                         </td>
@@ -221,8 +224,9 @@ const AdminAllUsers = () => {
                     )}
                 </table>
             </div>
+        </div>
 
-            {/* ── Edit Modal ── */}
+        {/* ── Edit Modal ── */}
             {editModal && (
                 <div className="modalOverlay" onClick={() => setEditModal(null)}>
                     <div className="modalContent glassCard" style={{ maxWidth: 480 }} onClick={e => e.stopPropagation()}>
@@ -242,6 +246,16 @@ const AdminAllUsers = () => {
                                     <div>
                                         <label className="formLabel">Roll Number</label>
                                         <input name="rollNo" className="login-input" value={editForm.rollNo || ''} onChange={handleEditChange} required />
+                                    </div>
+                                    <div>
+                                        <label className="formLabel">Branch</label>
+                                        <select name="branch" className="teacherAssignSelect" style={{ width: '100%' }} value={editForm.branch || ''} onChange={handleEditChange} required>
+                                            <option value="">— Select Branch —</option>
+                                            <option value="CSE">CSE</option>
+                                            <option value="ML">ML</option>
+                                            <option value="DS">DS</option>
+                                            <option value="Cyber Security">Cyber Security</option>
+                                        </select>
                                     </div>
                                     <div>
                                         <label className="formLabel">Class</label>
@@ -270,7 +284,7 @@ const AdminAllUsers = () => {
                                 </>
                             )}
 
-                            {editStatus === 'success' && <p style={{ color: '#10b981', fontSize: 13, margin: 0 }}>✅ Saved successfully! Refresh to see updates.</p>}
+                            {editStatus === 'success' && <p style={{ color: '#10b981', fontSize: 13, margin: 0 }}>✅ Saved successfully!</p>}
                             {editStatus === 'error'   && <p style={{ color: '#ef4444', fontSize: 13, margin: 0 }}>❌ Save failed. Is the server running?</p>}
 
                             <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 8 }}>
@@ -292,7 +306,7 @@ const AdminAllUsers = () => {
                             Are you sure you want to permanently delete <strong style={{ color: 'white' }}>{deleteTarget.name}</strong>? This cannot be undone.
                         </p>
 
-                        {deleteStatus === 'success' && <p style={{ color: '#10b981', fontSize: 13 }}>✅ Deleted! Refresh to update the list.</p>}
+                        {deleteStatus === 'success' && <p style={{ color: '#10b981', fontSize: 13 }}>✅ Deleted!</p>}
                         {deleteStatus === 'error'   && <p style={{ color: '#ef4444', fontSize: 13 }}>❌ Delete failed. Is the server running?</p>}
 
                         <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
@@ -308,7 +322,7 @@ const AdminAllUsers = () => {
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 };
 

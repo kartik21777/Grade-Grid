@@ -30,8 +30,9 @@ const AdminUsers = () => {
     };
 
     return (
-        <div className="sectionContainer smooth-mount">
-            <div className="sectionHeader">
+        <>
+            <div className="sectionContainer smooth-mount">
+                <div className="sectionHeader">
                 <div>
                     <h2>User Management</h2>
                     <p>Manage and onboard Students and Teachers</p>
@@ -142,6 +143,7 @@ const AdminUsers = () => {
                     </tbody>
                 </table>
             </div>
+        </div>
 
             {isAddModalOpen && (
                 <div className="modalOverlay">
@@ -170,7 +172,7 @@ const AdminUsers = () => {
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 };
 
