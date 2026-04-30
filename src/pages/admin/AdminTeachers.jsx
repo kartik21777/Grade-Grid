@@ -56,24 +56,29 @@ const AdminTeachers = () => {
     const handleBulkSubmit = async () => {
         if (!csvPreview.length) return;
         try {
-            const results = await Promise.all(
-                csvPreview.map(row =>
-                    fetch('http://localhost:5000/api/teachers', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ name: row.name, empId: row.empid || row.empId, dept: row.dept })
-                    })
-                )
-            );
-            const allOk = results.every(r => r.ok);
-            setCsvStatus(allOk ? 'success' : 'error');
-            if (allOk) {
+            const mappedTeachers = csvPreview.map(row => ({
+                name: row.name,
+                empId: row.empid || row.empId,
+                dept: row.dept
+            }));
+
+            const res = await fetch('http://localhost:5000/api/teachers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(mappedTeachers)
+            });
+
+            if (res.ok) {
+                setCsvStatus('success');
                 await refreshData();
                 setCsvPreview([]);
                 setCsvFilename('');
+            } else {
+                const errData = await res.json().catch(() => ({}));
+                setCsvStatus(`error: ${errData.message || 'Import failed.'}`);
             }
         } catch {
-            setCsvStatus('error');
+            setCsvStatus('error: Network error');
         }
     };
 
@@ -153,7 +158,7 @@ const AdminTeachers = () => {
                         </>
                     )}
                     {csvStatus === 'success' && <p style={{ color: '#10b981', fontSize: 13, marginTop: 12 }}>✅ Import successful!</p>}
-                    {csvStatus === 'error'   && <p style={{ color: '#ef4444', fontSize: 13, marginTop: 12 }}>❌ Import failed. Check the server.</p>}
+                    {csvStatus && csvStatus.startsWith('error') && <p style={{ color: '#ef4444', fontSize: 13, marginTop: 12 }}>❌ {csvStatus.replace('error:', '').trim() || 'Import failed. Check the server.'}</p>}
                 </div>
             </div>
         </div>

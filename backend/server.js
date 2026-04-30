@@ -14,6 +14,7 @@ import Assignment from './models/Assignment.model.js';
 import Score from './models/Score.model.js';
 import Note from './models/Note.model.js';
 import Teacher from './models/Teacher.model.js';
+import User from './models/User.model.js';
 
 dotenv.config();
 
@@ -62,6 +63,23 @@ const upload = multer({ storage });
 
 // Connect to DB
 connectDB();
+
+// 0. POST /api/login - Authenticate user against MongoDB
+app.post('/api/login', async (req, res) => {
+  try {
+    const { userId, password } = req.body;
+    const user = await User.findOne({ userId });
+
+    if (!user || user.password !== password) {
+      return res.status(401).json({ success: false, message: 'Invalid ID or Password' });
+    }
+
+    res.json({ success: true, role: user.role });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
 
 // 1. GET /api/data - Fetch all initial data using Promise.all
 app.get('/api/data', async (req, res) => {
@@ -330,7 +348,10 @@ app.post('/api/notes', upload.single('file'), async (req, res) => {
 app.post('/api/classes', async (req, res) => {
   try {
     const { name, originalId } = req.body;
-    const newClass = new Class({ name, originalId: Number(originalId) || Date.now() });
+    if (!originalId || Number(originalId) <= 0) {
+      return res.status(400).json({ message: 'Class ID (originalId) must be a positive integer' });
+    }
+    const newClass = new Class({ name, originalId: Number(originalId) });
     await newClass.save();
     res.status(201).json({ message: 'Class created', class: { ...newClass.toObject(), id: newClass.originalId } });
   } catch (error) {
@@ -372,16 +393,42 @@ app.post('/api/students', async (req, res) => {
   try {
     const { rollNo, name, branch, classId } = req.body;
     if (Array.isArray(req.body)) {
-      // Bulk create
-      const mapped = req.body.map(s => ({ ...s, originalId: s.rollNo }));
-      const inserted = await Student.insertMany(mapped);
-      return res.status(201).json({ message: 'Bulk students created', students: inserted });
+      try {
+        // Bulk create
+        const mapped = req.body.map(s => ({ ...s, originalId: s.rollNo }));
+        const inserted = await Student.insertMany(mapped);
+        // Auto-create User credentials for each bulk student
+        for (const s of inserted) {
+          await User.findOneAndUpdate(
+            { userId: s.rollNo },
+            { userId: s.rollNo, password: 'password123', role: 'student' },
+            { upsert: true }
+          );
+        }
+        return res.status(201).json({ message: 'Bulk students created', students: inserted });
+      } catch (bulkError) {
+        console.error('Error in bulk student upload:', bulkError);
+        if (bulkError.code === 11000) {
+          return res.status(400).json({ message: 'Duplicate ID detected. One or more students in the CSV already exist.' });
+        }
+        return res.status(500).json({ message: 'Server error during bulk student upload' });
+      }
     }
     const cls = await Class.findOne({ originalId: classId });
     const newStudent = new Student({ rollNo, originalId: rollNo, name, branch: branch || '', classId: cls ? cls._id : null });
     await newStudent.save();
+    // Auto-create User credentials for login
+    await User.findOneAndUpdate(
+      { userId: rollNo },
+      { userId: rollNo, password: 'password123', role: 'student' },
+      { upsert: true }
+    );
     res.status(201).json({ message: 'Student created', student: { ...newStudent.toObject(), id: newStudent.originalId } });
   } catch (error) {
+    console.error('Error creating student:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({ message: 'Duplicate ID detected. A student with this Roll No already exists.' });
+    }
     res.status(500).json({ message: 'Server error creating student' });
   }
 });
@@ -390,14 +437,30 @@ app.post('/api/students', async (req, res) => {
 app.post('/api/teachers', async (req, res) => {
   try {
     if (Array.isArray(req.body)) {
-      // Bulk create
-      const mapped = req.body.map(t => ({ 
-        ...t, 
-        originalId: t.empId,
-        assignedClasses: t.assignedClasses || []
-      }));
-      const inserted = await Teacher.insertMany(mapped);
-      return res.status(201).json({ message: 'Bulk teachers created', teachers: inserted });
+      try {
+        // Bulk create
+        const mapped = req.body.map(t => ({ 
+          ...t, 
+          originalId: t.empId,
+          assignedClasses: t.assignedClasses || []
+        }));
+        const inserted = await Teacher.insertMany(mapped);
+        // Auto-create User credentials for each bulk teacher
+        for (const t of inserted) {
+          await User.findOneAndUpdate(
+            { userId: t.empId },
+            { userId: t.empId, password: 'password123', role: 'teacher' },
+            { upsert: true }
+          );
+        }
+        return res.status(201).json({ message: 'Bulk teachers created', teachers: inserted });
+      } catch (bulkError) {
+        console.error('Error in bulk teacher upload:', bulkError);
+        if (bulkError.code === 11000) {
+          return res.status(400).json({ message: 'Duplicate ID detected. One or more teachers in the CSV already exist.' });
+        }
+        return res.status(500).json({ message: 'Server error during bulk teacher upload' });
+      }
     }
 
     const { empId, name, dept, assignedClasses } = req.body;
@@ -409,8 +472,18 @@ app.post('/api/teachers', async (req, res) => {
       assignedClasses: assignedClasses || [] 
     });
     await newTeacher.save();
+    // Auto-create User credentials for login
+    await User.findOneAndUpdate(
+      { userId: empId },
+      { userId: empId, password: 'password123', role: 'teacher' },
+      { upsert: true }
+    );
     res.status(201).json({ message: 'Teacher created', teacher: { ...newTeacher.toObject(), id: newTeacher.originalId } });
   } catch (error) {
+    console.error('Error creating teacher:', error);
+    if (error.code === 11000) {
+      return res.status(400).json({ message: 'Duplicate ID detected. A teacher with this Emp ID already exists.' });
+    }
     res.status(500).json({ message: 'Server error creating teacher' });
   }
 });
@@ -462,7 +535,9 @@ app.delete('/api/students/:id', async (req, res) => {
   try {
     const deleted = await Student.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ message: 'Student not found' });
-    res.json({ message: 'Student deleted' });
+    // Also remove login credentials
+    await User.findOneAndDelete({ userId: deleted.rollNo });
+    res.json({ message: 'Student and credentials deleted' });
   } catch (error) {
     res.status(500).json({ message: 'Server error deleting student' });
   }
@@ -489,7 +564,9 @@ app.delete('/api/teachers/:id', async (req, res) => {
   try {
     const deleted = await Teacher.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ message: 'Teacher not found' });
-    res.json({ message: 'Teacher deleted' });
+    // Also remove login credentials
+    await User.findOneAndDelete({ userId: deleted.empId });
+    res.json({ message: 'Teacher and credentials deleted' });
   } catch (error) {
     res.status(500).json({ message: 'Server error deleting teacher' });
   }
@@ -513,6 +590,37 @@ app.patch('/api/teachers/:id/classes', async (req, res) => {
   } catch (error) {
     console.error('PATCH /teachers/:id/classes error:', error);
     res.status(500).json({ message: 'Server error updating teacher classes' });
+  }
+});
+
+// 13. GET /api/users — list all user credentials (admin only)
+app.get('/api/users', async (req, res) => {
+  try {
+    const users = await User.find({}).select('-__v').lean();
+    res.json(users);
+  } catch (error) {
+    console.error('GET /api/users error:', error);
+    res.status(500).json({ message: 'Server error fetching users' });
+  }
+});
+
+// 14. PATCH /api/users/:userId/password — reset a user's password
+app.patch('/api/users/:userId/password', async (req, res) => {
+  try {
+    const { password } = req.body;
+    if (!password || password.length < 4) {
+      return res.status(400).json({ message: 'Password must be at least 4 characters' });
+    }
+    const updated = await User.findOneAndUpdate(
+      { userId: req.params.userId },
+      { password },
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ message: 'User not found' });
+    res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('PATCH password error:', error);
+    res.status(500).json({ message: 'Server error updating password' });
   }
 });
 

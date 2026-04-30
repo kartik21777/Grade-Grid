@@ -1,7 +1,5 @@
 import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
 import { useAlert } from './AlertContext';
-import { NOTES } from '../data/mockData';
-
 // SUBJECTS can remain static since it's just strings
 const SUBJECTS = [
   'Data Structures',

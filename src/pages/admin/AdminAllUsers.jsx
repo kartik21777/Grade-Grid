@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useDataContext } from '../../context/DataContext';
 
 const AdminAllUsers = () => {
@@ -16,6 +16,32 @@ const AdminAllUsers = () => {
     const [deleteTarget, setDeleteTarget] = useState(null); // { type, _id, name }
     const [deleteStatus, setDeleteStatus] = useState(null);
 
+    // Credentials state
+    const [credentials, setCredentials] = useState([]);
+    const [credLoading, setCredLoading] = useState(false);
+    const [passwordModal, setPasswordModal] = useState(null); // { userId, role }
+    const [newPassword, setNewPassword] = useState('');
+    const [passwordStatus, setPasswordStatus] = useState(null);
+
+    // Fetch credentials when Credentials tab is active
+    useEffect(() => {
+        if (activeTab === 'credentials') {
+            fetchCredentials();
+        }
+    }, [activeTab]);
+
+    const fetchCredentials = async () => {
+        setCredLoading(true);
+        try {
+            const res = await fetch('http://localhost:5000/api/users');
+            const data = await res.json();
+            setCredentials(data);
+        } catch (err) {
+            console.error('Failed to fetch credentials:', err);
+        }
+        setCredLoading(false);
+    };
+
     // ── Filtering ────────────────────────────────────────────────
     const q = searchQuery.toLowerCase();
     const filteredStudents = useMemo(() =>
@@ -30,6 +56,12 @@ const AdminAllUsers = () => {
             t.empId?.toLowerCase().includes(q) ||
             t.dept?.toLowerCase().includes(q)
         ), [teachers, q]);
+
+    const filteredCredentials = useMemo(() =>
+        credentials.filter(c =>
+            c.userId?.toLowerCase().includes(q) ||
+            c.role?.toLowerCase().includes(q)
+        ), [credentials, q]);
 
     // ── Edit Handlers ────────────────────────────────────────────
     const openEdit = (type, data) => {
@@ -93,9 +125,59 @@ const AdminAllUsers = () => {
         }
     };
 
+    // ── Password Reset Handler ───────────────────────────────────
+    const openPasswordModal = (user) => {
+        setPasswordModal(user);
+        setNewPassword('');
+        setPasswordStatus(null);
+    };
+
+    const handlePasswordReset = async (e) => {
+        e.preventDefault();
+        if (!newPassword || newPassword.length < 4) {
+            setPasswordStatus('short');
+            return;
+        }
+        try {
+            const res = await fetch(`http://localhost:5000/api/users/${passwordModal.userId}/password`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: newPassword })
+            });
+            if (res.ok) {
+                setPasswordStatus('success');
+                setTimeout(() => setPasswordModal(null), 1200);
+            } else {
+                setPasswordStatus('error');
+            }
+        } catch {
+            setPasswordStatus('error');
+        }
+    };
+
     const switchTab = (tab) => {
         setActiveTab(tab);
         setSearchQuery('');
+    };
+
+    const roleBadgeStyle = (role) => {
+        const colors = {
+            admin: { bg: 'rgba(251, 191, 36, 0.15)', text: '#fbbf24', border: 'rgba(251, 191, 36, 0.3)' },
+            teacher: { bg: 'rgba(96, 165, 250, 0.15)', text: '#60a5fa', border: 'rgba(96, 165, 250, 0.3)' },
+            student: { bg: 'rgba(52, 211, 153, 0.15)', text: '#34d399', border: 'rgba(52, 211, 153, 0.3)' }
+        };
+        const c = colors[role] || colors.student;
+        return {
+            display: 'inline-block',
+            padding: '3px 10px',
+            borderRadius: 12,
+            fontSize: 12,
+            fontWeight: 600,
+            background: c.bg,
+            color: c.text,
+            border: `1px solid ${c.border}`,
+            textTransform: 'capitalize'
+        };
     };
 
     return (
@@ -106,7 +188,7 @@ const AdminAllUsers = () => {
             <div style={{ marginBottom: 28 }}>
                 <h1 style={{ color: 'white', fontSize: 28, marginBottom: 6 }}>👥 User Directory</h1>
                 <p style={{ color: '#8892b0', fontSize: 14 }}>
-                    View, search, edit, or remove students and teachers.
+                    View, search, edit, or remove students and teachers. Manage login credentials.
                 </p>
             </div>
 
@@ -125,13 +207,23 @@ const AdminAllUsers = () => {
                     >
                         👨‍🏫 Teachers ({teachers.length})
                     </button>
+                    <button
+                        className={`customTab ${activeTab === 'credentials' ? 'active' : ''}`}
+                        onClick={() => switchTab('credentials')}
+                    >
+                        🔐 Credentials ({credentials.length})
+                    </button>
                 </div>
 
                 <div className="adminSearchBar">
                     <span className="adminSearchIcon">🔍</span>
                     <input
                         className="adminSearchInput"
-                        placeholder={activeTab === 'students' ? 'Search name or roll no…' : 'Search name, ID or dept…'}
+                        placeholder={
+                            activeTab === 'students' ? 'Search name or roll no…' :
+                            activeTab === 'teachers' ? 'Search name, ID or dept…' :
+                            'Search user ID or role…'
+                        }
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                     />
@@ -158,7 +250,7 @@ const AdminAllUsers = () => {
                             </thead>
                             <tbody>
                                 {filteredStudents.length === 0 ? (
-                                    <tr><td colSpan={4} className="adminNoResults">No students match "{searchQuery}"</td></tr>
+                                    <tr><td colSpan={5} className="adminNoResults">No students match "{searchQuery}"</td></tr>
                                 ) : filteredStudents.map(s => (
                                     <tr key={s._id || s.rollNo}>
                                         <td style={{ color: '#a5b4fc', fontWeight: 600 }}>{s.rollNo}</td>
@@ -215,6 +307,38 @@ const AdminAllUsers = () => {
                                             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
                                                 <button className="textBtn" onClick={() => openEdit('teacher', t)}>✏️ Edit</button>
                                                 <button className="textBtn" style={{ color: '#f87171' }} onClick={() => openDelete('teacher', t)}>🗑️ Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </>
+                    )}
+
+                    {/* Credentials */}
+                    {activeTab === 'credentials' && (
+                        <>
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Role</th>
+                                    <th>Password</th>
+                                    <th style={{ textAlign: 'right' }}>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {credLoading ? (
+                                    <tr><td colSpan={4} style={{ textAlign: 'center', color: '#8892b0', padding: 32 }}>Loading credentials…</td></tr>
+                                ) : filteredCredentials.length === 0 ? (
+                                    <tr><td colSpan={4} className="adminNoResults">No credentials match "{searchQuery}"</td></tr>
+                                ) : filteredCredentials.map(c => (
+                                    <tr key={c._id}>
+                                        <td style={{ color: '#a5b4fc', fontWeight: 600 }}>{c.userId}</td>
+                                        <td><span style={roleBadgeStyle(c.role)}>{c.role}</span></td>
+                                        <td style={{ color: '#64748b', fontFamily: 'monospace', fontSize: 13 }}>{'•'.repeat(c.password?.length || 8)}</td>
+                                        <td>
+                                            <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                                                <button className="textBtn" onClick={() => openPasswordModal(c)}>🔑 Reset Password</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -303,7 +427,7 @@ const AdminAllUsers = () => {
                         <div style={{ fontSize: 40, marginBottom: 12 }}>🗑️</div>
                         <h2 style={{ marginBottom: 8 }}>Delete User?</h2>
                         <p style={{ color: '#8892b0', fontSize: 14, marginBottom: 24 }}>
-                            Are you sure you want to permanently delete <strong style={{ color: 'white' }}>{deleteTarget.name}</strong>? This cannot be undone.
+                            Are you sure you want to permanently delete <strong style={{ color: 'white' }}>{deleteTarget.name}</strong>? This will also remove their login credentials.
                         </p>
 
                         {deleteStatus === 'success' && <p style={{ color: '#10b981', fontSize: 13 }}>✅ Deleted!</p>}
@@ -319,6 +443,43 @@ const AdminAllUsers = () => {
                                 Delete
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Password Reset Modal ── */}
+            {passwordModal && (
+                <div className="modalOverlay" onClick={() => setPasswordModal(null)}>
+                    <div className="modalContent glassCard" style={{ maxWidth: 420 }} onClick={e => e.stopPropagation()}>
+                        <div style={{ fontSize: 36, marginBottom: 8 }}>🔑</div>
+                        <h2 style={{ marginBottom: 4 }}>Reset Password</h2>
+                        <p style={{ color: '#8892b0', fontSize: 13, marginBottom: 20 }}>
+                            Set a new password for <strong style={{ color: '#a5b4fc' }}>{passwordModal.userId}</strong> <span style={roleBadgeStyle(passwordModal.role)}>{passwordModal.role}</span>
+                        </p>
+                        <form onSubmit={handlePasswordReset} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                            <div>
+                                <label className="formLabel">New Password</label>
+                                <input
+                                    type="text"
+                                    className="login-input"
+                                    placeholder="Enter new password (min 4 chars)"
+                                    value={newPassword}
+                                    onChange={e => setNewPassword(e.target.value)}
+                                    required
+                                    minLength={4}
+                                    autoFocus
+                                />
+                            </div>
+
+                            {passwordStatus === 'success' && <p style={{ color: '#10b981', fontSize: 13, margin: 0 }}>✅ Password updated!</p>}
+                            {passwordStatus === 'error'   && <p style={{ color: '#ef4444', fontSize: 13, margin: 0 }}>❌ Update failed. Is the server running?</p>}
+                            {passwordStatus === 'short'   && <p style={{ color: '#fbbf24', fontSize: 13, margin: 0 }}>⚠️ Password must be at least 4 characters.</p>}
+
+                            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 8 }}>
+                                <button type="button" className="secondaryBtn" onClick={() => setPasswordModal(null)}>Cancel</button>
+                                <button type="submit" className="primaryBtn">Update Password</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}

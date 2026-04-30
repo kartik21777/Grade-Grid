@@ -7,6 +7,7 @@ const AdminCreateClass = () => {
     const { refreshData } = useDataContext();
 
     const [className, setClassName] = useState('');
+    const [classId, setClassId] = useState('');
     const [status, setStatus] = useState('idle');
     const [globalError, setGlobalError] = useState('');
 
@@ -71,6 +72,18 @@ const AdminCreateClass = () => {
             return;
         }
 
+        if (!classId.trim()) {
+            setGlobalError('Class ID is required.');
+            setStatus('error');
+            return;
+        }
+
+        if (Number(classId) <= 0) {
+            setGlobalError('Class ID must be a positive integer (greater than 0).');
+            setStatus('error');
+            return;
+        }
+
         setStatus('uploading');
         setGlobalError('');
 
@@ -79,26 +92,26 @@ const AdminCreateClass = () => {
             const classRes = await fetch('http://localhost:5000/api/classes', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: className })
+                body: JSON.stringify({ name: className, ...(classId && { originalId: classId }) })
             });
             
             if (!classRes.ok) throw new Error('Failed to create the class in the database.');
             const classData = await classRes.json();
-            const newClassId = classData.class.id || classData.class._id;
+            const newClassObjectId = classData.class._id;
 
             // 2. Prepare Data Arrays
             const mappedStudents = studentPreview.map(row => ({
                 name: row.name,
                 rollNo: row.rollno,
                 branch: row.branch,
-                classId: newClassId
+                classId: newClassObjectId
             }));
 
             const mappedTeachers = teacherPreview.map(row => ({
                 name: row.name,
                 empId: row.empid,
                 dept: row.dept,
-                assignedClasses: [newClassId]
+                assignedClasses: [newClassObjectId]
             }));
 
             // 3. Bulk Insert
@@ -110,8 +123,11 @@ const AdminCreateClass = () => {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(mappedStudents)
-                    }).then(res => {
-                        if (!res.ok) throw new Error('Failed to bulk insert students.');
+                    }).then(async res => {
+                        if (!res.ok) {
+                            const errData = await res.json().catch(() => ({}));
+                            throw new Error(errData.message || 'Failed to bulk insert students.');
+                        }
                     })
                 );
             }
@@ -122,8 +138,11 @@ const AdminCreateClass = () => {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(mappedTeachers)
-                    }).then(res => {
-                        if (!res.ok) throw new Error('Failed to bulk insert teachers.');
+                    }).then(async res => {
+                        if (!res.ok) {
+                            const errData = await res.json().catch(() => ({}));
+                            throw new Error(errData.message || 'Failed to bulk insert teachers.');
+                        }
                     })
                 );
             }
@@ -162,17 +181,33 @@ const AdminCreateClass = () => {
                 
                 <div className="card" style={{ padding: 32 }}>
                     
-                    <div style={{ marginBottom: 32 }}>
-                        <label className="formLabel">Class Name</label>
-                        <input 
-                            type="text"
-                            className="login-input" 
-                            placeholder="e.g. Year 2 - EEE A" 
-                            style={{ fontSize: 16, padding: '12px 16px', maxWidth: 400 }}
-                            value={className}
-                            onChange={e => setClassName(e.target.value)}
-                            disabled={isUploading}
-                        />
+                    <div style={{ marginBottom: 32, display: 'flex', gap: 24, flexWrap: 'wrap' }}>
+                        <div style={{ flex: '1 1 300px' }}>
+                            <label className="formLabel">Class Name</label>
+                            <input 
+                                type="text"
+                                className="login-input" 
+                                placeholder="e.g. Year 2 - EEE A" 
+                                style={{ fontSize: 16, padding: '12px 16px', width: '100%' }}
+                                value={className}
+                                onChange={e => setClassName(e.target.value)}
+                                disabled={isUploading}
+                            />
+                        </div>
+                        <div style={{ flex: '1 1 200px', maxWidth: 300 }}>
+                            <label className="formLabel">Class ID</label>
+                            <input 
+                                type="number"
+                                className="login-input" 
+                                placeholder="e.g. 4" 
+                                style={{ fontSize: 16, padding: '12px 16px', width: '100%' }}
+                                value={classId}
+                                onChange={e => setClassId(e.target.value)}
+                                disabled={isUploading}
+                                required
+                                min="1"
+                            />
+                        </div>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 24 }}>

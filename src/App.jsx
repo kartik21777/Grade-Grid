@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
-import { USER_CREDENTIALS } from './data/mockData';
 import './index.css';
 import Login from './pages/Login';
 import StudentDashboard from './pages/StudentDashboard';
@@ -40,24 +39,36 @@ const App = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const userCreds = USER_CREDENTIALS[credentials.id];
+    setError('');
 
-    if (userCreds && userCreds.password === credentials.password) {
-      const newUser = { id: credentials.id, role: userCreds.role };
-      setUser(newUser);
-      setIsLoggedIn(true);
+    try {
+      const res = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: credentials.id, password: credentials.password })
+      });
+      const data = await res.json();
 
-      // Persist to localStorage
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('user', JSON.stringify(newUser));
+      if (res.ok && data.success) {
+        const newUser = { id: credentials.id, role: data.role };
+        setUser(newUser);
+        setIsLoggedIn(true);
 
-      if (userCreds.role === 'admin') navigate('/admin');
-      else if (userCreds.role === 'teacher') navigate('/teacher');
-      else navigate('/student');
-    } else {
-      setError('Invalid ID or Password');
+        // Persist to localStorage
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('user', JSON.stringify(newUser));
+
+        if (data.role === 'admin') navigate('/admin');
+        else if (data.role === 'teacher') navigate('/teacher');
+        else navigate('/student');
+      } else {
+        setError(data.message || 'Invalid ID or Password');
+      }
+    } catch (err) {
+      console.error('Login failed:', err);
+      setError('Unable to connect to server');
     }
   };
 
